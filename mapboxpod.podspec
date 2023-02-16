@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.version          = '1.0.1'
   s.summary          = 'Mapbox frammework.' 
   s.homepage         = 'https://github.com/arslanraza90/mapboxpod'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  # s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'Arslan Raza' => 'https://github.com/arslanraza90/' }
   s.source           = { :git => 'https://github.com/arslanraza90/mapboxpod.git', :tag => s.version.to_s }
  
