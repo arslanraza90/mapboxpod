@@ -12,7 +12,7 @@ import MapboxDirections
 import GooglePlaces
 
  
-public class MapBoxViewController: UIViewController {
+open class MapBoxViewController: UIViewController {
     
     var navigationMapView: NavigationMapView!
     private var placesClient: GMSPlacesClient!
@@ -83,29 +83,26 @@ public class MapBoxViewController: UIViewController {
         button.layer.cornerRadius = 5.0
         return button
     }()
+    
+   public func configrations() {
+       GMSPlacesClient.provideAPIKey("AIzaSyAMlml7aqa1BQRUnmmmgixmFoDR3mdpRUI")
+       placesClient = GMSPlacesClient.shared()
+       navigationMapView = NavigationMapView(frame: view.bounds)
+       navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+       navigationMapView.delegate = self
+       navigationMapView.userLocationStyle = .puck2D()
+       
+       
+       view.addSubview(navigationMapView)
+       navigationMapView.addSubview(navigationButton)
+       navigationMapView.addSubview(testFiledSuperView)
+       navigationMapView.addSubview(testFiledSuperView1)
+       testFiledSuperView.addSubview(originLabel)
+       testFiledSuperView1.addSubview(destinationLabel)
+       navigationButton.addTarget(self, action:#selector(self.tappedButton), for: .touchUpInside)
 
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        GMSPlacesClient.provideAPIKey("AIzaSyAMlml7aqa1BQRUnmmmgixmFoDR3mdpRUI")
-        placesClient = GMSPlacesClient.shared()
-        navigationMapView = NavigationMapView(frame: view.bounds)
-        navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        navigationMapView.delegate = self
-        navigationMapView.userLocationStyle = .puck2D()
-        
-        
-        view.addSubview(navigationMapView)
-        navigationMapView.addSubview(navigationButton)
-        navigationMapView.addSubview(testFiledSuperView)
-        navigationMapView.addSubview(testFiledSuperView1)
-        testFiledSuperView.addSubview(originLabel)
-        testFiledSuperView1.addSubview(destinationLabel)
-        navigationButton.addTarget(self, action:#selector(self.tappedButton), for: .touchUpInside)
-
-        layoutSubviews()
-        setupLabelTap()
-        
+       layoutSubviews()
+       setupLabelTap()
     }
     
     
