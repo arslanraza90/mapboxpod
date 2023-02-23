@@ -12,7 +12,6 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.swift_versions = '5.0'
   s.static_framework = true
-  # s.platform	= :ios, '11.0'
 
   s.dependency 'MapboxMaps', '10.10.1'
   s.dependency 'MapboxDirections', '~> 2.9'

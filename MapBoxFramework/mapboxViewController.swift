@@ -10,12 +10,14 @@ import MapboxCoreNavigation
 import MapboxNavigation
 import MapboxDirections
 import GooglePlaces
+import CoreLocation
 
  
-open class MapBoxViewController: UIViewController {
+open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     
     var navigationMapView: NavigationMapView!
     private var placesClient: GMSPlacesClient!
+    var manager:CLLocationManager!
     
     var origin: CLLocationCoordinate2D?
     var destination: CLLocationCoordinate2D?
@@ -47,6 +49,8 @@ open class MapBoxViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
+        label.text = "Your location"
+        label.textColor = .white
         label.layer.cornerRadius = 5.0
         return label
     }()
@@ -55,22 +59,23 @@ open class MapBoxViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
+        label.textColor = .white
         label.layer.cornerRadius = 5.0
         return label
     }()
     
-    lazy var testFiledSuperView: UIView = {
+    lazy var textFiledSuperView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         view.layer.cornerRadius = 5.0
         return view
     }()
     
-    lazy var testFiledSuperView1: UIView = {
+    lazy var textFiledSuperView1: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         view.layer.cornerRadius = 5.0
         return view
     }()
@@ -85,25 +90,53 @@ open class MapBoxViewController: UIViewController {
     }()
     
    public func configrations() {
+       
+       let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/arslanraza900/clecn7cwl001k01piwth96e2d"))
+       let mapView = MapView(frame: view.bounds, mapInitOptions: options)
+       
        GMSPlacesClient.provideAPIKey("AIzaSyAMlml7aqa1BQRUnmmmgixmFoDR3mdpRUI")
        placesClient = GMSPlacesClient.shared()
-       navigationMapView = NavigationMapView(frame: view.bounds)
+       navigationMapView = NavigationMapView(frame: view.bounds, mapView: mapView)
        navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
        navigationMapView.delegate = self
        navigationMapView.userLocationStyle = .puck2D()
-       
-       
+       let speedLimitView = SpeedLimitView()
+       let speed = speedLimitView.currentSpeed
+       // Add it as a subview
        view.addSubview(navigationMapView)
+       navigationMapView.addSubview(originLabel)
+       navigationMapView.addSubview(speedLimitView)
        navigationMapView.addSubview(navigationButton)
-       navigationMapView.addSubview(testFiledSuperView)
-       navigationMapView.addSubview(testFiledSuperView1)
-       testFiledSuperView.addSubview(originLabel)
-       testFiledSuperView1.addSubview(destinationLabel)
+       navigationMapView.addSubview(textFiledSuperView)
+       navigationMapView.addSubview(textFiledSuperView1)
+       textFiledSuperView.addSubview(originLabel)
+       textFiledSuperView1.addSubview(destinationLabel)
+       navigationMapView.mapView.isUserInteractionEnabled = true
        navigationButton.addTarget(self, action:#selector(self.tappedButton), for: .touchUpInside)
-
+       getUserLocation()
        layoutSubviews()
        setupLabelTap()
     }
+    
+    func getUserLocation(){
+        self.manager = CLLocationManager()
+        self.manager.delegate = self
+        self.manager.desiredAccuracy = kCLLocationAccuracyBest
+        self.manager.requestWhenInUseAuthorization()
+        self.manager.startUpdatingLocation()
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+         self.manager.stopUpdatingLocation() //stop getting user location
+    
+        let location = locations[0]
+        let userSpeed = location.speed
+        
+//        originLabel.text = String(describing: userSpeed)
+        
+        origin = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
+         //self.userLocation = locations[0] as! CLLocation
+     }
     
     
     private func layoutSubviews() {
@@ -113,24 +146,24 @@ open class MapBoxViewController: UIViewController {
             navigationButton.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -50),
             navigationButton.heightAnchor.constraint(equalToConstant: 50),
             
-            testFiledSuperView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            testFiledSuperView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            testFiledSuperView.bottomAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-            testFiledSuperView.heightAnchor.constraint(equalToConstant: 50),
+            textFiledSuperView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            textFiledSuperView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+            textFiledSuperView.bottomAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+            textFiledSuperView.heightAnchor.constraint(equalToConstant: 50),
             
-            originLabel.leadingAnchor.constraint(equalTo: testFiledSuperView.leadingAnchor, constant: 0),
-            originLabel.trailingAnchor.constraint(equalTo: testFiledSuperView.trailingAnchor, constant: 0),
-            originLabel.bottomAnchor.constraint(equalTo: testFiledSuperView.bottomAnchor, constant: 0),
+            originLabel.leadingAnchor.constraint(equalTo: textFiledSuperView.leadingAnchor, constant: 10),
+            originLabel.trailingAnchor.constraint(equalTo: textFiledSuperView.trailingAnchor, constant: 0),
+            originLabel.bottomAnchor.constraint(equalTo: textFiledSuperView.bottomAnchor, constant: 0),
             originLabel.heightAnchor.constraint(equalToConstant: 50),
             
-            testFiledSuperView1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            testFiledSuperView1.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            testFiledSuperView1.bottomAnchor.constraint(equalTo: testFiledSuperView.bottomAnchor, constant: 70),
-            testFiledSuperView1.heightAnchor.constraint(equalToConstant: 50),
+            textFiledSuperView1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            textFiledSuperView1.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+            textFiledSuperView1.bottomAnchor.constraint(equalTo: textFiledSuperView.bottomAnchor, constant: 70),
+            textFiledSuperView1.heightAnchor.constraint(equalToConstant: 50),
             
-            destinationLabel.leadingAnchor.constraint(equalTo: testFiledSuperView1.leadingAnchor, constant: 0),
-            destinationLabel.trailingAnchor.constraint(equalTo: testFiledSuperView1.trailingAnchor, constant: 0),
-            destinationLabel.bottomAnchor.constraint(equalTo: testFiledSuperView1.bottomAnchor, constant: 0),
+            destinationLabel.leadingAnchor.constraint(equalTo: textFiledSuperView1.leadingAnchor, constant: 10),
+            destinationLabel.trailingAnchor.constraint(equalTo: textFiledSuperView1.trailingAnchor, constant: 0),
+            destinationLabel.bottomAnchor.constraint(equalTo: textFiledSuperView1.bottomAnchor, constant: 0),
             destinationLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
@@ -148,9 +181,9 @@ open class MapBoxViewController: UIViewController {
     
     func setupLabelTap() {
         
-        let origin = UITapGestureRecognizer(target: self, action: #selector(self.originLabelTapped(_:)))
-        self.originLabel.isUserInteractionEnabled = true
-        self.originLabel.addGestureRecognizer(origin)
+//        let origin = UITapGestureRecognizer(target: self, action: #selector(self.originLabelTapped(_:)))
+//        self.originLabel.isUserInteractionEnabled = true
+//        self.originLabel.addGestureRecognizer(origin)
         
         let destination = UITapGestureRecognizer(target: self, action: #selector(self.destinationLabelTapped(_:)))
         self.destinationLabel.isUserInteractionEnabled = true
@@ -158,21 +191,21 @@ open class MapBoxViewController: UIViewController {
         
     }
     
-    @objc func originLabelTapped(_ sender: UITapGestureRecognizer) {
-        
-        isOrigin = true
-        
-        let autocompleteController = GMSAutocompleteViewController()
-        autocompleteController.delegate = self
-        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue) |
-                                                  UInt(GMSPlaceField.name.rawValue))
-        autocompleteController.placeFields = fields
-        // Specify a filter.
-        let filter = GMSAutocompleteFilter()
-        //      filter.types = .address
-        autocompleteController.autocompleteFilter = filter
-        present(autocompleteController, animated: true, completion: nil)
-        }
+//    @objc func originLabelTapped(_ sender: UITapGestureRecognizer) {
+//
+//        isOrigin = true
+//
+//        let autocompleteController = GMSAutocompleteViewController()
+//        autocompleteController.delegate = self
+//        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue) |
+//                                                  UInt(GMSPlaceField.name.rawValue))
+//        autocompleteController.placeFields = fields
+//        // Specify a filter.
+//        let filter = GMSAutocompleteFilter()
+//        //      filter.types = .address
+//        autocompleteController.autocompleteFilter = filter
+//        present(autocompleteController, animated: true, completion: nil)
+//        }
     
     func showSearchViewController() {
         let autocompleteController = GMSAutocompleteViewController()
@@ -205,8 +238,14 @@ open class MapBoxViewController: UIViewController {
 
     
     @objc func tappedButton(sender: UIButton) {
-        navigationRouteTurnByTurn(origin: origin!, destination: destination!)
-//        streetViewRoute(origin: origin!, destination: destination!)
+        if let destination = destination {
+            navigationRouteTurnByTurn(origin: origin!, destination: destination)
+//            streetViewRoute(origin: origin!, destination: destination)
+        } else {
+            let alert = UIAlertController(title: "Alert", message: "Please select the destination", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     func navigationRouteTurnByTurn(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
@@ -222,23 +261,17 @@ open class MapBoxViewController: UIViewController {
                     return
                 }
                 
-//                guard let route = response.routes?.first else { return }
-//                let indexedRouteResponse = IndexedRouteResponse(routeResponse: response, routeIndex: 0)
-//
-//                let navigationViewController = NavigationViewController(for: indexedRouteResponse)
-
-//                 For demonstration purposes, simulate locations if the Simulate Navigation option is on.
-//                 Since first route is retrieved from response `routeIndex` is set to 0.
+                //                 For demonstration purposes, simulate locations if the Simulate Navigation option is on.
+                //                 Since first route is retrieved from response `routeIndex` is set to 0.
                 let indexedRouteResponse = IndexedRouteResponse(routeResponse: response, routeIndex: 0)
                 let navigationService = MapboxNavigationService(indexedRouteResponse: indexedRouteResponse,
                                                                 customRoutingProvider: NavigationSettings.shared.directions,
                                                                 credentials: NavigationSettings.shared.directions.credentials,
                                                                 simulating: .always)
-
-
+                
+                
                 let navigationOptions = NavigationOptions(styles: [CustomNightStyles()],
                                                           navigationService: navigationService)
-//                let navigationOptions = NavigationOptions(navigationService: navigationService)
                 let navigationViewController = NavigationViewController(for: indexedRouteResponse,
                                                                         navigationOptions: navigationOptions)
                 navigationViewController.modalPresentationStyle = .fullScreen
@@ -249,9 +282,8 @@ open class MapBoxViewController: UIViewController {
                 strongSelf.present(navigationViewController, animated: true, completion: nil)
             }
         }
-        
-        
     }
+    
     
     func streetViewRoute(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
         
@@ -280,7 +312,22 @@ open class MapBoxViewController: UIViewController {
                 // Render part of the route that has been traversed with full transparency, to give the illusion of a disappearing route.
                 navigationViewController.routeLineTracksTraversal = true
                 
-                strongSelf.present(navigationViewController, animated: true, completion: nil)
+                strongSelf.present(navigationViewController, animated: true, completion: {
+                    
+                    let customButton = UIButton()
+                    customButton.setTitle("Press", for: .normal)
+                    customButton.translatesAutoresizingMaskIntoConstraints = false
+                    customButton.backgroundColor = .blue
+                    customButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
+                    self?.navigationMapView.mapView.addSubview(customButton)
+                    customButton.bottomAnchor.constraint(equalTo: self!.navigationMapView.mapView.bottomAnchor, constant: 0).isActive = true
+                    customButton.leftAnchor.constraint(equalTo: self!.navigationMapView.mapView.leftAnchor, constant: 0).isActive = true
+                    customButton.rightAnchor.constraint(equalTo: self!.navigationMapView.mapView.rightAnchor, constant: 0).isActive = true
+
+                    self!.navigationMapView.mapView.setNeedsLayout()
+                    
+                    
+                })
             }
         }
     }
@@ -413,26 +460,11 @@ extension MapBoxViewController: GMSAutocompleteViewControllerDelegate {
     // Handle the user's selection.
     public func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
         
-        if isOrigin {
-            origin = CLLocationCoordinate2DMake(place.coordinate.latitude, place.coordinate.longitude)
-            print(origin)
-            originLabel.text = place.name
-        }else {
-            destination = CLLocationCoordinate2DMake(place.coordinate.latitude, place.coordinate.longitude)
-            destinationLabel.text = place.name
-            print(destination)
+        destination = CLLocationCoordinate2DMake(place.coordinate.latitude, place.coordinate.longitude)
+        destinationLabel.text = place.name
+        if let destination = destination{
+            requestRoute(origin: origin!, destination: destination)
         }
-
-        if origin?.longitude != nil && destination?.latitude != nil {
-            requestRoute(origin: origin!, destination: destination!)
-        }
-        
-        
-        
-        print("Place name: \(String(describing: place.name))")
-        print("Place cordinates: \(place.coordinate)")
-        print("Place ID: \(String(describing: place.placeID))")
-        print("Place attributions: \(String(describing: place.attributions))")
         dismiss(animated: true, completion: nil)
     }
     
@@ -455,23 +487,5 @@ extension MapBoxViewController: GMSAutocompleteViewControllerDelegate {
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
     
-}
-
-
-class CustomNightStyles: NightStyle {
-
-    required init() {
-        super.init()
-
-        styleType = .night
-    }
-
-    override func apply() {
-        super.apply()
-
-        // `BottomBannerView` is not used on CarPlay, so styling is only provided for iPhone and iPad.
-        BottomBannerView.appearance(for: UITraitCollection(userInterfaceIdiom: .phone)).backgroundColor = .black
-        BottomBannerView.appearance(for: UITraitCollection(userInterfaceIdiom: .pad)).backgroundColor = .darkGray
-    }
 }
 

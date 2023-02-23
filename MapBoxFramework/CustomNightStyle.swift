@@ -42,3 +42,22 @@ class CustomNightStyle: NightStyle {
     }
 }
 
+
+class CustomNightStyles: NightStyle {
+
+    required init() {
+        super.init()
+
+        styleType = .night
+    }
+
+    override func apply() {
+        super.apply()
+
+        // `BottomBannerView` is not used on CarPlay, so styling is only provided for iPhone and iPad.
+        BottomBannerView.appearance(for: UITraitCollection(userInterfaceIdiom: .phone)).backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        BottomBannerView.appearance(for: UITraitCollection(userInterfaceIdiom: .pad)).backgroundColor = .darkGray
+    }
+}
+
+
