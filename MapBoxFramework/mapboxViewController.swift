@@ -267,7 +267,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
                 let navigationService = MapboxNavigationService(indexedRouteResponse: indexedRouteResponse,
                                                                 customRoutingProvider: NavigationSettings.shared.directions,
                                                                 credentials: NavigationSettings.shared.directions.credentials,
-                                                                simulating: .always)
+                                                                simulating: .never)
                 
                 
                 let navigationOptions = NavigationOptions(styles: [CustomNightStyles()],
@@ -303,7 +303,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
                 let navigationService = MapboxNavigationService(indexedRouteResponse: indexedRouteResponse,
                                                                 customRoutingProvider: NavigationSettings.shared.directions,
                                                                 credentials: NavigationSettings.shared.directions.credentials,
-                                                                simulating: .always)
+                                                                simulating: .never)
                 let navigationOptions = NavigationOptions(styles: [CustomDayStyle(), CustomNightStyle()],
                                                           navigationService: navigationService)
                 let navigationViewController = NavigationViewController(for: indexedRouteResponse,
