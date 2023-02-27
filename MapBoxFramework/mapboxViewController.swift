@@ -22,8 +22,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     var origin: CLLocationCoordinate2D?
     var destination: CLLocationCoordinate2D?
     
-    var isOrigin = false
-    
     var currentRouteIndex = 0 {
         didSet {
             showCurrentRoute()
@@ -50,7 +48,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .clear
         label.text = "Your location"
-        label.textColor = .white
+        label.textColor = .darkGray
         label.layer.cornerRadius = 5.0
         return label
     }()
@@ -64,10 +62,10 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         return label
     }()
     
-    lazy var textFiledSuperView: UIView = {
+    lazy var originSubView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        view.backgroundColor = UIColor(named: "destination-view-background")
         view.layer.cornerRadius = 5.0
         return view
     }()
@@ -83,9 +81,67 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     lazy var navigationButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .black
-        button.setTitle("Start Navigation", for: .normal)
-        button.layer.cornerRadius = 5.0
+        button.backgroundColor = UIColor(named: "routeButtonColor")
+        button.setTitle("Find Route", for: .normal)
+        button.layer.cornerRadius = 12.0
+        return button
+    }()
+    
+    lazy var destinationMainView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 15.0
+        return view
+    }()
+    
+    lazy var destinationSubView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor(named: "destination-view-background")
+        view.layer.cornerRadius = 10.0
+        return view
+    }()
+    
+    lazy var serachImageView: UIImageView = {
+         let imageView = UIImageView()
+         imageView.translatesAutoresizingMaskIntoConstraints = false
+         imageView.image = UIImage(systemName: "magnifyingglass")
+         imageView.tintColor = .darkGray
+         return imageView
+     }()
+    
+    lazy var serachImageViewOrigin: UIImageView = {
+         let imageView = UIImageView()
+         imageView.translatesAutoresizingMaskIntoConstraints = false
+         imageView.image = UIImage(systemName: "magnifyingglass")
+         imageView.tintColor = .darkGray
+         return imageView
+     }()
+    
+    
+    lazy var locationIcon: UIImageView = {
+         let imageView = UIImageView()
+         imageView.translatesAutoresizingMaskIntoConstraints = false
+         imageView.image = UIImage(named: "location")
+        imageView.contentMode = .scaleToFill
+         return imageView
+     }()
+    
+    lazy var destinationViewLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Destination"
+        label.backgroundColor = .clear
+        label.textColor = .darkGray
+        label.layer.cornerRadius = 5.0
+        return label
+    }()
+    
+    lazy var destinationButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .clear
         return button
     }()
     
@@ -93,29 +149,38 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
        
        let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/arslanraza900/clecn7cwl001k01piwth96e2d"))
        let mapView = MapView(frame: view.bounds, mapInitOptions: options)
-       
        GMSPlacesClient.provideAPIKey("AIzaSyAMlml7aqa1BQRUnmmmgixmFoDR3mdpRUI")
        placesClient = GMSPlacesClient.shared()
        navigationMapView = NavigationMapView(frame: view.bounds, mapView: mapView)
        navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
        navigationMapView.delegate = self
        navigationMapView.userLocationStyle = .puck2D()
-       let speedLimitView = SpeedLimitView()
-       let speed = speedLimitView.currentSpeed
-       // Add it as a subview
-       view.addSubview(navigationMapView)
-       navigationMapView.addSubview(originLabel)
-       navigationMapView.addSubview(speedLimitView)
-       navigationMapView.addSubview(navigationButton)
-       navigationMapView.addSubview(textFiledSuperView)
-       navigationMapView.addSubview(textFiledSuperView1)
-       textFiledSuperView.addSubview(originLabel)
-       textFiledSuperView1.addSubview(destinationLabel)
        navigationMapView.mapView.isUserInteractionEnabled = true
        navigationButton.addTarget(self, action:#selector(self.tappedButton), for: .touchUpInside)
+       destinationButton.addTarget(self, action:#selector(self.destinationButtonTapped), for: .touchUpInside)
+       addSubviews()
+       
        getUserLocation()
        layoutSubviews()
-       setupLabelTap()
+
+    }
+    
+    func addSubviews() {
+        
+        let speedLimitView = SpeedLimitView()
+        view.addSubview(navigationMapView)
+        navigationMapView.addSubview(originLabel)
+        navigationMapView.addSubview(speedLimitView)
+        navigationMapView.addSubview(navigationButton)
+        navigationMapView.addSubview(destinationMainView)
+        destinationMainView.addSubview(destinationSubView)
+        destinationMainView.addSubview(locationIcon)
+        destinationSubView.addSubview(destinationViewLabel)
+        destinationSubView.addSubview(destinationButton)
+        destinationMainView.addSubview(originSubView)
+        originSubView.addSubview(originLabel)
+        
+        setupLabelTap()
     }
     
     func getUserLocation(){
@@ -130,41 +195,57 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
          self.manager.stopUpdatingLocation() //stop getting user location
     
         let location = locations[0]
-        let userSpeed = location.speed
-        
-//        originLabel.text = String(describing: userSpeed)
         
         origin = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-         //self.userLocation = locations[0] as! CLLocation
      }
     
     
     private func layoutSubviews() {
         NSLayoutConstraint.activate([
-            navigationButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            navigationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            navigationButton.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -50),
-            navigationButton.heightAnchor.constraint(equalToConstant: 50),
             
-            textFiledSuperView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            textFiledSuperView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            textFiledSuperView.bottomAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-            textFiledSuperView.heightAnchor.constraint(equalToConstant: 50),
             
-            originLabel.leadingAnchor.constraint(equalTo: textFiledSuperView.leadingAnchor, constant: 10),
-            originLabel.trailingAnchor.constraint(equalTo: textFiledSuperView.trailingAnchor, constant: 0),
-            originLabel.bottomAnchor.constraint(equalTo: textFiledSuperView.bottomAnchor, constant: 0),
-            originLabel.heightAnchor.constraint(equalToConstant: 50),
             
-            textFiledSuperView1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            textFiledSuperView1.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            textFiledSuperView1.bottomAnchor.constraint(equalTo: textFiledSuperView.bottomAnchor, constant: 70),
-            textFiledSuperView1.heightAnchor.constraint(equalToConstant: 50),
+            navigationButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            navigationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            navigationButton.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -30),
+            navigationButton.heightAnchor.constraint(equalToConstant: 48),
             
-            destinationLabel.leadingAnchor.constraint(equalTo: textFiledSuperView1.leadingAnchor, constant: 10),
-            destinationLabel.trailingAnchor.constraint(equalTo: textFiledSuperView1.trailingAnchor, constant: 0),
-            destinationLabel.bottomAnchor.constraint(equalTo: textFiledSuperView1.bottomAnchor, constant: 0),
-            destinationLabel.heightAnchor.constraint(equalToConstant: 50)
+            destinationMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            destinationMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            destinationMainView.bottomAnchor.constraint(equalTo: navigationButton.topAnchor, constant: -15),
+            destinationMainView.heightAnchor.constraint(equalToConstant: 140),
+            
+            originSubView.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 40),
+            originSubView.trailingAnchor.constraint(equalTo: destinationMainView.trailingAnchor, constant: -12),
+            originSubView.bottomAnchor.constraint(equalTo: destinationSubView.topAnchor, constant: -12),
+            originSubView.topAnchor.constraint(equalTo: destinationMainView.topAnchor, constant: 14),
+            
+            destinationSubView.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 40),
+            destinationSubView.trailingAnchor.constraint(equalTo: destinationMainView.trailingAnchor, constant: -12),
+            destinationSubView.bottomAnchor.constraint(equalTo: destinationMainView.bottomAnchor, constant: -14),
+            destinationSubView.topAnchor.constraint(equalTo: originSubView.bottomAnchor, constant: 0),
+            destinationSubView.heightAnchor.constraint(equalTo: originSubView.heightAnchor),
+            
+            destinationViewLabel.leadingAnchor.constraint(equalTo: destinationSubView.leadingAnchor, constant: 12),
+            destinationViewLabel.centerYAnchor.constraint(equalTo: destinationSubView.centerYAnchor),
+            destinationViewLabel.heightAnchor.constraint(equalToConstant: 20),
+            destinationViewLabel.widthAnchor.constraint(equalToConstant: 120),
+            
+            destinationButton.centerXAnchor.constraint(equalTo: destinationSubView.centerXAnchor),
+            destinationButton.centerYAnchor.constraint(equalTo: destinationSubView.centerYAnchor),
+            destinationButton.heightAnchor.constraint(equalTo: destinationSubView.heightAnchor),
+            destinationButton.widthAnchor.constraint(equalTo: destinationSubView.widthAnchor),
+            
+            originLabel.leadingAnchor.constraint(equalTo: originSubView.leadingAnchor, constant: 12),
+            originLabel.centerYAnchor.constraint(equalTo: originSubView.centerYAnchor),
+            originLabel.heightAnchor.constraint(equalToConstant: 20),
+            originLabel.widthAnchor.constraint(equalToConstant: 120),
+            
+            locationIcon.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 10),
+            locationIcon.bottomAnchor.constraint(equalTo: destinationMainView.bottomAnchor, constant: -17),
+            locationIcon.topAnchor.constraint(equalTo: destinationMainView.topAnchor, constant: 20),
+            locationIcon.widthAnchor.constraint(equalToConstant: 25),
+            
         ])
     }
     
@@ -181,31 +262,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     
     func setupLabelTap() {
         
-//        let origin = UITapGestureRecognizer(target: self, action: #selector(self.originLabelTapped(_:)))
-//        self.originLabel.isUserInteractionEnabled = true
-//        self.originLabel.addGestureRecognizer(origin)
-        
         let destination = UITapGestureRecognizer(target: self, action: #selector(self.destinationLabelTapped(_:)))
         self.destinationLabel.isUserInteractionEnabled = true
         self.destinationLabel.addGestureRecognizer(destination)
         
     }
-    
-//    @objc func originLabelTapped(_ sender: UITapGestureRecognizer) {
-//
-//        isOrigin = true
-//
-//        let autocompleteController = GMSAutocompleteViewController()
-//        autocompleteController.delegate = self
-//        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue) |
-//                                                  UInt(GMSPlaceField.name.rawValue))
-//        autocompleteController.placeFields = fields
-//        // Specify a filter.
-//        let filter = GMSAutocompleteFilter()
-//        //      filter.types = .address
-//        autocompleteController.autocompleteFilter = filter
-//        present(autocompleteController, animated: true, completion: nil)
-//        }
     
     func showSearchViewController() {
         let autocompleteController = GMSAutocompleteViewController()
@@ -214,7 +275,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         autocompleteController.placeFields = fields
         // Specify a filter.
         let filter = GMSAutocompleteFilter()
-//        filter.type = .address
         autocompleteController.autocompleteFilter = filter
         present(autocompleteController, animated: true, completion: nil)
     }
@@ -223,7 +283,19 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     
     @objc func destinationLabelTapped(_ sender: UITapGestureRecognizer) {
         
-        isOrigin = false
+        let autocompleteController = GMSAutocompleteViewController()
+        autocompleteController.delegate = self
+        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue) |
+                                                  UInt(GMSPlaceField.name.rawValue))
+        autocompleteController.placeFields = fields
+        // Specify a filter.
+        let filter = GMSAutocompleteFilter()
+        autocompleteController.autocompleteFilter = filter
+        present(autocompleteController, animated: true, completion: nil)
+        }
+    
+    @objc func destinationButtonTapped(sender: UIButton) {
+        
         let autocompleteController = GMSAutocompleteViewController()
         autocompleteController.delegate = self
         let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue) |
@@ -234,13 +306,13 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         //      filter.types = .address
         autocompleteController.autocompleteFilter = filter
         present(autocompleteController, animated: true, completion: nil)
-        }
+        
+    }
 
     
     @objc func tappedButton(sender: UIButton) {
         if let destination = destination {
             navigationRouteTurnByTurn(origin: origin!, destination: destination)
-//            streetViewRoute(origin: origin!, destination: destination)
         } else {
             let alert = UIAlertController(title: "Alert", message: "Please select the destination", preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
@@ -454,14 +526,13 @@ extension MapBoxViewController: NavigationViewControllerDelegate {
 
 
 
-
 extension MapBoxViewController: GMSAutocompleteViewControllerDelegate {
     
     // Handle the user's selection.
     public func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
         
         destination = CLLocationCoordinate2DMake(place.coordinate.latitude, place.coordinate.longitude)
-        destinationLabel.text = place.name
+        destinationViewLabel.text = place.name
         if let destination = destination{
             requestRoute(origin: origin!, destination: destination)
         }
@@ -488,4 +559,5 @@ extension MapBoxViewController: GMSAutocompleteViewControllerDelegate {
     }
     
 }
+
 
