@@ -12,15 +12,17 @@ import MapboxDirections
 import GooglePlaces
 import CoreLocation
 
- 
 open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     
     var navigationMapView: NavigationMapView!
     private var placesClient: GMSPlacesClient!
     var manager:CLLocationManager!
+    var places: [Place] = []
+    var isFromOrigin = false
     
     var origin: CLLocationCoordinate2D?
     var destination: CLLocationCoordinate2D?
+    var backupOriginCordinates: CLLocationCoordinate2D?
     
     var currentRouteIndex = 0 {
         didSet {
@@ -43,37 +45,22 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     
-    lazy var originLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.backgroundColor = .clear
-        label.text = "Your location"
-        label.textColor = .darkGray
-        label.layer.cornerRadius = 5.0
-        return label
-    }()
-    
-    lazy var destinationLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.backgroundColor = .clear
-        label.textColor = .white
-        label.layer.cornerRadius = 5.0
-        return label
+    lazy var originTextField: UITextField = {
+        let textField = UITextField()
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "Current location",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+        )
+        textField.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.textColor = .darkGray
+        return textField
     }()
     
     lazy var originSubView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "destination-view-background")
-        view.layer.cornerRadius = 5.0
-        return view
-    }()
-    
-    lazy var textFiledSuperView1: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        view.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
         view.layer.cornerRadius = 5.0
         return view
     }()
@@ -81,7 +68,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     lazy var navigationButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = UIColor(named: "routeButtonColor")
+        button.backgroundColor = #colorLiteral(red: 0.8637991548, green: 0.4307671189, blue: 1, alpha: 1)
         button.setTitle("Find Route", for: .normal)
         button.layer.cornerRadius = 12.0
         return button
@@ -95,40 +82,69 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         return view
     }()
     
+    lazy var initialDestinationMainView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 15.0
+        return view
+    }()
+    
     lazy var destinationSubView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "destination-view-background")
+        view.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
         view.layer.cornerRadius = 10.0
         return view
     }()
     
+    lazy var initialDestinationView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
+        view.layer.cornerRadius = 10.0
+        return view
+    }()
+    
+    
     lazy var serachImageView: UIImageView = {
-         let imageView = UIImageView()
-         imageView.translatesAutoresizingMaskIntoConstraints = false
-         imageView.image = UIImage(systemName: "magnifyingglass")
-         imageView.tintColor = .darkGray
-         return imageView
-     }()
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(systemName: "magnifyingglass")
+        imageView.tintColor = .darkGray
+        return imageView
+    }()
     
     lazy var serachImageViewOrigin: UIImageView = {
-         let imageView = UIImageView()
-         imageView.translatesAutoresizingMaskIntoConstraints = false
-         imageView.image = UIImage(systemName: "magnifyingglass")
-         imageView.tintColor = .darkGray
-         return imageView
-     }()
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(systemName: "magnifyingglass")
+        imageView.tintColor = .darkGray
+        return imageView
+    }()
     
     
     lazy var locationIcon: UIImageView = {
-         let imageView = UIImageView()
-         imageView.translatesAutoresizingMaskIntoConstraints = false
-         imageView.image = UIImage(named: "location")
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "locationIconPur")
         imageView.contentMode = .scaleToFill
-         return imageView
-     }()
+        return imageView
+    }()
     
-    lazy var destinationViewLabel: UILabel = {
+    lazy var destinationTextField: UITextField = {
+        let textField = UITextField()
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "Destination",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+        )
+        textField.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.textColor = .darkGray
+        return textField
+    }()
+    
+    lazy var initialDestinationLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Destination"
@@ -138,49 +154,189 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         return label
     }()
     
-    lazy var destinationButton: UIButton = {
+    lazy var searchMapsTextField: UITextField = {
+        let textField = UITextField()
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "Search Maps",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+        )
+        textField.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.textColor = .darkGray
+        return textField
+    }()
+    
+    lazy var initialDestinationButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
         return button
     }()
     
-   public func configrations() {
-       
-       let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/arslanraza900/clecn7cwl001k01piwth96e2d"))
-       let mapView = MapView(frame: view.bounds, mapInitOptions: options)
-       GMSPlacesClient.provideAPIKey("AIzaSyAMlml7aqa1BQRUnmmmgixmFoDR3mdpRUI")
-       placesClient = GMSPlacesClient.shared()
-       navigationMapView = NavigationMapView(frame: view.bounds, mapView: mapView)
-       navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-       navigationMapView.delegate = self
-       navigationMapView.userLocationStyle = .puck2D()
-       navigationMapView.mapView.isUserInteractionEnabled = true
-       navigationButton.addTarget(self, action:#selector(self.tappedButton), for: .touchUpInside)
-       destinationButton.addTarget(self, action:#selector(self.destinationButtonTapped), for: .touchUpInside)
-       addSubviews()
-       
-       getUserLocation()
-       layoutSubviews()
-
+    lazy var tableView: UITableView = {
+        let tableView = UITableView(frame: .zero)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
+        tableView.layer.cornerRadius = 15.0
+        tableView.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
+        return tableView
+    }()
+    
+    lazy var mainTableView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
+        view.layer.cornerRadius = 15.0
+        return view
+    }()
+    
+    
+    lazy var routeMainView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 15.0
+        return view
+    }()
+    
+    lazy var routesLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Routes"
+        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        label.backgroundColor = .clear
+        label.textColor = .black
+        return label
+    }()
+    
+    lazy var locationName: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Travessa Francisco"
+        label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        label.backgroundColor = .clear
+        label.textColor = .black
+        label.layer.cornerRadius = 5.0
+        return label
+    }()
+    
+    lazy var fastestRoute: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Fastest Route now"
+        label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        label.backgroundColor = .clear
+        label.textColor = #colorLiteral(red: 0.4235294118, green: 0.4235294118, blue: 0.4235294118, alpha: 0.9)
+        label.layer.cornerRadius = 5.0
+        return label
+    }()
+    
+    lazy var routeTime: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "4m"
+        label.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        label.backgroundColor = .clear
+        label.textColor = .black
+        label.layer.cornerRadius = 5.0
+        return label
+    }()
+    
+    lazy var routeDistance: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "5km"
+        label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        label.backgroundColor = .clear
+        label.textColor = #colorLiteral(red: 0.6666666667, green: 0.6666666667, blue: 0.6666666667, alpha: 0.9)
+        label.layer.cornerRadius = 5.0
+        return label
+    }()
+    
+    lazy var startButtonView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = #colorLiteral(red: 0.5529411765, green: 0.6980392157, blue: 0.9803921569, alpha: 0.9)
+        view.layer.cornerRadius = 15.0
+        return view
+    }()
+    
+    lazy var locationImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "locationIcon")
+        imageView.tintColor = .darkGray
+        return imageView
+    }()
+    
+    lazy var startLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Start"
+        label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        label.backgroundColor = .clear
+        label.textColor = .white
+        label.layer.cornerRadius = 5.0
+        return label
+    }()
+    
+    lazy var startButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .clear
+        return button
+    }()
+    
+    
+    public func configrations() {
+        
+        let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/arslanraza900/clecn7cwl001k01piwth96e2d"))
+        let mapView = MapView(frame: view.bounds, mapInitOptions: options)
+        GMSPlacesClient.provideAPIKey("AIzaSyAMlml7aqa1BQRUnmmmgixmFoDR3mdpRUI")
+        placesClient = GMSPlacesClient.shared()
+        navigationMapView = NavigationMapView(frame: view.bounds, mapView: mapView)
+        navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        navigationMapView.userLocationStyle = .puck2D()
+        navigationMapView.mapView.isUserInteractionEnabled = true
+        initialDestinationButton.addTarget(self, action:#selector(self.initialDestinationButtonTapped), for: .touchUpInside)
+        getUserLocation()
+        initialSubViewSetup()
+        let speedLimitView = SpeedLimitView()
+        navigationMapView.addSubview(speedLimitView)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil);
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil);
+        
+        addDoneButtonToKeyboard()
+        
     }
     
-    func addSubviews() {
+    
+    func addDoneButtonToKeyboard() {
         
-        let speedLimitView = SpeedLimitView()
-        view.addSubview(navigationMapView)
-        navigationMapView.addSubview(originLabel)
-        navigationMapView.addSubview(speedLimitView)
-        navigationMapView.addSubview(navigationButton)
-        navigationMapView.addSubview(destinationMainView)
-        destinationMainView.addSubview(destinationSubView)
-        destinationMainView.addSubview(locationIcon)
-        destinationSubView.addSubview(destinationViewLabel)
-        destinationSubView.addSubview(destinationButton)
-        destinationMainView.addSubview(originSubView)
-        originSubView.addSubview(originLabel)
-        
-        setupLabelTap()
+        let toolbar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0,  width: self.view.frame.size.width, height: 30))
+        let flexSpace = UIBarButtonItem(barButtonSystemItem:    .flexibleSpace, target: nil, action: nil)
+        let doneBtn: UIBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonAction(sender:)))
+        toolbar.setItems([flexSpace, doneBtn], animated: false)
+        toolbar.sizeToFit()
+        self.originTextField.inputAccessoryView = toolbar
+        self.destinationTextField.inputAccessoryView = toolbar
+        self.searchMapsTextField.inputAccessoryView = toolbar
+    }
+    
+    @objc func doneButtonAction(sender: UIGestureRecognizer) {
+        self.view.endEditing(true)
+    }
+    
+    
+    @objc func keyboardWillShow(sender: NSNotification) {
+        self.view.frame.origin.y = -300
+    }
+    
+    @objc func keyboardWillHide(sender: NSNotification) {
+        self.view.frame.origin.y = 0
     }
     
     func getUserLocation(){
@@ -192,61 +348,26 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-         self.manager.stopUpdatingLocation() //stop getting user location
-    
+        self.manager.stopUpdatingLocation() //stop getting user location
+        
         let location = locations[0]
         
         origin = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-     }
-    
-    
-    private func layoutSubviews() {
-        NSLayoutConstraint.activate([
+        backupOriginCordinates = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
+        
+        if let lastLocation = locations.last {
+            let geocoder = CLGeocoder()
             
-            
-            
-            navigationButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            navigationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            navigationButton.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -30),
-            navigationButton.heightAnchor.constraint(equalToConstant: 48),
-            
-            destinationMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            destinationMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            destinationMainView.bottomAnchor.constraint(equalTo: navigationButton.topAnchor, constant: -15),
-            destinationMainView.heightAnchor.constraint(equalToConstant: 140),
-            
-            originSubView.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 40),
-            originSubView.trailingAnchor.constraint(equalTo: destinationMainView.trailingAnchor, constant: -12),
-            originSubView.bottomAnchor.constraint(equalTo: destinationSubView.topAnchor, constant: -12),
-            originSubView.topAnchor.constraint(equalTo: destinationMainView.topAnchor, constant: 14),
-            
-            destinationSubView.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 40),
-            destinationSubView.trailingAnchor.constraint(equalTo: destinationMainView.trailingAnchor, constant: -12),
-            destinationSubView.bottomAnchor.constraint(equalTo: destinationMainView.bottomAnchor, constant: -14),
-            destinationSubView.topAnchor.constraint(equalTo: originSubView.bottomAnchor, constant: 0),
-            destinationSubView.heightAnchor.constraint(equalTo: originSubView.heightAnchor),
-            
-            destinationViewLabel.leadingAnchor.constraint(equalTo: destinationSubView.leadingAnchor, constant: 12),
-            destinationViewLabel.centerYAnchor.constraint(equalTo: destinationSubView.centerYAnchor),
-            destinationViewLabel.heightAnchor.constraint(equalToConstant: 20),
-            destinationViewLabel.widthAnchor.constraint(equalToConstant: 120),
-            
-            destinationButton.centerXAnchor.constraint(equalTo: destinationSubView.centerXAnchor),
-            destinationButton.centerYAnchor.constraint(equalTo: destinationSubView.centerYAnchor),
-            destinationButton.heightAnchor.constraint(equalTo: destinationSubView.heightAnchor),
-            destinationButton.widthAnchor.constraint(equalTo: destinationSubView.widthAnchor),
-            
-            originLabel.leadingAnchor.constraint(equalTo: originSubView.leadingAnchor, constant: 12),
-            originLabel.centerYAnchor.constraint(equalTo: originSubView.centerYAnchor),
-            originLabel.heightAnchor.constraint(equalToConstant: 20),
-            originLabel.widthAnchor.constraint(equalToConstant: 120),
-            
-            locationIcon.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 10),
-            locationIcon.bottomAnchor.constraint(equalTo: destinationMainView.bottomAnchor, constant: -17),
-            locationIcon.topAnchor.constraint(equalTo: destinationMainView.topAnchor, constant: 20),
-            locationIcon.widthAnchor.constraint(equalToConstant: 25),
-            
-        ])
+            geocoder.reverseGeocodeLocation(lastLocation) { [weak self] (placemarks, error) in
+                if error == nil {
+                    if let firstLocation = placemarks?[0],
+                       let cityName = firstLocation.locality {
+                        self?.findPlaces(query: cityName)
+                    }
+                }
+            }
+        }
+        
     }
     
     func showCurrentRoute() {
@@ -260,63 +381,58 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         navigationMapView.showWaypoints(on: currentRoute)
     }
     
-    func setupLabelTap() {
+    func findPlaces(query: String) {
         
-        let destination = UITapGestureRecognizer(target: self, action: #selector(self.destinationLabelTapped(_:)))
-        self.destinationLabel.isUserInteractionEnabled = true
-        self.destinationLabel.addGestureRecognizer(destination)
-        
-    }
-    
-    func showSearchViewController() {
-        let autocompleteController = GMSAutocompleteViewController()
-        autocompleteController.delegate = self
-        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.name.rawValue))
-        autocompleteController.placeFields = fields
-        // Specify a filter.
-        let filter = GMSAutocompleteFilter()
-        autocompleteController.autocompleteFilter = filter
-        present(autocompleteController, animated: true, completion: nil)
-    }
-    
-    
-    
-    @objc func destinationLabelTapped(_ sender: UITapGestureRecognizer) {
-        
-        let autocompleteController = GMSAutocompleteViewController()
-        autocompleteController.delegate = self
-        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue) |
-                                                  UInt(GMSPlaceField.name.rawValue))
-        autocompleteController.placeFields = fields
-        // Specify a filter.
-        let filter = GMSAutocompleteFilter()
-        autocompleteController.autocompleteFilter = filter
-        present(autocompleteController, animated: true, completion: nil)
+        GooglePlacesManager.shared.findPlaces(query: query) { result in
+            switch result {
+            case .success(let places):
+                self.places = places
+                self.tableView.reloadData()
+                
+            case .failure(let error):
+                print(error)
+            }
         }
-    
-    @objc func destinationButtonTapped(sender: UIButton) {
-        
-        let autocompleteController = GMSAutocompleteViewController()
-        autocompleteController.delegate = self
-        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue) |
-                                                  UInt(GMSPlaceField.name.rawValue))
-        autocompleteController.placeFields = fields
-        // Specify a filter.
-        let filter = GMSAutocompleteFilter()
-        //      filter.types = .address
-        autocompleteController.autocompleteFilter = filter
-        present(autocompleteController, animated: true, completion: nil)
-        
     }
-
     
-    @objc func tappedButton(sender: UIButton) {
+    func getCoordinatesFromPlaces(place: Place) {
+        
+        GooglePlacesManager.shared.resolveLocation(for: place) { result in
+            switch result {
+            case .success(let cordinate):
+                if self.isFromOrigin {
+                    self.origin = cordinate
+                } else {
+                    self.destination = cordinate
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    @objc func initialDestinationButtonTapped(sender: UIButton) {
+        addSubViewsOnDestinationTap()
+    }
+    
+    
+    @objc func startNavigationAction(sender: UIButton) {
+        
         if let destination = destination {
             navigationRouteTurnByTurn(origin: origin!, destination: destination)
         } else {
             let alert = UIAlertController(title: "Alert", message: "Please select the destination", preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    
+    @objc func findRouteAction(sender: UIButton) {
+        manageSubViewOnFindRouteAction()
+        
+        if let destination  = destination {
+            requestRoute(origin: origin!, destination: destination)
         }
     }
     
@@ -333,21 +449,17 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
                     return
                 }
                 
-                //                 For demonstration purposes, simulate locations if the Simulate Navigation option is on.
-                //                 Since first route is retrieved from response `routeIndex` is set to 0.
                 let indexedRouteResponse = IndexedRouteResponse(routeResponse: response, routeIndex: 0)
                 let navigationService = MapboxNavigationService(indexedRouteResponse: indexedRouteResponse,
                                                                 customRoutingProvider: NavigationSettings.shared.directions,
                                                                 credentials: NavigationSettings.shared.directions.credentials,
                                                                 simulating: .never)
                 
-                
                 let navigationOptions = NavigationOptions(styles: [CustomNightStyles()],
                                                           navigationService: navigationService)
                 let navigationViewController = NavigationViewController(for: indexedRouteResponse,
                                                                         navigationOptions: navigationOptions)
                 navigationViewController.modalPresentationStyle = .fullScreen
-                // Render part of the route that has been traversed with full transparency, to give the illusion of a disappearing route.
                 navigationViewController.routeLineTracksTraversal = true
                 navigationViewController.showsSpeedLimits = true
                 
@@ -356,59 +468,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    
-    func streetViewRoute(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
-        
-        let routeOptions = NavigationRouteOptions(coordinates: [origin, destination])
-        
-        Directions.shared.calculate(routeOptions) { [weak self] (_, result) in
-            switch result {
-            case .failure(let error):
-                print(error.localizedDescription)
-            case .success(let response):
-                guard let strongSelf = self else {
-                    return
-                }
-                
-                // For demonstration purposes, simulate locations if the Simulate Navigation option is on.
-                let indexedRouteResponse = IndexedRouteResponse(routeResponse: response, routeIndex: 0)
-                let navigationService = MapboxNavigationService(indexedRouteResponse: indexedRouteResponse,
-                                                                customRoutingProvider: NavigationSettings.shared.directions,
-                                                                credentials: NavigationSettings.shared.directions.credentials,
-                                                                simulating: .never)
-                let navigationOptions = NavigationOptions(styles: [CustomDayStyle(), CustomNightStyle()],
-                                                          navigationService: navigationService)
-                let navigationViewController = NavigationViewController(for: indexedRouteResponse,
-                                                                        navigationOptions: navigationOptions)
-                navigationViewController.modalPresentationStyle = .fullScreen
-                // Render part of the route that has been traversed with full transparency, to give the illusion of a disappearing route.
-                navigationViewController.routeLineTracksTraversal = true
-                
-                strongSelf.present(navigationViewController, animated: true, completion: {
-                    
-                    let customButton = UIButton()
-                    customButton.setTitle("Press", for: .normal)
-                    customButton.translatesAutoresizingMaskIntoConstraints = false
-                    customButton.backgroundColor = .blue
-                    customButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
-                    self?.navigationMapView.mapView.addSubview(customButton)
-                    customButton.bottomAnchor.constraint(equalTo: self!.navigationMapView.mapView.bottomAnchor, constant: 0).isActive = true
-                    customButton.leftAnchor.constraint(equalTo: self!.navigationMapView.mapView.leftAnchor, constant: 0).isActive = true
-                    customButton.rightAnchor.constraint(equalTo: self!.navigationMapView.mapView.rightAnchor, constant: 0).isActive = true
-
-                    self!.navigationMapView.mapView.setNeedsLayout()
-                    
-                    
-                })
-            }
-        }
-    }
-    
     func requestRoute(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
         
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [origin, destination])
         
-        let cameraOptions = CameraOptions(center: origin, zoom: 13.0)
+        let cameraOptions = CameraOptions(center: origin, zoom: 7.0)
         self.navigationMapView.mapView.mapboxMap.setCamera(to: cameraOptions)
         
         Directions.shared.calculate(navigationRouteOptions) { [weak self] (_, result) in
@@ -423,141 +487,156 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
                 self.routeResponse = response
                 self.navigationMapView.show(routes)
                 self.navigationMapView.showWaypoints(on: currentRoute)
+                
+                let measurement = Measurement(value: currentRoute.distance, unit: UnitLength.meters).converted(to: .kilometers)
+                let distanceInKilometers = Int(measurement.value)
+                self.routeDistance.text = "\(distanceInKilometers) km"
+                
+                
+                let expectedTime = self.secondsToHoursMinutesSeconds(Int(currentRoute.expectedTravelTime))
+                
+                if expectedTime.0 != 0{
+                    self.routeTime.text = "\(expectedTime.0) h" + " " + "\(expectedTime.1) m"
+                } else {
+                    self.routeTime.text = "\(expectedTime.1) m"
+                }
             }
         }
+    }
+    
+    func secondsToHoursMinutesSeconds(_ seconds: Int) -> (Int, Int) {
+        return (seconds / 3600, (seconds % 3600) / 60)
     }
     
     public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
         dismiss(animated: true, completion: nil)
     }
-    
-    // MARK: - Styling methods
-    func customCircleLayer(with identifier: String, sourceIdentifier: String) -> CircleLayer {
-        var circleLayer = CircleLayer(id: identifier)
-        circleLayer.source = sourceIdentifier
-        let opacity = Exp(.switchCase) {
-            Exp(.any) {
-                Exp(.get) {
-                    "waypointCompleted"
-                }
-            }
-            0.5
-            1
+}
+
+extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if isFromOrigin {
+            return places.count + 1
+        } else {
+            return places.count
         }
-        circleLayer.circleColor = .constant(.init(UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)))
-        circleLayer.circleOpacity = .expression(opacity)
-        circleLayer.circleRadius = .constant(.init(10))
-        circleLayer.circleStrokeColor = .constant(.init(UIColor.black))
-        circleLayer.circleStrokeWidth = .constant(.init(1))
-        circleLayer.circleStrokeOpacity = .expression(opacity)
-        return circleLayer
     }
     
-    func customSymbolLayer(with identifier: String, sourceIdentifier: String) -> SymbolLayer {
-        var symbolLayer = SymbolLayer(id: identifier)
-        symbolLayer.source = sourceIdentifier
-        symbolLayer.textField = .expression(Exp(.toString) {
-            Exp(.get) {
-                "name"
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LocationTableViewCell", for:indexPath) as! LocationTableViewCell
+        if isFromOrigin {
+            if indexPath.row == 0 {
+                cell.placeName.text = "Current Location"
             }
-        })
-        symbolLayer.textSize = .constant(.init(10))
-        symbolLayer.textOpacity = .expression(Exp(.switchCase) {
-            Exp(.any) {
-                Exp(.get) {
-                    "waypointCompleted"
-                }
+            if indexPath.row > 0 {
+                cell.placeName.text = places[indexPath.row - 1].name
             }
-            0.5
-            1
-        })
-        symbolLayer.textHaloWidth = .constant(.init(0.25))
-        symbolLayer.textHaloColor = .constant(.init(UIColor.black))
-        return symbolLayer
-    }
-    
-    func customWaypointShape(shapeFor waypoints: [Waypoint], legIndex: Int) -> FeatureCollection {
-        var features = [Turf.Feature]()
-        for (waypointIndex, waypoint) in waypoints.enumerated() {
-            var feature = Feature(geometry: .point(Point(waypoint.coordinate)))
-            feature.properties = [
-                "waypointCompleted": .boolean(waypointIndex < legIndex),
-                "name": .number(Double(waypointIndex + 1))
-            ]
-            features.append(feature)
+        } else {
+            cell.placeName.text = places[indexPath.row].name
         }
-        return FeatureCollection(features: features)
-    }
-}
- 
-// MARK: Delegate methods
-extension MapBoxViewController: NavigationMapViewDelegate {
-    
-    public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
-        print(location)
+        cell.selectionStyle = .none
+        return cell
     }
     
-    public func navigationMapView(_ navigationMapView: NavigationMapView, waypointCircleLayerWithIdentifier identifier: String, sourceIdentifier: String) -> CircleLayer? {
-        return customCircleLayer(with: identifier, sourceIdentifier: sourceIdentifier)
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 46
     }
     
-    public func navigationMapView(_ navigationMapView: NavigationMapView, waypointSymbolLayerWithIdentifier identifier: String, sourceIdentifier: String) -> SymbolLayer? {
-        return customSymbolLayer(with: identifier, sourceIdentifier: sourceIdentifier)
-    }
-    
-    public func navigationMapView(_ navigationMapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> FeatureCollection? {
-        return customWaypointShape(shapeFor: waypoints, legIndex: legIndex)
-    }
-}
- 
-extension MapBoxViewController: NavigationViewControllerDelegate {
-    public func navigationViewController(_ navigationViewController: NavigationViewController, waypointCircleLayerWithIdentifier identifier: String, sourceIdentifier: String) -> CircleLayer? {
-        return customCircleLayer(with: identifier, sourceIdentifier: sourceIdentifier)
-    }
-    
-    public func navigationViewController(_ navigationViewController: NavigationViewController, waypointSymbolLayerWithIdentifier identifier: String, sourceIdentifier: String) -> SymbolLayer? {
-        return customSymbolLayer(with: identifier, sourceIdentifier: sourceIdentifier)
-    }
-    
-    public func navigationViewController(_ navigationViewController: NavigationViewController, shapeFor waypoints: [Waypoint], legIndex: Int) -> FeatureCollection? {
-        return customWaypointShape(shapeFor: waypoints, legIndex: legIndex)
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.view.endEditing(true)
+        if isFromOrigin {
+            if indexPath.row == 0 {
+                origin = backupOriginCordinates
+                originTextField.text = "Current location"
+            }
+            
+            if indexPath.row > 0 {
+                let place = places[indexPath.row - 1]
+                
+                if isFromOrigin {
+                    originTextField.text = place.name
+                } else {
+                    destinationTextField.text = place.name
+                    locationName.text = place.name
+                }
+                getCoordinatesFromPlaces(place: place)
+            }
+            
+        } else {
+            let place = places[indexPath.row]
+            
+            if isFromOrigin {
+                originTextField.text = place.name
+            } else {
+                destinationTextField.text = place.name
+                locationName.text = place.name
+            }
+            
+            getCoordinatesFromPlaces(place: place)
+        }
+        addSubviewsOnCellSelection()
     }
 }
 
 
-
-extension MapBoxViewController: GMSAutocompleteViewControllerDelegate {
+extension MapBoxViewController: UITextFieldDelegate{
     
-    // Handle the user's selection.
-    public func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
-        destination = CLLocationCoordinate2DMake(place.coordinate.latitude, place.coordinate.longitude)
-        destinationViewLabel.text = place.name
-        if let destination = destination{
-            requestRoute(origin: origin!, destination: destination)
+        if !(string == ""){
+            if textField == searchMapsTextField {
+                findPlaces(query: textField.text!)
+            } else if textField == destinationTextField {
+                findPlaces(query: textField.text!)
+            } else if textField == originTextField {
+                findPlaces(query: textField.text!)
+            }
         }
-        dismiss(animated: true, completion: nil)
+        
+        return true
     }
     
-    public func viewController(_ viewController: GMSAutocompleteViewController, didFailAutocompleteWithError error: Error) {
-        // TODO: handle the error.
-        print("Error: ", error.localizedDescription)
+    public func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField == originTextField {
+            originSubView.layer.masksToBounds = true
+            originSubView.layer.borderColor = #colorLiteral(red: 0.8941176471, green: 0.4745098039, blue: 1, alpha: 0.9)
+            originSubView.layer.borderWidth = 1.0
+            originTextField.text = ""
+            isFromOrigin = true
+            tableView.reloadData()
+            if self.navigationButton.isDescendant(of: navigationMapView) {
+                navigationButton.removeFromSuperview()
+                manageSubViewsOnTextFieldEditing()
+            } else {
+                routeMainView.removeFromSuperview()
+                manageSubViewsOnTextFieldEditing()
+            }
+            
+        } else if textField == destinationTextField {
+            destinationSubView.layer.masksToBounds = true
+            destinationSubView.layer.borderColor = #colorLiteral(red: 0.8941176471, green: 0.4745098039, blue: 1, alpha: 0.9)
+            destinationSubView.layer.borderWidth = 1.0
+            destinationTextField.text = ""
+            isFromOrigin = false
+            tableView.reloadData()
+            if self.navigationButton.isDescendant(of: navigationMapView) {
+                navigationButton.removeFromSuperview()
+                manageSubViewsOnTextFieldEditing()
+            } else {
+                routeMainView.removeFromSuperview()
+                manageSubViewsOnTextFieldEditing()
+            }
+        }
     }
     
-    // User canceled the operation.
-    public func wasCancelled(_ viewController: GMSAutocompleteViewController) {
-        dismiss(animated: true, completion: nil)
+    public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        if textField == originTextField {
+            originSubView.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        } else if textField == destinationTextField {
+            destinationSubView.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        }
+        
+        return true
     }
-    
-    // Turn the network activity indicator on and off again.
-    public func didRequestAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-    }
-    
-    public func didUpdateAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
-        UIApplication.shared.isNetworkActivityIndicatorVisible = false
-    }
-    
 }
-
 

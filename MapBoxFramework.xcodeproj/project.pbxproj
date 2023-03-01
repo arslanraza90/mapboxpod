@@ -14,6 +14,9 @@
 		A88B5EEB299516FB0096FF88 /* MapBoxFrameworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88B5EEA299516FB0096FF88 /* MapBoxFrameworkTests.swift */; };
 		A88B5EEC299516FB0096FF88 /* MapBoxFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = A88B5EDE299516FB0096FF88 /* MapBoxFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A88B5EF6299517600096FF88 /* mapboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88B5EF5299517600096FF88 /* mapboxViewController.swift */; };
+		A8E199FB29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E199FA29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift */; };
+		A8E199FD29AFCCAA00CF2952 /* LocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E199FC29AFCCAA00CF2952 /* LocationTableViewCell.swift */; };
+		A8E199FF29AFCCC900CF2952 /* GooglePlacesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E199FE29AFCCC900CF2952 /* GooglePlacesManager.swift */; };
 		A8F5F73A29AC93C900419ED0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A8F5F73929AC93C900419ED0 /* Assets.xcassets */; };
 		D1FA012081324EDC37D60B85 /* Pods_MapBoxFramework_MapBoxFrameworkTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35316E764BF35B5CBE4B5 /* Pods_MapBoxFramework_MapBoxFrameworkTests.framework */; };
 		E4B6FF9C7343BE7E6CA3B746 /* Pods_MapBoxFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAF08C847A9E3CD25701CBCA /* Pods_MapBoxFramework.framework */; };
@@ -42,6 +45,9 @@
 		A88B5EE5299516FB0096FF88 /* MapBoxFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapBoxFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A88B5EEA299516FB0096FF88 /* MapBoxFrameworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapBoxFrameworkTests.swift; sourceTree = "<group>"; };
 		A88B5EF5299517600096FF88 /* mapboxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mapboxViewController.swift; sourceTree = "<group>"; };
+		A8E199FA29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapBoxViewController+Extension.swift"; sourceTree = "<group>"; };
+		A8E199FC29AFCCAA00CF2952 /* LocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTableViewCell.swift; sourceTree = "<group>"; };
+		A8E199FE29AFCCC900CF2952 /* GooglePlacesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglePlacesManager.swift; sourceTree = "<group>"; };
 		A8F5F73929AC93C900419ED0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B7F5AD61E8C988CAC2A29570 /* Pods-MapBoxFramework-MapBoxFrameworkTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxFramework-MapBoxFrameworkTests.release.xcconfig"; path = "Target Support Files/Pods-MapBoxFramework-MapBoxFrameworkTests/Pods-MapBoxFramework-MapBoxFrameworkTests.release.xcconfig"; sourceTree = "<group>"; };
 		CAF08C847A9E3CD25701CBCA /* Pods_MapBoxFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapBoxFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,7 +89,6 @@
 			isa = PBXGroup;
 			children = (
 				A88B5EDD299516FB0096FF88 /* MapBoxFramework */,
-				A8F5F73929AC93C900419ED0 /* Assets.xcassets */,
 				A88B5EE9299516FB0096FF88 /* MapBoxFrameworkTests */,
 				A88B5EDC299516FB0096FF88 /* Products */,
 				0D1381E2466F2D4706764DE5 /* Pods */,
@@ -108,6 +113,10 @@
 				A88B5EF5299517600096FF88 /* mapboxViewController.swift */,
 				A876F5AB299CFAA200E72D37 /* CustomDayStyle.swift */,
 				A876F5AD299CFAB500E72D37 /* CustomNightStyle.swift */,
+				A8E199FA29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift */,
+				A8E199FC29AFCCAA00CF2952 /* LocationTableViewCell.swift */,
+				A8E199FE29AFCCC900CF2952 /* GooglePlacesManager.swift */,
+				A8F5F73929AC93C900419ED0 /* Assets.xcassets */,
 			);
 			path = MapBoxFramework;
 			sourceTree = "<group>";
@@ -342,10 +351,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8E199FD29AFCCAA00CF2952 /* LocationTableViewCell.swift in Sources */,
 				A88B5EE0299516FB0096FF88 /* MapBoxFramework.docc in Sources */,
 				A876F5AC299CFAA200E72D37 /* CustomDayStyle.swift in Sources */,
+				A8E199FF29AFCCC900CF2952 /* GooglePlacesManager.swift in Sources */,
 				A88B5EF6299517600096FF88 /* mapboxViewController.swift in Sources */,
 				A876F5AE299CFAB500E72D37 /* CustomNightStyle.swift in Sources */,
+				A8E199FB29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

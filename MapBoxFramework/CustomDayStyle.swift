@@ -78,4 +78,3 @@ class CustomDayStyle: DayStyle {
         WayNameView.appearance(for: traitCollection).backgroundColor = secondaryBackgroundColor
     }
 }
-

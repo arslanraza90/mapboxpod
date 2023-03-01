@@ -57,7 +57,9 @@ class CustomNightStyles: NightStyle {
         // `BottomBannerView` is not used on CarPlay, so styling is only provided for iPhone and iPad.
         BottomBannerView.appearance(for: UITraitCollection(userInterfaceIdiom: .phone)).backgroundColor = UIColor.black.withAlphaComponent(0.4)
         BottomBannerView.appearance(for: UITraitCollection(userInterfaceIdiom: .pad)).backgroundColor = .darkGray
+        TimeRemainingLabel.appearance(for:  UITraitCollection(userInterfaceIdiom: .phone)).textColor = .lightGray
+        TimeRemainingLabel.appearance(for:  UITraitCollection(userInterfaceIdiom: .phone)).trafficLowColor = .lightGray
+        TimeRemainingLabel.appearance(for:  UITraitCollection(userInterfaceIdiom: .phone)).trafficUnknownColor = .lightGray
+        DistanceRemainingLabel.appearance(for: UITraitCollection(userInterfaceIdiom: .phone)).normalTextColor = .lightGray
     }
 }
-
-
