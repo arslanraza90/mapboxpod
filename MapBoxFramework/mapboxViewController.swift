@@ -12,17 +12,17 @@ import MapboxDirections
 import GooglePlaces
 import CoreLocation
 
-open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
+open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, NavigationViewControllerDelegate {
     
     var navigationMapView: NavigationMapView!
     private var placesClient: GMSPlacesClient!
     var manager:CLLocationManager!
     var places: [Place] = []
     var isFromOrigin = false
-    
     var origin: CLLocationCoordinate2D?
     var destination: CLLocationCoordinate2D?
     var backupOriginCordinates: CLLocationCoordinate2D?
+    var isSpeedLimitShowimg = false
     
     var currentRouteIndex = 0 {
         didSet {
@@ -44,6 +44,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         }
     }
     
+    let locaImage = UIImage(named: "locationIconPur", in: Bundle(identifier: "mapbox.com.MapBoxFramework"), compatibleWith: nil)
+    let locationArrow = UIImage(named: "locationIcon", in: Bundle(identifier: "mapbox.com.MapBoxFramework"), compatibleWith: nil)
+
     
     lazy var originTextField: UITextField = {
         let textField = UITextField()
@@ -63,6 +66,38 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         view.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
         view.layer.cornerRadius = 5.0
         return view
+    }()
+    
+    lazy var currentSpeedView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.3779843564)
+        view.layer.cornerRadius = 30.0
+        view.layer.masksToBounds = true
+        view.layer.borderColor = UIColor.white.cgColor
+        view.layer.borderWidth = 3.0
+        return view
+    }()
+    
+    lazy var speedLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "10"
+        label.backgroundColor = .clear
+        label.textAlignment = .center
+        label.textColor = #colorLiteral(red: 0.2117647059, green: 0.8156862745, blue: 0.631372549, alpha: 1)
+        label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+        return label
+    }()
+    
+    lazy var kilometerPerHour: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "km/h"
+        label.backgroundColor = .clear
+        label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        label.textColor = #colorLiteral(red: 0.2117647059, green: 0.8156862745, blue: 0.631372549, alpha: 1)
+        return label
     }()
     
     lazy var navigationButton: UIButton = {
@@ -127,7 +162,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     lazy var locationIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(named: "locationIconPur")
+        imageView.image = locaImage
         imageView.contentMode = .scaleToFill
         return imageView
     }()
@@ -265,7 +300,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     lazy var locationImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(named: "locationIcon")
+        imageView.image = locationArrow
         imageView.tintColor = .darkGray
         return imageView
     }()
@@ -301,9 +336,10 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         navigationMapView.mapView.isUserInteractionEnabled = true
         initialDestinationButton.addTarget(self, action:#selector(self.initialDestinationButtonTapped), for: .touchUpInside)
         getUserLocation()
-        initialSubViewSetup()
         let speedLimitView = SpeedLimitView()
         navigationMapView.addSubview(speedLimitView)
+        initialSubViewSetup()
+        
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil);
         
@@ -351,7 +387,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         self.manager.stopUpdatingLocation() //stop getting user location
         
         let location = locations[0]
-        
+        let speed = location.speed
         origin = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         backupOriginCordinates = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         
@@ -377,6 +413,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         routes.append(contentsOf: self.routes!.filter {
             $0 != currentRoute
         })
+        navigationMapView.removeWaypoints()
         navigationMapView.show(routes)
         navigationMapView.showWaypoints(on: currentRoute)
     }
@@ -386,7 +423,13 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
         GooglePlacesManager.shared.findPlaces(query: query) { result in
             switch result {
             case .success(let places):
-                self.places = places
+                if places.isEmpty {
+                    if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
+                        self.places = selectedPlaces
+                    }
+                } else {
+                    self.places = places
+                }
                 self.tableView.reloadData()
                 
             case .failure(let error):
@@ -419,7 +462,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     @objc func startNavigationAction(sender: UIButton) {
         
         if let destination = destination {
-            navigationRouteTurnByTurn(origin: origin!, destination: destination)
+            if origin == backupOriginCordinates {
+                navigationRouteTurnByTurn(origin: origin!, destination: destination)
+            }
         } else {
             let alert = UIAlertController(title: "Alert", message: "Please select the destination", preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
@@ -461,7 +506,36 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
                                                                         navigationOptions: navigationOptions)
                 navigationViewController.modalPresentationStyle = .fullScreen
                 navigationViewController.routeLineTracksTraversal = true
-                navigationViewController.showsSpeedLimits = true
+                navigationViewController.showsSpeedLimits = false
+                navigationViewController.navigationView.speedLimitView.regulatoryBorderColor = .white
+                navigationViewController.navigationView.speedLimitView.signBackColor = .red
+                navigationViewController.navigationView.speedLimitView.textColor = .white
+                navigationViewController.delegate = self
+                
+                
+                
+                guard let navigationView = navigationViewController.navigationMapView else { return }
+                guard let mapView = navigationView.mapView else { return }
+                
+                mapView.addSubview(strongSelf.currentSpeedView)
+                strongSelf.currentSpeedView.addSubview(strongSelf.speedLabel)
+                strongSelf.currentSpeedView.addSubview(strongSelf.speedLabel)
+                strongSelf.currentSpeedView.addSubview(strongSelf.kilometerPerHour)
+                strongSelf.isSpeedLimitShowimg = false
+                
+                strongSelf.currentSpeedView.leadingAnchor.constraint(equalTo: mapView.leadingAnchor, constant: 4).isActive = true
+                strongSelf.currentSpeedView.topAnchor.constraint(equalTo: mapView.topAnchor, constant: 228).isActive = true
+                strongSelf.currentSpeedView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+                strongSelf.currentSpeedView.widthAnchor.constraint(equalToConstant: 60).isActive = true
+                
+                strongSelf.speedLabel.topAnchor.constraint(equalTo: strongSelf.currentSpeedView.topAnchor, constant: 12).isActive = true
+                strongSelf.speedLabel.centerXAnchor.constraint(equalTo: strongSelf.currentSpeedView.centerXAnchor).isActive = true
+                strongSelf.speedLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
+                strongSelf.speedLabel.widthAnchor.constraint(equalToConstant: 30).isActive = true
+                
+                strongSelf.kilometerPerHour.topAnchor.constraint(equalTo: strongSelf.speedLabel.bottomAnchor, constant: 4).isActive = true
+                strongSelf.kilometerPerHour.centerXAnchor.constraint(equalTo: strongSelf.speedLabel.centerXAnchor).isActive = true
+                
                 
                 strongSelf.present(navigationViewController, animated: true, completion: nil)
             }
@@ -511,6 +585,31 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate {
     public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
         dismiss(animated: true, completion: nil)
     }
+    
+    public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
+        
+        let speedInKilometers = location.speed * 3.6
+        
+        if let speedLimit = navigationViewController.navigationView.speedLimitView.speedLimit?.value  {
+            if speedInKilometers > speedLimit {
+                kilometerPerHour.textColor = .red
+                speedLabel.textColor = .red
+                if isSpeedLimitShowimg == false {
+                    navigationViewController.showsSpeedLimits = true
+                    isSpeedLimitShowimg = true
+                }
+            } else {
+                kilometerPerHour.textColor = #colorLiteral(red: 0.2117647059, green: 0.8156862745, blue: 0.631372549, alpha: 1)
+                speedLabel.textColor = #colorLiteral(red: 0.2117647059, green: 0.8156862745, blue: 0.631372549, alpha: 1)
+                navigationViewController.showsSpeedLimits = false
+                isSpeedLimitShowimg = false
+            }
+        }
+        
+        let currentSpeed = String(format: "%.0f", speedInKilometers)
+        speedLabel.text = currentSpeed
+    }
+
 }
 
 extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
@@ -568,6 +667,19 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
             if isFromOrigin {
                 originTextField.text = place.name
             } else {
+                if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
+                    if !(selectedPlaces.contains(where: {$0.identifier == place.identifier})) {
+                        var list = [Place]()
+                        list = selectedPlaces
+                        if list.count > 5 {
+                            list.remove(at: 0)
+                        }
+                        list.append(place)
+                        SharePreference.shared.setSelectedPlaces(list)
+                    }
+                } else {
+                    SharePreference.shared.setSelectedPlaces([place])
+                }
                 destinationTextField.text = place.name
                 locationName.text = place.name
             }
@@ -639,4 +751,5 @@ extension MapBoxViewController: UITextFieldDelegate{
         return true
     }
 }
+
 

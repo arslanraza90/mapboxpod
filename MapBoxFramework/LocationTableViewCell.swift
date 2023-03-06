@@ -12,6 +12,8 @@ class LocationTableViewCell: UITableViewCell {
     
     static let identifier = "LocationTableViewCell"
     
+    let vector = UIImage(named: "vector", in: Bundle(identifier: "mapbox.com.MapBoxFramework"), compatibleWith: nil)
+    
     
     let cellView: UIView = {
         let view = UIView()
@@ -32,7 +34,7 @@ class LocationTableViewCell: UITableViewCell {
     lazy var serachImageView: UIImageView = {
          let imageView = UIImageView()
          imageView.translatesAutoresizingMaskIntoConstraints = false
-         imageView.image = UIImage(named: "Vector")//UIImage(systemName: "magnifyingglass")
+         imageView.image = vector
          imageView.tintColor = .darkGray
          return imageView
      }()

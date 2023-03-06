@@ -52,10 +52,24 @@ extension MapBoxViewController {
     
     func addSubViewsOnDestinationTap() {
         
-        initialDestinationMainView.removeFromSuperview()
-        initialDestinationLabel.removeFromSuperview()
-        initialDestinationButton.removeFromSuperview()
-        navigationMapView.addSubview(mainTableView)
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.initialDestinationMainView.removeFromSuperview()
+            self.initialDestinationLabel.removeFromSuperview()
+            self.initialDestinationButton.removeFromSuperview()
+
+        }, completion: nil)
+        
+        
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.mainTableView)
+
+        }, completion: nil)
+        
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.initialDestinationMainView)
+
+        }, completion: nil)
+        
         mainTableView.addSubview(tableView)
         navigationMapView.addSubview(initialDestinationMainView)
         initialDestinationMainView.addSubview(initialDestinationView)
@@ -106,11 +120,22 @@ extension MapBoxViewController {
     
     
     func addSubviewsOnCellSelection() {
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.mainTableView.removeFromSuperview()
+            self.initialDestinationMainView.removeFromSuperview()
+
+        }, completion: nil)
         
-        mainTableView.removeFromSuperview()
-        initialDestinationMainView.removeFromSuperview()
-        navigationMapView.addSubview(navigationButton)
-        navigationMapView.addSubview(destinationMainView)
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.navigationButton)
+
+        }, completion: nil)
+        
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.destinationMainView)
+
+        }, completion: nil)
+        
         destinationMainView.addSubview(originSubView)
         originSubView.addSubview(originTextField)
         destinationMainView.addSubview(destinationSubView)
@@ -167,11 +192,25 @@ extension MapBoxViewController {
     
     func manageSubViewOnFindRouteAction() {
         
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationButton.removeFromSuperview()
+            self.destinationMainView.removeFromSuperview()
+
+        }, completion: nil)
+        
         navigationButton.removeFromSuperview()
         destinationMainView.removeFromSuperview()
         
-        navigationMapView.addSubview(routeMainView)
-        navigationMapView.addSubview(destinationMainView)
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.routeMainView)
+
+        }, completion: nil)
+        
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.destinationMainView)
+
+        }, completion: nil)
+        
         routeMainView.addSubview(routesLabel)
         routeMainView.addSubview(locationName)
         routeMainView.addSubview(fastestRoute)
@@ -241,7 +280,11 @@ extension MapBoxViewController {
     }
     
     func manageSubViewsOnTextFieldEditing() {
-        navigationMapView.addSubview(mainTableView)
+        
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.mainTableView)
+
+        }, completion: nil)
         
         NSLayoutConstraint.activate([
             

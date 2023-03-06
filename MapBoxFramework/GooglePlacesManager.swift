@@ -9,7 +9,7 @@ import Foundation
 import GooglePlaces
 import CoreLocation
 
-struct Place {
+struct Place: Codable {
     let name: String
     let identifier: String
 }
