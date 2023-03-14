@@ -19,6 +19,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     var manager:CLLocationManager!
     var places: [Place] = []
     var isFromOrigin = false
+    var isFromDestination = false
     var origin: CLLocationCoordinate2D?
     var destination: CLLocationCoordinate2D?
     var backupOriginCordinates: CLLocationCoordinate2D?
@@ -43,10 +44,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             currentRouteIndex = 0
         }
     }
-    
-    let locaImage = UIImage(named: "locationIconPur", in: Bundle(identifier: "mapbox.com.MapBoxFramework"), compatibleWith: nil)
-    let locationArrow = UIImage(named: "locationIcon", in: Bundle(identifier: "mapbox.com.MapBoxFramework"), compatibleWith: nil)
-
     
     lazy var originTextField: UITextField = {
         let textField = UITextField()
@@ -162,7 +159,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var locationIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = locaImage
+        imageView.image = convertUrlToImage(url: "https://i.ibb.co/FW0CQtF/Location-1.png")
         imageView.contentMode = .scaleToFill
         return imageView
     }()
@@ -300,7 +297,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var locationImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = locationArrow
+        imageView.image = convertUrlToImage(url: "https://i.ibb.co/T4zH7cv/loca.png")
         imageView.tintColor = .darkGray
         return imageView
     }()
@@ -387,7 +384,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         self.manager.stopUpdatingLocation() //stop getting user location
         
         let location = locations[0]
-        let speed = location.speed
         origin = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         backupOriginCordinates = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         
@@ -462,13 +458,13 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     @objc func startNavigationAction(sender: UIButton) {
         
         if let destination = destination {
-            if origin == backupOriginCordinates {
+            if destination != backupOriginCordinates {
                 navigationRouteTurnByTurn(origin: origin!, destination: destination)
+            } else {
+                let alert = UIAlertController(title: "Alert", message: "Please select the destination other than your current location.", preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
             }
-        } else {
-            let alert = UIAlertController(title: "Alert", message: "Please select the destination", preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -609,30 +605,29 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         let currentSpeed = String(format: "%.0f", speedInKilometers)
         speedLabel.text = currentSpeed
     }
-
 }
 
 extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isFromOrigin {
+        if isFromOrigin || isFromDestination {
             return places.count + 1
-        } else {
-            return places.count
         }
+        return places.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LocationTableViewCell", for:indexPath) as! LocationTableViewCell
-        if isFromOrigin {
+        
+        if isFromOrigin || isFromDestination {
             if indexPath.row == 0 {
                 cell.placeName.text = "Current Location"
-            }
-            if indexPath.row > 0 {
+            } else {
                 cell.placeName.text = places[indexPath.row - 1].name
             }
         } else {
             cell.placeName.text = places[indexPath.row].name
         }
+        
         cell.selectionStyle = .none
         return cell
     }
@@ -643,48 +638,54 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.view.endEditing(true)
-        if isFromOrigin {
-            if indexPath.row == 0 {
+        var place: Place
+        if indexPath.row == 0 {
+            if isFromOrigin {
                 origin = backupOriginCordinates
                 originTextField.text = "Current location"
+            } else if isFromDestination {
+                destination = backupOriginCordinates
+                destinationTextField.text = "Current location"
+                locationName.text = "Current location"
+            } else  {
+                place = places[indexPath.row]
+                destinationTextField.text = place.name
+                locationName.text = place.name
+                getCoordinatesFromPlaces(place: place)
             }
+        }
+        
+        if indexPath.row > 0 {
             
-            if indexPath.row > 0 {
-                let place = places[indexPath.row - 1]
-                
+            if isFromOrigin || isFromDestination {
+                place = places[indexPath.row - 1]
                 if isFromOrigin {
                     originTextField.text = place.name
                 } else {
                     destinationTextField.text = place.name
                     locationName.text = place.name
                 }
-                getCoordinatesFromPlaces(place: place)
-            }
-            
-        } else {
-            let place = places[indexPath.row]
-            
-            if isFromOrigin {
-                originTextField.text = place.name
             } else {
-                if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
-                    if !(selectedPlaces.contains(where: {$0.identifier == place.identifier})) {
-                        var list = [Place]()
-                        list = selectedPlaces
-                        if list.count > 5 {
-                            list.remove(at: 0)
-                        }
-                        list.append(place)
-                        SharePreference.shared.setSelectedPlaces(list)
-                    }
-                } else {
-                    SharePreference.shared.setSelectedPlaces([place])
-                }
+                place = places[indexPath.row]
                 destinationTextField.text = place.name
                 locationName.text = place.name
             }
-            
             getCoordinatesFromPlaces(place: place)
+            
+            
+            if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
+                if !(selectedPlaces.contains(where: {$0.identifier == place.identifier})) {
+                    var list = [Place]()
+                    list = selectedPlaces
+                    if list.count > 5 {
+                        list.remove(at: 0)
+                    }
+                    list.append(place)
+                    SharePreference.shared.setSelectedPlaces(list)
+                }
+            } else {
+                SharePreference.shared.setSelectedPlaces([place])
+            }
         }
         addSubviewsOnCellSelection()
     }
@@ -715,6 +716,7 @@ extension MapBoxViewController: UITextFieldDelegate{
             originSubView.layer.borderWidth = 1.0
             originTextField.text = ""
             isFromOrigin = true
+            isFromDestination = false
             tableView.reloadData()
             if self.navigationButton.isDescendant(of: navigationMapView) {
                 navigationButton.removeFromSuperview()
@@ -730,6 +732,7 @@ extension MapBoxViewController: UITextFieldDelegate{
             destinationSubView.layer.borderWidth = 1.0
             destinationTextField.text = ""
             isFromOrigin = false
+            isFromDestination = true
             tableView.reloadData()
             if self.navigationButton.isDescendant(of: navigationMapView) {
                 navigationButton.removeFromSuperview()
@@ -753,3 +756,9 @@ extension MapBoxViewController: UITextFieldDelegate{
 }
 
 
+func convertUrlToImage(url: String) -> UIImage{
+    let url = URL(string: url)
+    let imageData = try? Data(contentsOf: url!)
+    let image = UIImage(data: imageData!)
+    return image!
+}

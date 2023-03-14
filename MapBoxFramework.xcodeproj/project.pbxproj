@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		A80347B529B5E21E00644C3D /* SharePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80347B429B5E21E00644C3D /* SharePreference.swift */; };
-		A80347B729B5E77E00644C3D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A80347B629B5E77E00644C3D /* Images.xcassets */; };
 		A876F5AC299CFAA200E72D37 /* CustomDayStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A876F5AB299CFAA200E72D37 /* CustomDayStyle.swift */; };
 		A876F5AE299CFAB500E72D37 /* CustomNightStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A876F5AD299CFAB500E72D37 /* CustomNightStyle.swift */; };
 		A88B5EE0299516FB0096FF88 /* MapBoxFramework.docc in Sources */ = {isa = PBXBuildFile; fileRef = A88B5EDF299516FB0096FF88 /* MapBoxFramework.docc */; };
@@ -39,7 +38,6 @@
 		2CA0980D29470944ACDB2231 /* Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig"; path = "Target Support Files/Pods-MapBoxFramework-MapBoxFrameworkTests/Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5AA61A3B4732F2BC097E5967 /* Pods-MapBoxFramework.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxFramework.release.xcconfig"; path = "Target Support Files/Pods-MapBoxFramework/Pods-MapBoxFramework.release.xcconfig"; sourceTree = "<group>"; };
 		A80347B429B5E21E00644C3D /* SharePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreference.swift; sourceTree = "<group>"; };
-		A80347B629B5E77E00644C3D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		A876F5AB299CFAA200E72D37 /* CustomDayStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDayStyle.swift; sourceTree = "<group>"; };
 		A876F5AD299CFAB500E72D37 /* CustomNightStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNightStyle.swift; sourceTree = "<group>"; };
 		A88B5EDB299516FB0096FF88 /* MapBoxFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MapBoxFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,7 +116,6 @@
 				A8E199FA29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift */,
 				A8E199FC29AFCCAA00CF2952 /* LocationTableViewCell.swift */,
 				A8E199FE29AFCCC900CF2952 /* GooglePlacesManager.swift */,
-				A80347B629B5E77E00644C3D /* Images.xcassets */,
 				A80347B429B5E21E00644C3D /* SharePreference.swift */,
 			);
 			path = MapBoxFramework;
@@ -238,7 +235,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A80347B729B5E77E00644C3D /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
