@@ -68,7 +68,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var currentSpeedView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.3779843564)
+        view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         view.layer.cornerRadius = 30.0
         view.layer.masksToBounds = true
         view.layer.borderColor = UIColor.white.cgColor
@@ -82,7 +82,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         label.text = "10"
         label.backgroundColor = .clear
         label.textAlignment = .center
-        label.textColor = #colorLiteral(red: 0.2117647059, green: 0.8156862745, blue: 0.631372549, alpha: 1)
+        label.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
         label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
         return label
     }()
@@ -93,16 +93,18 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         label.text = "km/h"
         label.backgroundColor = .clear
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        label.textColor = #colorLiteral(red: 0.2117647059, green: 0.8156862745, blue: 0.631372549, alpha: 1)
+        label.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
         return label
     }()
     
     lazy var navigationButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = #colorLiteral(red: 0.8637991548, green: 0.4307671189, blue: 1, alpha: 1)
+        button.backgroundColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1)
         button.setTitle("Find Route", for: .normal)
+        button.setTitleColor(#colorLiteral(red: 0.1725490196, green: 0.1725490196, blue: 0.1725490196, alpha: 1), for: .normal)
         button.layer.cornerRadius = 12.0
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         return button
     }()
     
@@ -289,15 +291,22 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var startButtonView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = #colorLiteral(red: 0.5529411765, green: 0.6980392157, blue: 0.9803921569, alpha: 0.9)
+        view.backgroundColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 0.9)
         view.layer.cornerRadius = 15.0
         return view
     }()
     
     lazy var locationImage: UIImageView = {
+        
+        guard let filePath = Bundle(for: type(of: self)).path(forResource: "online-agreement", ofType: "png"),
+              let image = UIImage(contentsOfFile: filePath),
+              let data = image.pngData() else {
+            fatalError("Image not available")
+        }
+        
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = convertUrlToImage(url: "https://i.ibb.co/T4zH7cv/loca.png")
+        imageView.image = image//convertUrlToImage(url: "https://i.ibb.co/T4zH7cv/loca.png")
         imageView.tintColor = .darkGray
         return imageView
     }()
@@ -308,7 +317,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         label.text = "Start"
         label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         label.backgroundColor = .clear
-        label.textColor = .white
+        label.textColor = #colorLiteral(red: 0.1725490196, green: 0.1725490196, blue: 0.1725490196, alpha: 1)
         label.layer.cornerRadius = 5.0
         return label
     }()
@@ -490,39 +499,61 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                     return
                 }
                 
+                
+                
+                
                 let indexedRouteResponse = IndexedRouteResponse(routeResponse: response, routeIndex: 0)
                 let navigationService = MapboxNavigationService(indexedRouteResponse: indexedRouteResponse,
                                                                 customRoutingProvider: NavigationSettings.shared.directions,
                                                                 credentials: NavigationSettings.shared.directions.credentials,
                                                                 simulating: .never)
                 
-                let navigationOptions = NavigationOptions(styles: [CustomNightStyles()],
-                                                          navigationService: navigationService)
+                
+                
+                let topBanner = CustomTopBarViewController()
+                let bottomBanner = CustomBottomBarViewController()
+                let navigationOptions = NavigationOptions(styles: [CustomNightStyles()], navigationService: navigationService,
+                                                          topBanner: topBanner,
+                                                          bottomBanner: bottomBanner)
                 let navigationViewController = NavigationViewController(for: indexedRouteResponse,
                                                                         navigationOptions: navigationOptions)
+                bottomBanner.navigationViewController = navigationViewController
+                
                 navigationViewController.modalPresentationStyle = .fullScreen
                 navigationViewController.routeLineTracksTraversal = true
-                navigationViewController.showsSpeedLimits = false
+                navigationViewController.showsSpeedLimits = true
                 navigationViewController.navigationView.speedLimitView.regulatoryBorderColor = .white
                 navigationViewController.navigationView.speedLimitView.signBackColor = .red
                 navigationViewController.navigationView.speedLimitView.textColor = .white
                 navigationViewController.delegate = self
                 
                 
+                let stackView = navigationViewController.navigationView.floatingStackView
+                let speedLimitView = navigationViewController.navigationView.speedLimitView
+                speedLimitView.translatesAutoresizingMaskIntoConstraints = false
+                stackView.translatesAutoresizingMaskIntoConstraints = false
                 
                 guard let navigationView = navigationViewController.navigationMapView else { return }
                 guard let mapView = navigationView.mapView else { return }
-                
                 mapView.addSubview(strongSelf.currentSpeedView)
                 strongSelf.currentSpeedView.addSubview(strongSelf.speedLabel)
                 strongSelf.currentSpeedView.addSubview(strongSelf.speedLabel)
                 strongSelf.currentSpeedView.addSubview(strongSelf.kilometerPerHour)
                 strongSelf.isSpeedLimitShowimg = false
                 
-                strongSelf.currentSpeedView.leadingAnchor.constraint(equalTo: mapView.leadingAnchor, constant: 4).isActive = true
-                strongSelf.currentSpeedView.topAnchor.constraint(equalTo: mapView.topAnchor, constant: 228).isActive = true
-                strongSelf.currentSpeedView.heightAnchor.constraint(equalToConstant: 60).isActive = true
-                strongSelf.currentSpeedView.widthAnchor.constraint(equalToConstant: 60).isActive = true
+                
+                NSLayoutConstraint.activate([
+                    stackView.topAnchor.constraint(equalTo: navigationViewController.navigationView.safeAreaLayoutGuide.topAnchor, constant: 120),
+                    speedLimitView.topAnchor.constraint(equalTo: navigationViewController.navigationView.safeAreaLayoutGuide.bottomAnchor, constant: -160),
+                    speedLimitView.trailingAnchor.constraint(equalTo: navigationViewController.navigationView.safeAreaLayoutGuide.trailingAnchor, constant: 328),
+                    speedLimitView.heightAnchor.constraint(equalToConstant: 30),
+                    speedLimitView.widthAnchor.constraint(equalToConstant: 30),
+                    strongSelf.currentSpeedView.topAnchor.constraint(equalTo: navigationViewController.navigationView.safeAreaLayoutGuide.bottomAnchor, constant: -174),
+                    strongSelf.currentSpeedView.trailingAnchor.constraint(equalTo: speedLimitView.leadingAnchor, constant: 353),
+                    strongSelf.currentSpeedView.heightAnchor.constraint(equalToConstant: 60),
+                    strongSelf.currentSpeedView.widthAnchor.constraint(equalToConstant: 60)
+                    
+                ])
                 
                 strongSelf.speedLabel.topAnchor.constraint(equalTo: strongSelf.currentSpeedView.topAnchor, constant: 12).isActive = true
                 strongSelf.speedLabel.centerXAnchor.constraint(equalTo: strongSelf.currentSpeedView.centerXAnchor).isActive = true
@@ -574,8 +605,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         }
     }
     
-    func secondsToHoursMinutesSeconds(_ seconds: Int) -> (Int, Int) {
-        return (seconds / 3600, (seconds % 3600) / 60)
+    func secondsToHoursMinutesSeconds(_ seconds: Int) -> (Int, Int, Int) {
+        return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
     }
     
     public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
@@ -595,8 +626,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                     isSpeedLimitShowimg = true
                 }
             } else {
-                kilometerPerHour.textColor = #colorLiteral(red: 0.2117647059, green: 0.8156862745, blue: 0.631372549, alpha: 1)
-                speedLabel.textColor = #colorLiteral(red: 0.2117647059, green: 0.8156862745, blue: 0.631372549, alpha: 1)
+                kilometerPerHour.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
+                speedLabel.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
                 navigationViewController.showsSpeedLimits = false
                 isSpeedLimitShowimg = false
             }
@@ -758,7 +789,163 @@ extension MapBoxViewController: UITextFieldDelegate{
 
 func convertUrlToImage(url: String) -> UIImage{
     let url = URL(string: url)
-    let imageData = try? Data(contentsOf: url!)
-    let image = UIImage(data: imageData!)
-    return image!
+    var imageView = UIImage()
+    DispatchQueue.main.async {
+        guard let imageData = try? Data(contentsOf: url!) else { return }
+        guard let image = UIImage(data: imageData) else { return }
+        imageView = image
+    }
+    return imageView
 }
+
+
+class CustomTopBarViewController: ContainerViewController {
+    private lazy var instructionsBannerTopOffsetConstraint = {
+        return instructionsBannerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10)
+    }()
+    private lazy var centerOffset: CGFloat = calculateCenterOffset(with: view.bounds.size)
+    private lazy var instructionsBannerCenterOffsetConstraint = {
+        return instructionsBannerView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0)
+    }()
+    private lazy var instructionsBannerWidthConstraint = {
+        return instructionsBannerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
+    }()
+    
+    // You can Include one of the existing Views to display route-specific info
+    lazy var instructionsBannerView: InstructionsBannerView = {
+        let banner = InstructionsBannerView()
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        banner.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
+        banner.layer.cornerRadius = 25
+        banner.separatorView.isHidden = true
+        return banner
+    }()
+    
+    override func viewDidLoad() {
+        view.addSubview(instructionsBannerView)
+        
+        setupConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateConstraints()
+    }
+    
+    private func setupConstraints() {
+        instructionsBannerCenterOffsetConstraint.isActive = true
+        instructionsBannerTopOffsetConstraint.isActive = true
+        instructionsBannerWidthConstraint.isActive = true
+    }
+    
+    private func updateConstraints() {
+        instructionsBannerCenterOffsetConstraint.constant = centerOffset
+    }
+    
+    // MARK: - Device rotation
+    
+    private func calculateCenterOffset(with size: CGSize) -> CGFloat {
+        return (size.height < size.width ? -size.width / 5 : 0)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        centerOffset = calculateCenterOffset(with: size)
+    }
+    
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateConstraints()
+    }
+    
+    // MARK: - NavigationServiceDelegate implementation
+    
+    public func navigationService(_ service: NavigationService, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
+        // pass updated data to sub-views which also implement `NavigationServiceDelegate`
+        instructionsBannerView.updateDistance(for: progress.currentLegProgress.currentStepProgress)
+    }
+    
+    public func navigationService(_ service: NavigationService, didPassVisualInstructionPoint instruction: VisualInstructionBanner, routeProgress: RouteProgress) {
+        instructionsBannerView.update(for: instruction)
+    }
+    
+    public func navigationService(_ service: NavigationService, didRerouteAlong route: Route, at location: CLLocation?, proactive: Bool) {
+        instructionsBannerView.updateDistance(for: service.routeProgress.currentLegProgress.currentStepProgress)
+    }
+}
+
+class CustomBottomBarViewController: ContainerViewController, CustomBottomBannerViewDelegate {
+    
+    weak var navigationViewController: NavigationViewController?
+    
+    // Or you can implement your own UI elements
+    lazy var bannerView: CustomBottomBannerView = {
+        let banner = CustomBottomBannerView()
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        banner.delegate = self
+        return banner
+    }()
+    
+    override func loadView() {
+        super.loadView()
+        
+        view.addSubview(bannerView)
+        
+        let safeArea = view.layoutMarginsGuide
+        NSLayoutConstraint.activate([
+            bannerView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 8),
+            bannerView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -8),
+            bannerView.heightAnchor.constraint(equalTo: view.heightAnchor),
+            bannerView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
+        ])
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupConstraints()
+    }
+    
+    private func setupConstraints() {
+        if let superview = view.superview?.superview {
+            view.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        }
+    }
+    
+    // MARK: - NavigationServiceDelegate implementation
+    
+    func navigationService(_ service: NavigationService, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
+        // Update your controls manually
+        //        bannerView.progress = Float(progress.fractionTraveled)
+        
+        let durationRemaining = self.secondsToHoursMinutesSeconds(Int(progress.durationRemaining))
+        let expectedTime = self.secondsToHoursMinutesSeconds(Int(progress.route.expectedTravelTime))
+        
+        if durationRemaining.0 != 0{
+            bannerView.eta = "\(durationRemaining.0)" + ":" + "\(durationRemaining.1)"
+            bannerView.timeTotal = "\(expectedTime.0)" + ":" + "\(expectedTime.1)"
+        } else {
+            bannerView.eta = "\(durationRemaining.1)" + ":" + "\(durationRemaining.2)"
+            bannerView.timeTotal = "\(expectedTime.1)"
+        }
+        
+        
+        
+        let measurement = Measurement(value: progress.route.distance, unit: UnitLength.meters).converted(to: .kilometers)
+        let distanceInKilometers = Int(measurement.value)
+        bannerView.distanceTotal = String(distanceInKilometers)
+    }
+    
+    // MARK: - CustomBottomBannerViewDelegate implementation
+    
+    func customBottomBannerDidCancel(_ banner: CustomBottomBannerView) {
+        navigationViewController?.dismiss(animated: true,
+                                          completion: nil)
+    }
+    
+    func secondsToHoursMinutesSeconds(_ seconds: Int) -> (Int, Int, Int) {
+        return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
+    }
+}
+
+
