@@ -13,6 +13,9 @@ extension MapBoxViewController {
     func initialSubViewSetup() {
         
         view.addSubview(navigationMapView)
+        navigationMapView.addSubview(actionSheetView)
+        actionSheetView.addSubview(actionSheetImageView)
+        actionSheetView.addSubview(actionSheetButton)
         navigationMapView.addSubview(initialDestinationMainView)
         initialDestinationMainView.addSubview(initialDestinationView)
         initialDestinationView.addSubview(initialDestinationLabel)
@@ -20,6 +23,22 @@ extension MapBoxViewController {
         initialDestinationView.addSubview(serachImageView)
         
         NSLayoutConstraint.activate([
+            
+            
+            actionSheetView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
+            actionSheetView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 160),
+            actionSheetView.heightAnchor.constraint(equalToConstant: 50),
+            actionSheetView.widthAnchor.constraint(equalToConstant: 50),
+            
+            actionSheetImageView.centerYAnchor.constraint(equalTo: actionSheetView.centerYAnchor),
+            actionSheetImageView.centerXAnchor.constraint(equalTo: actionSheetView.centerXAnchor),
+            actionSheetImageView.heightAnchor.constraint(equalToConstant: 25),
+            actionSheetImageView.widthAnchor.constraint(equalToConstant: 25),
+            
+            actionSheetButton.trailingAnchor.constraint(equalTo: actionSheetView.trailingAnchor, constant: 0),
+            actionSheetButton.topAnchor.constraint(equalTo: actionSheetView.topAnchor, constant: 0),
+            actionSheetButton.bottomAnchor.constraint(equalTo: actionSheetView.bottomAnchor, constant: 0),
+            actionSheetButton.leadingAnchor.constraint(equalTo: actionSheetView.leadingAnchor, constant: 0),
             
             initialDestinationMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             initialDestinationMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),

@@ -12,7 +12,7 @@ import MapboxDirections
 import GooglePlaces
 import CoreLocation
 
-open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, NavigationViewControllerDelegate {
+open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, NavigationViewControllerDelegate, UIViewControllerTransitioningDelegate {
     
     var navigationMapView: NavigationMapView!
     private var placesClient: GMSPlacesClient!
@@ -108,6 +108,34 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return button
     }()
     
+    lazy var actionSheetView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 25.0
+        return view
+    }()
+    
+    lazy var actionSheetImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        convertUrlToImage(url: "https://i.ibb.co/884LhVg/layers.png", completion: { images in
+            DispatchQueue.main.async {
+                imageView.image = images
+            }
+        })
+        imageView.tintColor = .darkGray
+        return imageView
+    }()
+    
+    lazy var actionSheetButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 15.0
+        return button
+    }()
+    
     lazy var destinationMainView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -161,7 +189,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var locationIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = convertUrlToImage(url: "https://i.ibb.co/FW0CQtF/Location-1.png")
+        convertUrlToImage(url: "https://i.ibb.co/FW0CQtF/Location-1.png", completion: { images in
+            DispatchQueue.main.async {
+                imageView.image = images
+            }
+        })
         imageView.contentMode = .scaleToFill
         return imageView
     }()
@@ -297,16 +329,13 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }()
     
     lazy var locationImage: UIImageView = {
-        
-        guard let filePath = Bundle(for: type(of: self)).path(forResource: "online-agreement", ofType: "png"),
-              let image = UIImage(contentsOfFile: filePath),
-              let data = image.pngData() else {
-            fatalError("Image not available")
-        }
-        
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = image//convertUrlToImage(url: "https://i.ibb.co/T4zH7cv/loca.png")
+        convertUrlToImage(url: "https://i.ibb.co/NF1BngM/loc.png", completion: { images in
+            DispatchQueue.main.async {
+                imageView.image = images
+            }
+        })
         imageView.tintColor = .darkGray
         return imageView
     }()
@@ -341,6 +370,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         navigationMapView.userLocationStyle = .puck2D()
         navigationMapView.mapView.isUserInteractionEnabled = true
         initialDestinationButton.addTarget(self, action:#selector(self.initialDestinationButtonTapped), for: .touchUpInside)
+        actionSheetButton.addTarget(self, action:#selector(self.actionSheetButtonTapped), for: .touchUpInside)
         getUserLocation()
         let speedLimitView = SpeedLimitView()
         navigationMapView.addSubview(speedLimitView)
@@ -464,6 +494,14 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     
+    @objc func actionSheetButtonTapped(sender: UIButton) {
+        let vc = SelectMapStyleViewController()
+        vc.delegate = self
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true, completion: nil)
+    }
+    
+    
     @objc func startNavigationAction(sender: UIButton) {
         
         if let destination = destination {
@@ -484,6 +522,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         if let destination  = destination {
             requestRoute(origin: origin!, destination: destination)
         }
+        
     }
     
     func navigationRouteTurnByTurn(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
@@ -551,17 +590,16 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                     strongSelf.currentSpeedView.topAnchor.constraint(equalTo: navigationViewController.navigationView.safeAreaLayoutGuide.bottomAnchor, constant: -174),
                     strongSelf.currentSpeedView.trailingAnchor.constraint(equalTo: speedLimitView.leadingAnchor, constant: 353),
                     strongSelf.currentSpeedView.heightAnchor.constraint(equalToConstant: 60),
-                    strongSelf.currentSpeedView.widthAnchor.constraint(equalToConstant: 60)
+                    strongSelf.currentSpeedView.widthAnchor.constraint(equalToConstant: 60),
+                    strongSelf.speedLabel.topAnchor.constraint(equalTo: strongSelf.currentSpeedView.topAnchor, constant: 12),
+                    strongSelf.speedLabel.centerXAnchor.constraint(equalTo: strongSelf.currentSpeedView.centerXAnchor),
+                    strongSelf.speedLabel.heightAnchor.constraint(equalToConstant: 15),
+                    strongSelf.speedLabel.widthAnchor.constraint(equalToConstant: 30),
+                    
+                    strongSelf.kilometerPerHour.topAnchor.constraint(equalTo: strongSelf.speedLabel.bottomAnchor, constant: 4),
+                    strongSelf.kilometerPerHour.centerXAnchor.constraint(equalTo: strongSelf.speedLabel.centerXAnchor)
                     
                 ])
-                
-                strongSelf.speedLabel.topAnchor.constraint(equalTo: strongSelf.currentSpeedView.topAnchor, constant: 12).isActive = true
-                strongSelf.speedLabel.centerXAnchor.constraint(equalTo: strongSelf.currentSpeedView.centerXAnchor).isActive = true
-                strongSelf.speedLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
-                strongSelf.speedLabel.widthAnchor.constraint(equalToConstant: 30).isActive = true
-                
-                strongSelf.kilometerPerHour.topAnchor.constraint(equalTo: strongSelf.speedLabel.bottomAnchor, constant: 4).isActive = true
-                strongSelf.kilometerPerHour.centerXAnchor.constraint(equalTo: strongSelf.speedLabel.centerXAnchor).isActive = true
                 
                 
                 strongSelf.present(navigationViewController, animated: true, completion: nil)
@@ -787,164 +825,27 @@ extension MapBoxViewController: UITextFieldDelegate{
 }
 
 
-func convertUrlToImage(url: String) -> UIImage{
-    let url = URL(string: url)
-    var imageView = UIImage()
-    DispatchQueue.main.async {
-        guard let imageData = try? Data(contentsOf: url!) else { return }
-        guard let image = UIImage(data: imageData) else { return }
-        imageView = image
-    }
-    return imageView
-}
-
-
-class CustomTopBarViewController: ContainerViewController {
-    private lazy var instructionsBannerTopOffsetConstraint = {
-        return instructionsBannerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10)
-    }()
-    private lazy var centerOffset: CGFloat = calculateCenterOffset(with: view.bounds.size)
-    private lazy var instructionsBannerCenterOffsetConstraint = {
-        return instructionsBannerView.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0)
-    }()
-    private lazy var instructionsBannerWidthConstraint = {
-        return instructionsBannerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.9)
-    }()
-    
-    // You can Include one of the existing Views to display route-specific info
-    lazy var instructionsBannerView: InstructionsBannerView = {
-        let banner = InstructionsBannerView()
-        banner.translatesAutoresizingMaskIntoConstraints = false
-        banner.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
-        banner.layer.cornerRadius = 25
-        banner.separatorView.isHidden = true
-        return banner
-    }()
-    
-    override func viewDidLoad() {
-        view.addSubview(instructionsBannerView)
-        
-        setupConstraints()
+func convertUrlToImage(url: String, completion: @escaping (UIImage?) -> Void) {
+    guard let url = URL(string: url) else {
+        completion(nil)
+        return
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        updateConstraints()
-    }
-    
-    private func setupConstraints() {
-        instructionsBannerCenterOffsetConstraint.isActive = true
-        instructionsBannerTopOffsetConstraint.isActive = true
-        instructionsBannerWidthConstraint.isActive = true
-    }
-    
-    private func updateConstraints() {
-        instructionsBannerCenterOffsetConstraint.constant = centerOffset
-    }
-    
-    // MARK: - Device rotation
-    
-    private func calculateCenterOffset(with size: CGSize) -> CGFloat {
-        return (size.height < size.width ? -size.width / 5 : 0)
-    }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        centerOffset = calculateCenterOffset(with: size)
-    }
-    
-    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        updateConstraints()
-    }
-    
-    // MARK: - NavigationServiceDelegate implementation
-    
-    public func navigationService(_ service: NavigationService, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
-        // pass updated data to sub-views which also implement `NavigationServiceDelegate`
-        instructionsBannerView.updateDistance(for: progress.currentLegProgress.currentStepProgress)
-    }
-    
-    public func navigationService(_ service: NavigationService, didPassVisualInstructionPoint instruction: VisualInstructionBanner, routeProgress: RouteProgress) {
-        instructionsBannerView.update(for: instruction)
-    }
-    
-    public func navigationService(_ service: NavigationService, didRerouteAlong route: Route, at location: CLLocation?, proactive: Bool) {
-        instructionsBannerView.updateDistance(for: service.routeProgress.currentLegProgress.currentStepProgress)
-    }
-}
-
-class CustomBottomBarViewController: ContainerViewController, CustomBottomBannerViewDelegate {
-    
-    weak var navigationViewController: NavigationViewController?
-    
-    // Or you can implement your own UI elements
-    lazy var bannerView: CustomBottomBannerView = {
-        let banner = CustomBottomBannerView()
-        banner.translatesAutoresizingMaskIntoConstraints = false
-        banner.delegate = self
-        return banner
-    }()
-    
-    override func loadView() {
-        super.loadView()
-        
-        view.addSubview(bannerView)
-        
-        let safeArea = view.layoutMarginsGuide
-        NSLayoutConstraint.activate([
-            bannerView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 8),
-            bannerView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -8),
-            bannerView.heightAnchor.constraint(equalTo: view.heightAnchor),
-            bannerView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
-        ])
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setupConstraints()
-    }
-    
-    private func setupConstraints() {
-        if let superview = view.superview?.superview {
-            view.bottomAnchor.constraint(equalTo: superview.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        }
-    }
-    
-    // MARK: - NavigationServiceDelegate implementation
-    
-    func navigationService(_ service: NavigationService, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
-        // Update your controls manually
-        //        bannerView.progress = Float(progress.fractionTraveled)
-        
-        let durationRemaining = self.secondsToHoursMinutesSeconds(Int(progress.durationRemaining))
-        let expectedTime = self.secondsToHoursMinutesSeconds(Int(progress.route.expectedTravelTime))
-        
-        if durationRemaining.0 != 0{
-            bannerView.eta = "\(durationRemaining.0)" + ":" + "\(durationRemaining.1)"
-            bannerView.timeTotal = "\(expectedTime.0)" + ":" + "\(expectedTime.1)"
-        } else {
-            bannerView.eta = "\(durationRemaining.1)" + ":" + "\(durationRemaining.2)"
-            bannerView.timeTotal = "\(expectedTime.1)"
+    URLSession.shared.dataTask(with: url) { data, response, error in
+        guard let data = data, error == nil else {
+            completion(nil)
+            return
         }
         
-        
-        
-        let measurement = Measurement(value: progress.route.distance, unit: UnitLength.meters).converted(to: .kilometers)
-        let distanceInKilometers = Int(measurement.value)
-        bannerView.distanceTotal = String(distanceInKilometers)
-    }
-    
-    // MARK: - CustomBottomBannerViewDelegate implementation
-    
-    func customBottomBannerDidCancel(_ banner: CustomBottomBannerView) {
-        navigationViewController?.dismiss(animated: true,
-                                          completion: nil)
-    }
-    
-    func secondsToHoursMinutesSeconds(_ seconds: Int) -> (Int, Int, Int) {
-        return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
+        let image = UIImage(data: data)
+        completion(image)
+    }.resume()
+}
+
+extension MapBoxViewController: SelectedMapStyle {
+    func selectedStyle(type: String) {
+    navigationMapView.mapView.mapboxMap.style.uri = StyleURI(rawValue: type)//StyleURI.satellite
+
     }
 }
 

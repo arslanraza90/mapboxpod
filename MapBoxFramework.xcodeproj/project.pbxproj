@@ -11,6 +11,9 @@
 		A83A80F429E6ADFE00119291 /* Artworks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F329E6ADFE00119291 /* Artworks.xcassets */; };
 		A83A80F629E6AE2500119291 /* online-agreement.png in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F529E6AE2500119291 /* online-agreement.png */; };
 		A83A80F729E6AE3500119291 /* Artworks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F329E6ADFE00119291 /* Artworks.xcassets */; };
+		A83A812C29E96DEF00119291 /* SelectMapStyleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83A812B29E96DEF00119291 /* SelectMapStyleViewController.swift */; };
+		A83A812E29E96F1200119291 /* CustomBottomBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83A812D29E96F1200119291 /* CustomBottomBarViewController.swift */; };
+		A83A813029E96F6500119291 /* CustomTopBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83A812F29E96F6500119291 /* CustomTopBarViewController.swift */; };
 		A876F5AC299CFAA200E72D37 /* CustomDayStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A876F5AB299CFAA200E72D37 /* CustomDayStyle.swift */; };
 		A876F5AE299CFAB500E72D37 /* CustomNightStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A876F5AD299CFAB500E72D37 /* CustomNightStyle.swift */; };
 		A88B5EE0299516FB0096FF88 /* MapBoxFramework.docc in Sources */ = {isa = PBXBuildFile; fileRef = A88B5EDF299516FB0096FF88 /* MapBoxFramework.docc */; };
@@ -45,6 +48,9 @@
 		A80347B429B5E21E00644C3D /* SharePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreference.swift; sourceTree = "<group>"; };
 		A83A80F329E6ADFE00119291 /* Artworks.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Artworks.xcassets; sourceTree = "<group>"; };
 		A83A80F529E6AE2500119291 /* online-agreement.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "online-agreement.png"; sourceTree = "<group>"; };
+		A83A812B29E96DEF00119291 /* SelectMapStyleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMapStyleViewController.swift; sourceTree = "<group>"; };
+		A83A812D29E96F1200119291 /* CustomBottomBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBottomBarViewController.swift; sourceTree = "<group>"; };
+		A83A812F29E96F6500119291 /* CustomTopBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTopBarViewController.swift; sourceTree = "<group>"; };
 		A876F5AB299CFAA200E72D37 /* CustomDayStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDayStyle.swift; sourceTree = "<group>"; };
 		A876F5AD299CFAB500E72D37 /* CustomNightStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNightStyle.swift; sourceTree = "<group>"; };
 		A88B5EDB299516FB0096FF88 /* MapBoxFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MapBoxFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -130,6 +136,9 @@
 				A8E199FC29AFCCAA00CF2952 /* LocationTableViewCell.swift */,
 				A8E199FE29AFCCC900CF2952 /* GooglePlacesManager.swift */,
 				A80347B429B5E21E00644C3D /* SharePreference.swift */,
+				A83A812B29E96DEF00119291 /* SelectMapStyleViewController.swift */,
+				A83A812D29E96F1200119291 /* CustomBottomBarViewController.swift */,
+				A83A812F29E96F6500119291 /* CustomTopBarViewController.swift */,
 			);
 			path = MapBoxFramework;
 			sourceTree = "<group>";
@@ -367,13 +376,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A83A812E29E96F1200119291 /* CustomBottomBarViewController.swift in Sources */,
 				A8E199FD29AFCCAA00CF2952 /* LocationTableViewCell.swift in Sources */,
+				A83A813029E96F6500119291 /* CustomTopBarViewController.swift in Sources */,
 				A88B5EE0299516FB0096FF88 /* MapBoxFramework.docc in Sources */,
 				A8C10FC829DEC4DC0091F776 /* CustomBottomBannerView.swift in Sources */,
 				A80347B529B5E21E00644C3D /* SharePreference.swift in Sources */,
 				A876F5AC299CFAA200E72D37 /* CustomDayStyle.swift in Sources */,
 				A8E199FF29AFCCC900CF2952 /* GooglePlacesManager.swift in Sources */,
 				A88B5EF6299517600096FF88 /* mapboxViewController.swift in Sources */,
+				A83A812C29E96DEF00119291 /* SelectMapStyleViewController.swift in Sources */,
 				A876F5AE299CFAB500E72D37 /* CustomNightStyle.swift in Sources */,
 				A8E199FB29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift in Sources */,
 			);
