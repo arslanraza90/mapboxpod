@@ -1,7 +1,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'mapboxpod'
-  s.version          = '1.1.1'
+  s.version          = '1.1.2'
   s.summary          = 'Mapbox frammework.' 
   s.homepage         = 'https://github.com/arslanraza90/mapboxpod'
   # s.license          = { :type => 'MIT', :file => 'LICENSE' }
