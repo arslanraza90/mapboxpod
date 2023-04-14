@@ -60,6 +60,10 @@ class CustomBottomBannerView: UIView {
 
 //        bundle.loadNibNamed("CustomBottomBannerView", owner: self)
         
+//        Bundle.main.loadNibNamed(String(describing: CustomBottomBannerView.self),
+//                                 owner: self,
+//                                 options: nil)
+        
         let bundle = Bundle(for: type(of: self))
                 let nib = UINib(nibName: "CustomBottomBannerView", bundle: bundle)
                 nib.instantiate(withOwner: self, options: nil)
