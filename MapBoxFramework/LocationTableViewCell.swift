@@ -31,11 +31,7 @@ class LocationTableViewCell: UITableViewCell {
     lazy var serachImageView: UIImageView = {
          let imageView = UIImageView()
          imageView.translatesAutoresizingMaskIntoConstraints = false
-        convertUrlToImage(url: "https://i.ibb.co/p3zyFqc/Vector-1.png", completion: { images in
-            DispatchQueue.main.async {
-                imageView.image = images
-            }
-        })
+        imageView.image  = UIImage(named: "reload")
          imageView.tintColor = .darkGray
          return imageView
      }()

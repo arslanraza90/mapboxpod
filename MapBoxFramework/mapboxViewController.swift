@@ -119,11 +119,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var actionSheetImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        convertUrlToImage(url: "https://i.ibb.co/884LhVg/layers.png", completion: { images in
-            DispatchQueue.main.async {
-                imageView.image = images
-            }
-        })
+        imageView.image = UIImage(named: "layers")
         imageView.tintColor = .darkGray
         return imageView
     }()
@@ -189,11 +185,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var locationIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        convertUrlToImage(url: "https://i.ibb.co/FW0CQtF/Location-1.png", completion: { images in
-            DispatchQueue.main.async {
-                imageView.image = images
-            }
-        })
+        imageView.image = UIImage(named: "LocationIcon")
         imageView.contentMode = .scaleToFill
         return imageView
     }()
@@ -331,11 +323,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var locationImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        convertUrlToImage(url: "https://i.ibb.co/NF1BngM/loc.png", completion: { images in
-            DispatchQueue.main.async {
-                imageView.image = images
-            }
-        })
+        imageView.image = UIImage(named: "location")
         imageView.tintColor = .darkGray
         return imageView
     }()
@@ -822,24 +810,6 @@ extension MapBoxViewController: UITextFieldDelegate{
         
         return true
     }
-}
-
-
-func convertUrlToImage(url: String, completion: @escaping (UIImage?) -> Void) {
-    guard let url = URL(string: url) else {
-        completion(nil)
-        return
-    }
-    
-    URLSession.shared.dataTask(with: url) { data, response, error in
-        guard let data = data, error == nil else {
-            completion(nil)
-            return
-        }
-        
-        let image = UIImage(data: data)
-        completion(image)
-    }.resume()
 }
 
 extension MapBoxViewController: SelectedMapStyle {

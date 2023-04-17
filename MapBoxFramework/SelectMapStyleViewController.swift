@@ -34,11 +34,7 @@ class SelectMapStyleViewController: UIViewController {
             image.contentMode = .scaleToFill
             image.layer.cornerRadius  = 10.0
             image.clipsToBounds = true
-            convertUrlToImage(url: "https://i.ibb.co/r0Sgrnt/street.png", completion: { images in
-                DispatchQueue.main.async {
-                    image.image = images
-                }
-            })
+            image.image = UIImage(named: "street")
             return image
         }()
         
@@ -48,11 +44,7 @@ class SelectMapStyleViewController: UIViewController {
             image.contentMode = .scaleAspectFit
             image.layer.cornerRadius  = 10.0
             image.clipsToBounds = true
-            convertUrlToImage(url: "https://i.ibb.co/vhz54Wq/outDoor.png", completion: { images in
-                DispatchQueue.main.async {
-                    image.image = images
-                }
-            })
+            image.image = UIImage(named: "outDoor")
             return image
         }()
         
@@ -62,11 +54,7 @@ class SelectMapStyleViewController: UIViewController {
             image.contentMode = .scaleAspectFit
             image.layer.cornerRadius  = 10.0
             image.clipsToBounds = true
-            convertUrlToImage(url: "https://i.ibb.co/XLW7Dyc/light.png", completion: { images in
-                DispatchQueue.main.async {
-                    image.image = images
-                }
-            })
+            image.image = UIImage(named: "light")
             return image
         }()
         
@@ -76,11 +64,7 @@ class SelectMapStyleViewController: UIViewController {
             image.contentMode = .scaleAspectFit
             image.layer.cornerRadius  = 10.0
             image.clipsToBounds = true
-            convertUrlToImage(url: "https://i.ibb.co/3Snxcxw/dark.png", completion: { images in
-                DispatchQueue.main.async {
-                    image.image = images
-                }
-            })
+            image.image = UIImage(named: "dark")
             return image
         }()
         
@@ -90,11 +74,7 @@ class SelectMapStyleViewController: UIViewController {
             image.contentMode = .scaleAspectFit
             image.layer.cornerRadius  = 10.0
             image.clipsToBounds = true
-            convertUrlToImage(url: "https://i.ibb.co/LZqBjqP/satelight.png", completion: { images in
-                DispatchQueue.main.async {
-                    image.image = images
-                }
-            })
+            image.image = UIImage(named: "satelight")
             return image
         }()
         
@@ -104,11 +84,7 @@ class SelectMapStyleViewController: UIViewController {
             image.contentMode = .scaleAspectFit
             image.layer.cornerRadius  = 10.0
             image.clipsToBounds = true
-            convertUrlToImage(url: "https://i.ibb.co/7j7tSr1/satellite-Street.png", completion: { images in
-                DispatchQueue.main.async {
-                    image.image = images
-                }
-            })
+            image.image = UIImage(named: "satelliteStreet")
             return image
         }()
         
@@ -118,11 +94,7 @@ class SelectMapStyleViewController: UIViewController {
             image.contentMode = .scaleAspectFit
             image.layer.cornerRadius  = 10.0
             image.clipsToBounds = true
-            convertUrlToImage(url: "https://i.ibb.co/DzLPsmt/navigation-Day.png", completion: { images in
-                DispatchQueue.main.async {
-                    image.image = images
-                }
-            })
+            image.image = UIImage(named: "navigationDay")
             return image
         }()
         
@@ -132,11 +104,7 @@ class SelectMapStyleViewController: UIViewController {
             image.contentMode = .scaleAspectFit
             image.layer.cornerRadius  = 10.0
             image.clipsToBounds = true
-            convertUrlToImage(url: "https://i.ibb.co/XynMQTR/traffic-Night.png", completion: { images in
-                DispatchQueue.main.async {
-                    image.image = images
-                }
-            })
+            image.image = UIImage(named: "trafficNight")
             return image
         }()
         
