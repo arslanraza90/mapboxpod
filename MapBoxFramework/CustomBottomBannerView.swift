@@ -20,7 +20,7 @@ class CustomBottomBannerView: UIView {
     @IBOutlet weak var totalTime: UILabel!
     @IBOutlet weak var crossImage: UIImageView!
     @IBOutlet weak var totalDistance: UILabel!
-    @IBOutlet weak var mainButtonView: UIView!
+    @IBOutlet weak var mainView: UIView!
     
     var eta: String? {
         get {
@@ -54,32 +54,18 @@ class CustomBottomBannerView: UIView {
     
     private func initFromNib() {
         
-//
-//        let bundle = Bundle(for: type(of: self))
-//        let nib = UINib(nibName: "CustomBottomBannerView", bundle: bundle)
-
-//        bundle.loadNibNamed("CustomBottomBannerView", owner: self)
-        
-//        Bundle.main.loadNibNamed(String(describing: CustomBottomBannerView.self),
-//                                 owner: self,
-//                                 options: nil)
-        
-        let bundle = Bundle(for: type(of: self))
-                let nib = UINib(nibName: "CustomBottomBannerView", bundle: bundle)
-                nib.instantiate(withOwner: self, options: nil)
-        
+        Bundle.main.loadNibNamed(String(describing: CustomBottomBannerView.self),
+                                 owner: self,
+                                 options: nil)
         
         addSubview(contentView)
         contentView.frame = bounds
+        crossImage.image = UIImage(named: "cross")
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-        crossImage.image = UIImage(systemName: "multiply")?.withTintColor(.white, renderingMode: .alwaysOriginal)
-        cancelButton.backgroundColor = .clear
-        mainButtonView.layer.cornerRadius = 14.5
         cancelButton.backgroundColor = .clear
         cancelButton.layer.cornerRadius = 5
         cancelButton.setTitleColor(.darkGray, for: .highlighted)
-        
+        mainView.layer.cornerRadius = 14.5
         backgroundColor = UIColor.white
         layer.cornerRadius = 10
     }

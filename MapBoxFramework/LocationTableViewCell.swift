@@ -15,7 +15,7 @@ class LocationTableViewCell: UITableViewCell {
     let cellView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = #colorLiteral(red: 0.9098039216, green: 0.9098039216, blue: 0.9098039216, alpha: 0.9)
+        view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         return view
     }()
     
@@ -31,7 +31,7 @@ class LocationTableViewCell: UITableViewCell {
     lazy var serachImageView: UIImageView = {
          let imageView = UIImageView()
          imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image  = UIImage(named: "reload")
+         imageView.image  = UIImage(named: "reload")
          imageView.tintColor = .darkGray
          return imageView
      }()
@@ -47,7 +47,7 @@ class LocationTableViewCell: UITableViewCell {
     }
     
     func setupLayout(){
-        contentView.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
+        contentView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         contentView.addSubview(cellView)
         contentView.addSubview(serachImageView)
         cellView.addSubview(placeName)

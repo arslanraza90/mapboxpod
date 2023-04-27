@@ -13,6 +13,9 @@ extension MapBoxViewController {
     func initialSubViewSetup() {
         
         view.addSubview(navigationMapView)
+        navigationMapView.addSubview(currentLocationView)
+        currentLocationView.addSubview(currentLocationImageView)
+        currentLocationView.addSubview(currentLocationButton)
         navigationMapView.addSubview(actionSheetView)
         actionSheetView.addSubview(actionSheetImageView)
         actionSheetView.addSubview(actionSheetButton)
@@ -25,10 +28,25 @@ extension MapBoxViewController {
         NSLayoutConstraint.activate([
             
             
-            actionSheetView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
+            actionSheetView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
             actionSheetView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 160),
             actionSheetView.heightAnchor.constraint(equalToConstant: 50),
             actionSheetView.widthAnchor.constraint(equalToConstant: 50),
+            
+            currentLocationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            currentLocationView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 230),
+            currentLocationView.heightAnchor.constraint(equalToConstant: 50),
+            currentLocationView.widthAnchor.constraint(equalToConstant: 50),
+            
+            currentLocationImageView.centerYAnchor.constraint(equalTo: currentLocationView.centerYAnchor),
+            currentLocationImageView.centerXAnchor.constraint(equalTo: currentLocationView.centerXAnchor),
+            currentLocationImageView.heightAnchor.constraint(equalToConstant: 25),
+            currentLocationImageView.widthAnchor.constraint(equalToConstant: 25),
+            
+            currentLocationButton.trailingAnchor.constraint(equalTo: currentLocationView.trailingAnchor, constant: 0),
+            currentLocationButton.topAnchor.constraint(equalTo: currentLocationView.topAnchor, constant: 0),
+            currentLocationButton.bottomAnchor.constraint(equalTo: currentLocationView.bottomAnchor, constant: 0),
+            currentLocationButton.leadingAnchor.constraint(equalTo: currentLocationView.leadingAnchor, constant: 0),
             
             actionSheetImageView.centerYAnchor.constraint(equalTo: actionSheetView.centerYAnchor),
             actionSheetImageView.centerXAnchor.constraint(equalTo: actionSheetView.centerXAnchor),

@@ -12,8 +12,8 @@ import MapboxDirections
 import GooglePlaces
 import CoreLocation
 
-open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, NavigationViewControllerDelegate, UIViewControllerTransitioningDelegate {
-    
+open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, NavigationViewControllerDelegate, UIViewControllerTransitioningDelegate, NavigationMapViewDelegate {
+
     var navigationMapView: NavigationMapView!
     private var placesClient: GMSPlacesClient!
     var manager:CLLocationManager!
@@ -132,6 +132,31 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return button
     }()
     
+    
+    lazy var currentLocationView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 25.0
+        return view
+    }()
+    
+    lazy var currentLocationImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "icnCompas")
+        imageView.tintColor = .darkGray
+        return imageView
+    }()
+    
+    lazy var currentLocationButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .clear
+        button.layer.cornerRadius = 15.0
+        return button
+    }()
+    
     lazy var destinationMainView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -185,7 +210,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var locationIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = UIImage(named: "LocationIcon")
+        imageView.image = UIImage(named: "locIcon")
         imageView.contentMode = .scaleToFill
         return imageView
     }()
@@ -237,14 +262,14 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
         tableView.layer.cornerRadius = 15.0
-        tableView.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
+        tableView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         return tableView
     }()
     
     lazy var mainTableView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
+        view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         view.layer.cornerRadius = 15.0
         return view
     }()
@@ -356,9 +381,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         navigationMapView = NavigationMapView(frame: view.bounds, mapView: mapView)
         navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         navigationMapView.userLocationStyle = .puck2D()
+        navigationMapView.delegate = self
         navigationMapView.mapView.isUserInteractionEnabled = true
         initialDestinationButton.addTarget(self, action:#selector(self.initialDestinationButtonTapped), for: .touchUpInside)
         actionSheetButton.addTarget(self, action:#selector(self.actionSheetButtonTapped), for: .touchUpInside)
+        currentLocationButton.addTarget(self, action:#selector(self.currentLocationButtonTapped), for: .touchUpInside)
         getUserLocation()
         let speedLimitView = SpeedLimitView()
         navigationMapView.addSubview(speedLimitView)
@@ -489,6 +516,16 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         present(vc, animated: true, completion: nil)
     }
     
+    @objc func currentLocationButtonTapped(sender: UIButton) {
+        let cameraOptions = CameraOptions(center: backupOriginCordinates,
+                                      padding: .zero,
+                                      anchor: .zero,
+                                      zoom: 15.0,
+                                      bearing: 180.0,
+                                      pitch: 15.0)
+
+        self.navigationMapView.mapView.camera.ease(to: cameraOptions, duration: 4.0)
+    }
     
     @objc func startNavigationAction(sender: UIButton) {
         
@@ -503,14 +540,12 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         }
     }
     
-    
     @objc func findRouteAction(sender: UIButton) {
         manageSubViewOnFindRouteAction()
         
         if let destination  = destination {
             requestRoute(origin: origin!, destination: destination)
         }
-        
     }
     
     func navigationRouteTurnByTurn(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
@@ -526,16 +561,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                     return
                 }
                 
-                
-                
-                
-                let indexedRouteResponse = IndexedRouteResponse(routeResponse: response, routeIndex: 0)
+                let indexedRouteResponse = IndexedRouteResponse(routeResponse: response, routeIndex: strongSelf.currentRouteIndex)
                 let navigationService = MapboxNavigationService(indexedRouteResponse: indexedRouteResponse,
                                                                 customRoutingProvider: NavigationSettings.shared.directions,
                                                                 credentials: NavigationSettings.shared.directions.credentials,
                                                                 simulating: .never)
-                
-                
                 
                 let topBanner = CustomTopBarViewController()
                 let bottomBanner = CustomBottomBarViewController()
@@ -598,8 +628,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     func requestRoute(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
         
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [origin, destination])
-        
-        let cameraOptions = CameraOptions(center: origin, zoom: 7.0)
+        navigationRouteOptions.includesAlternativeRoutes = true
+        let cameraOptions = CameraOptions(center: origin, zoom: 12.0)
         self.navigationMapView.mapView.mapboxMap.setCamera(to: cameraOptions)
         
         Directions.shared.calculate(navigationRouteOptions) { [weak self] (_, result) in
@@ -615,19 +645,29 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 self.navigationMapView.show(routes)
                 self.navigationMapView.showWaypoints(on: currentRoute)
                 
-                let measurement = Measurement(value: currentRoute.distance, unit: UnitLength.meters).converted(to: .kilometers)
-                let distanceInKilometers = Int(measurement.value)
-                self.routeDistance.text = "\(distanceInKilometers) km"
-                
-                
-                let expectedTime = self.secondsToHoursMinutesSeconds(Int(currentRoute.expectedTravelTime))
-                
-                if expectedTime.0 != 0{
-                    self.routeTime.text = "\(expectedTime.0) h" + " " + "\(expectedTime.1) m"
-                } else {
-                    self.routeTime.text = "\(expectedTime.1) m"
-                }
+                self.populateRouteView(route: currentRoute)
             }
+        }
+    }
+    
+    
+    func populateRouteView(route: Route) {
+        
+        let kilometers = Measurement(value: route.distance, unit: UnitLength.meters).converted(to: .kilometers)
+        let meters = Measurement(value: route.distance, unit: UnitLength.meters).converted(to: .meters)
+        let distanceInKilometers = Int(kilometers.value)
+        if distanceInKilometers != 0 {
+            self.routeDistance.text = "\(distanceInKilometers) km"
+        } else {
+            let meters = Int(meters.value)
+            self.routeDistance.text = "\(meters) m"
+        }
+        
+        let expectedTime = self.secondsToHoursMinutesSeconds(Int(route.expectedTravelTime))
+        if expectedTime.0 != 0{
+            self.routeTime.text = "\(expectedTime.0) h" + " " + "\(expectedTime.1) m"
+        } else {
+            self.routeTime.text = "\(expectedTime.1) m"
         }
     }
     
@@ -661,6 +701,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         
         let currentSpeed = String(format: "%.0f", speedInKilometers)
         speedLabel.text = currentSpeed
+    }
+    
+    public func navigationMapView(_ navigationMapView: MapboxNavigation.NavigationMapView, didSelect route: MapboxDirections.Route) {
+        currentRouteIndex = routes?.firstIndex(of: route) ?? 0
+        populateRouteView(route: route)
     }
 }
 
@@ -818,5 +863,3 @@ extension MapBoxViewController: SelectedMapStyle {
 
     }
 }
-
-

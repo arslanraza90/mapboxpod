@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		A80347B529B5E21E00644C3D /* SharePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80347B429B5E21E00644C3D /* SharePreference.swift */; };
 		A83A80F429E6ADFE00119291 /* Artworks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F329E6ADFE00119291 /* Artworks.xcassets */; };
-		A83A80F629E6AE2500119291 /* online-agreement.png in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F529E6AE2500119291 /* online-agreement.png */; };
 		A83A80F729E6AE3500119291 /* Artworks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F329E6ADFE00119291 /* Artworks.xcassets */; };
 		A83A812C29E96DEF00119291 /* SelectMapStyleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83A812B29E96DEF00119291 /* SelectMapStyleViewController.swift */; };
 		A83A812E29E96F1200119291 /* CustomBottomBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83A812D29E96F1200119291 /* CustomBottomBarViewController.swift */; };
@@ -47,7 +46,6 @@
 		5AA61A3B4732F2BC097E5967 /* Pods-MapBoxFramework.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxFramework.release.xcconfig"; path = "Target Support Files/Pods-MapBoxFramework/Pods-MapBoxFramework.release.xcconfig"; sourceTree = "<group>"; };
 		A80347B429B5E21E00644C3D /* SharePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePreference.swift; sourceTree = "<group>"; };
 		A83A80F329E6ADFE00119291 /* Artworks.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Artworks.xcassets; sourceTree = "<group>"; };
-		A83A80F529E6AE2500119291 /* online-agreement.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "online-agreement.png"; sourceTree = "<group>"; };
 		A83A812B29E96DEF00119291 /* SelectMapStyleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMapStyleViewController.swift; sourceTree = "<group>"; };
 		A83A812D29E96F1200119291 /* CustomBottomBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBottomBarViewController.swift; sourceTree = "<group>"; };
 		A83A812F29E96F6500119291 /* CustomTopBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTopBarViewController.swift; sourceTree = "<group>"; };
@@ -127,7 +125,6 @@
 				A88B5EDF299516FB0096FF88 /* MapBoxFramework.docc */,
 				A88B5EF5299517600096FF88 /* mapboxViewController.swift */,
 				A83A80F329E6ADFE00119291 /* Artworks.xcassets */,
-				A83A80F529E6AE2500119291 /* online-agreement.png */,
 				A8C10FC629DEC4DC0091F776 /* CustomBottomBannerView.swift */,
 				A8C10FC529DEC4DB0091F776 /* CustomBottomBannerView.xib */,
 				A876F5AB299CFAA200E72D37 /* CustomDayStyle.swift */,
@@ -258,7 +255,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A83A80F429E6ADFE00119291 /* Artworks.xcassets in Resources */,
-				A83A80F629E6AE2500119291 /* online-agreement.png in Resources */,
 				A8C10FC729DEC4DC0091F776 /* CustomBottomBannerView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
