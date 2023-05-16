@@ -27,13 +27,12 @@ extension MapBoxViewController {
         
         NSLayoutConstraint.activate([
             
-            
-            actionSheetView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            actionSheetView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: UIScreen.main.bounds.width - 60),
             actionSheetView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 160),
             actionSheetView.heightAnchor.constraint(equalToConstant: 50),
             actionSheetView.widthAnchor.constraint(equalToConstant: 50),
             
-            currentLocationView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            currentLocationView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: UIScreen.main.bounds.width - 60),
             currentLocationView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 230),
             currentLocationView.heightAnchor.constraint(equalToConstant: 50),
             currentLocationView.widthAnchor.constraint(equalToConstant: 50),
@@ -58,16 +57,15 @@ extension MapBoxViewController {
             actionSheetButton.bottomAnchor.constraint(equalTo: actionSheetView.bottomAnchor, constant: 0),
             actionSheetButton.leadingAnchor.constraint(equalTo: actionSheetView.leadingAnchor, constant: 0),
             
-            initialDestinationMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            initialDestinationMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            initialDestinationMainView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -30),
+            initialDestinationMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            initialDestinationMainView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
+            initialDestinationMainView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -100),
             initialDestinationMainView.heightAnchor.constraint(equalToConstant: 72),
             
             initialDestinationView.leadingAnchor.constraint(equalTo: initialDestinationMainView.leadingAnchor, constant: 15),
             initialDestinationView.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor, constant: -15),
             initialDestinationView.bottomAnchor.constraint(equalTo: initialDestinationMainView.bottomAnchor, constant: -16),
             initialDestinationView.topAnchor.constraint(equalTo: initialDestinationMainView.topAnchor, constant: 17),
-            
             
             serachImageView.leadingAnchor.constraint(equalTo: initialDestinationView.leadingAnchor, constant: 8),
             serachImageView.centerYAnchor.constraint(equalTo: initialDestinationView.centerYAnchor),
@@ -96,7 +94,6 @@ extension MapBoxViewController {
 
         }, completion: nil)
         
-        
         UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
             self.navigationMapView.addSubview(self.mainTableView)
 
@@ -117,12 +114,11 @@ extension MapBoxViewController {
         searchMapsTextField.delegate = self
         tableView.register(LocationTableViewCell.self, forCellReuseIdentifier: "LocationTableViewCell")
         
-        
         NSLayoutConstraint.activate([
             
-            mainTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            mainTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            mainTableView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -20),
+            mainTableView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            mainTableView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
+            mainTableView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -100),
             mainTableView.heightAnchor.constraint(equalToConstant: 193),
             
             tableView.centerXAnchor.constraint(equalTo: mainTableView.centerXAnchor),
@@ -130,8 +126,8 @@ extension MapBoxViewController {
             tableView.heightAnchor.constraint(equalTo: mainTableView.heightAnchor),
             tableView.widthAnchor.constraint(equalTo: mainTableView.widthAnchor),
             
-            initialDestinationMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            initialDestinationMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            initialDestinationMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            initialDestinationMainView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
             initialDestinationMainView.bottomAnchor.constraint(equalTo: mainTableView.topAnchor, constant: -10),
             initialDestinationMainView.heightAnchor.constraint(equalToConstant: 72),
             
@@ -139,7 +135,6 @@ extension MapBoxViewController {
             initialDestinationView.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor, constant: -15),
             initialDestinationView.bottomAnchor.constraint(equalTo: initialDestinationMainView.bottomAnchor, constant: -16),
             initialDestinationView.topAnchor.constraint(equalTo: initialDestinationMainView.topAnchor, constant: 17),
-            
             
             serachImageView.leadingAnchor.constraint(equalTo: initialDestinationView.leadingAnchor, constant: 8),
             serachImageView.centerYAnchor.constraint(equalTo: initialDestinationView.centerYAnchor),
@@ -151,10 +146,8 @@ extension MapBoxViewController {
             searchMapsTextField.heightAnchor.constraint(equalToConstant: 20),
             searchMapsTextField.trailingAnchor.constraint(equalTo: initialDestinationView.trailingAnchor, constant: -12),
             
-            
         ])
     }
-    
     
     func addSubviewsOnCellSelection() {
         UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
@@ -182,17 +175,15 @@ extension MapBoxViewController {
         originTextField.delegate = self
         navigationButton.addTarget(self, action:#selector(self.findRouteAction), for: .touchUpInside)
         
-        
-        
         NSLayoutConstraint.activate([
             
-            navigationButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            navigationButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            navigationButton.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            navigationButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
             navigationButton.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -30),
             navigationButton.heightAnchor.constraint(equalToConstant: 48),
             
-            destinationMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            destinationMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            destinationMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            destinationMainView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
             destinationMainView.bottomAnchor.constraint(equalTo: navigationButton.topAnchor, constant: -20),
             destinationMainView.heightAnchor.constraint(equalToConstant: 140),
             
@@ -222,7 +213,6 @@ extension MapBoxViewController {
             locationIcon.bottomAnchor.constraint(equalTo: destinationMainView.bottomAnchor, constant: -17),
             locationIcon.topAnchor.constraint(equalTo: destinationMainView.topAnchor, constant: 20),
             locationIcon.widthAnchor.constraint(equalToConstant: 25),
-            
             
         ])
     }
@@ -259,16 +249,15 @@ extension MapBoxViewController {
         startButtonView.addSubview(startButton)
         startButton.addTarget(self, action:#selector(self.startNavigationAction), for: .touchUpInside)
         
-        
         NSLayoutConstraint.activate([
             
-            routeMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            routeMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            routeMainView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -20),
+            routeMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            routeMainView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
+            routeMainView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -100),
             routeMainView.heightAnchor.constraint(equalToConstant: 128),
             
-            destinationMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            destinationMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            destinationMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            destinationMainView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
             destinationMainView.bottomAnchor.constraint(equalTo: routeMainView.topAnchor, constant: -10),
             destinationMainView.heightAnchor.constraint(equalToConstant: 140),
             
@@ -325,13 +314,13 @@ extension MapBoxViewController {
         
         NSLayoutConstraint.activate([
             
-            mainTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            mainTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            mainTableView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -20),
+            mainTableView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            mainTableView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
+            mainTableView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -100),
             mainTableView.heightAnchor.constraint(equalToConstant: 193),
             
-            destinationMainView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            destinationMainView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            destinationMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            destinationMainView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
             destinationMainView.bottomAnchor.constraint(equalTo: mainTableView.topAnchor, constant: -20),
             destinationMainView.heightAnchor.constraint(equalToConstant: 140),
             

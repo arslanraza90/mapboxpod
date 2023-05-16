@@ -389,8 +389,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         getUserLocation()
         let speedLimitView = SpeedLimitView()
         navigationMapView.addSubview(speedLimitView)
-        initialSubViewSetup()
-        
+        DispatchQueue.main.async {
+            self.initialSubViewSetup()
+        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name: UIResponder.keyboardWillShowNotification, object: nil);
         
@@ -399,8 +400,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         addDoneButtonToKeyboard()
         
     }
-    
-    
+
     func addDoneButtonToKeyboard() {
         
         let toolbar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0,  width: self.view.frame.size.width, height: 30))
@@ -416,7 +416,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     @objc func doneButtonAction(sender: UIGestureRecognizer) {
         self.view.endEditing(true)
     }
-    
     
     @objc func keyboardWillShow(sender: NSNotification) {
         self.view.frame.origin.y = -300
@@ -453,7 +452,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 }
             }
         }
-        
     }
     
     func showCurrentRoute() {
@@ -649,7 +647,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             }
         }
     }
-    
     
     func populateRouteView(route: Route) {
         
