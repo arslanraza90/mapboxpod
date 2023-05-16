@@ -20,6 +20,7 @@
 		A88B5EEB299516FB0096FF88 /* MapBoxFrameworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88B5EEA299516FB0096FF88 /* MapBoxFrameworkTests.swift */; };
 		A88B5EEC299516FB0096FF88 /* MapBoxFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = A88B5EDE299516FB0096FF88 /* MapBoxFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A88B5EF6299517600096FF88 /* mapboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88B5EF5299517600096FF88 /* mapboxViewController.swift */; };
+		A8B4796D2A13C8D200915276 /* info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A8B4796C2A13C8D200915276 /* info.plist */; };
 		A8C10FC729DEC4DC0091F776 /* CustomBottomBannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = A8C10FC529DEC4DB0091F776 /* CustomBottomBannerView.xib */; };
 		A8C10FC829DEC4DC0091F776 /* CustomBottomBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C10FC629DEC4DC0091F776 /* CustomBottomBannerView.swift */; };
 		A8E199FB29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E199FA29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift */; };
@@ -57,6 +58,7 @@
 		A88B5EE5299516FB0096FF88 /* MapBoxFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapBoxFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A88B5EEA299516FB0096FF88 /* MapBoxFrameworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapBoxFrameworkTests.swift; sourceTree = "<group>"; };
 		A88B5EF5299517600096FF88 /* mapboxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mapboxViewController.swift; sourceTree = "<group>"; };
+		A8B4796C2A13C8D200915276 /* info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = info.plist; sourceTree = "<group>"; };
 		A8C10FC529DEC4DB0091F776 /* CustomBottomBannerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomBottomBannerView.xib; sourceTree = "<group>"; };
 		A8C10FC629DEC4DC0091F776 /* CustomBottomBannerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomBottomBannerView.swift; sourceTree = "<group>"; };
 		A8E199FA29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapBoxViewController+Extension.swift"; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				A83A812B29E96DEF00119291 /* SelectMapStyleViewController.swift */,
 				A83A812D29E96F1200119291 /* CustomBottomBarViewController.swift */,
 				A83A812F29E96F6500119291 /* CustomTopBarViewController.swift */,
+				A8B4796C2A13C8D200915276 /* info.plist */,
 			);
 			path = MapBoxFramework;
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 			files = (
 				A83A80F429E6ADFE00119291 /* Artworks.xcassets in Resources */,
 				A8C10FC729DEC4DC0091F776 /* CustomBottomBannerView.xib in Resources */,
+				A8B4796D2A13C8D200915276 /* info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
