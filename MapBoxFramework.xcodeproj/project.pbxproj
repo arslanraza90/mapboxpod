@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		013746CD2A249C0100D112BC /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013746CC2A249C0100D112BC /* APIService.swift */; };
 		A80347B529B5E21E00644C3D /* SharePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80347B429B5E21E00644C3D /* SharePreference.swift */; };
 		A83A80F429E6ADFE00119291 /* Artworks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F329E6ADFE00119291 /* Artworks.xcassets */; };
 		A83A80F729E6AE3500119291 /* Artworks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F329E6ADFE00119291 /* Artworks.xcassets */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		013746CC2A249C0100D112BC /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		1E4332B41C4667295E7067D1 /* Pods-MapBoxFramework.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxFramework.debug.xcconfig"; path = "Target Support Files/Pods-MapBoxFramework/Pods-MapBoxFramework.debug.xcconfig"; sourceTree = "<group>"; };
 		20C35316E764BF35B5CBE4B5 /* Pods_MapBoxFramework_MapBoxFrameworkTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapBoxFramework_MapBoxFrameworkTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CA0980D29470944ACDB2231 /* Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig"; path = "Target Support Files/Pods-MapBoxFramework-MapBoxFrameworkTests/Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				A83A812B29E96DEF00119291 /* SelectMapStyleViewController.swift */,
 				A83A812D29E96F1200119291 /* CustomBottomBarViewController.swift */,
 				A83A812F29E96F6500119291 /* CustomTopBarViewController.swift */,
+				013746CC2A249C0100D112BC /* APIService.swift */,
 			);
 			path = MapBoxFramework;
 			sourceTree = "<group>";
@@ -381,6 +384,7 @@
 				A876F5AC299CFAA200E72D37 /* CustomDayStyle.swift in Sources */,
 				A8E199FF29AFCCC900CF2952 /* GooglePlacesManager.swift in Sources */,
 				A88B5EF6299517600096FF88 /* mapboxViewController.swift in Sources */,
+				013746CD2A249C0100D112BC /* APIService.swift in Sources */,
 				A83A812C29E96DEF00119291 /* SelectMapStyleViewController.swift in Sources */,
 				A876F5AE299CFAB500E72D37 /* CustomNightStyle.swift in Sources */,
 				A8E199FB29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift in Sources */,

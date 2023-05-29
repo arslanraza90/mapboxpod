@@ -541,36 +541,18 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     func getWeather(location: CLLocationCoordinate2D) {
-        let weatherURL = "https://api.openweathermap.org/data/2.5/weather?lat=\(location.latitude)&lon=\(location.longitude)&units=metric&appid=92baa5b07d9b0604b34d250d24ccbe07"
-        guard let url =  URL(string: weatherURL) else { return }
-        let urlRequest = URLRequest(url: url)
-        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
-            if error == nil {
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! [String: AnyObject]
-                    if let main = json["main"] as? [String: AnyObject] {
-                        if let temp = main["temp"] as? Double {
-                            let temperature = Int(temp)
-                            DispatchQueue.main.async {
-                                self.weatherLabel.text = NSString(format:"\(temperature)%@C" as NSString, "\u{00B0}") as String
-                                self.weatherView.isHidden = false
-                            }
-                        }
-                    }
-                    if let weatherList = json["weather"] as? [[String: AnyObject]], let weather = weatherList.first {
-                        if let icon = weather["icon"] as? String {
-                            let iconUrl = "https://openweathermap.org/img/wn/\(icon).png"
-                            if let url = URL(string: iconUrl) {
-                                self.weatherImage.load(url: url)
-                            }
-                        }
-                    }
-                } catch (let err) {
-                    print(err.localizedDescription)
+        APIService.shared.getWeather(location: location) { result in
+            switch result {
+            case .success(let weather):
+                DispatchQueue.main.async {
+                    self.weatherLabel.text = NSString(format:"\(weather.temp)%@C" as NSString, "\u{00B0}") as String
+                    self.weatherView.isHidden = false
+                    self.weatherImage.load(url: weather.iconURL)
                 }
+            case .failure(let error):
+                print(error)
             }
         }
-        task.resume()
     }
     
     @objc func initialDestinationButtonTapped(sender: UIButton) {
