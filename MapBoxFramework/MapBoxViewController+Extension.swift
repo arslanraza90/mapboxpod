@@ -13,6 +13,9 @@ extension MapBoxViewController {
     func initialSubViewSetup() {
         
         view.addSubview(navigationMapView)
+        weatherView.addSubview(weatherImage)
+        weatherView.addSubview(weatherLabel)
+        navigationMapView.addSubview(weatherView)
         navigationMapView.addSubview(currentLocationView)
         currentLocationView.addSubview(currentLocationImageView)
         currentLocationView.addSubview(currentLocationButton)
@@ -36,6 +39,21 @@ extension MapBoxViewController {
             currentLocationView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 230),
             currentLocationView.heightAnchor.constraint(equalToConstant: 50),
             currentLocationView.widthAnchor.constraint(equalToConstant: 50),
+            
+            weatherImage.leadingAnchor.constraint(equalTo: weatherView.leadingAnchor, constant: 12),
+            weatherImage.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 10),
+            weatherImage.heightAnchor.constraint(equalToConstant: 30),
+            weatherImage.widthAnchor.constraint(equalToConstant: 30),
+            
+            weatherLabel.leadingAnchor.constraint(equalTo: weatherImage.trailingAnchor, constant: 4),
+            weatherLabel.centerYAnchor.constraint(equalTo: weatherImage.centerYAnchor),
+            weatherLabel.trailingAnchor.constraint(equalTo: weatherView.trailingAnchor, constant: 0),
+            
+            weatherView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: 10),
+            weatherView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 160),
+            weatherView.heightAnchor.constraint(equalToConstant: 48),
+            weatherView.widthAnchor.constraint(equalToConstant: 82),
+
             
             currentLocationImageView.centerYAnchor.constraint(equalTo: currentLocationView.centerYAnchor),
             currentLocationImageView.centerXAnchor.constraint(equalTo: currentLocationView.centerXAnchor),
@@ -242,6 +260,7 @@ extension MapBoxViewController {
         routeMainView.addSubview(locationName)
         routeMainView.addSubview(fastestRoute)
         routeMainView.addSubview(routeDistance)
+        routeMainView.addSubview(potentialReward)
         routeMainView.addSubview(routeTime)
         routeMainView.addSubview(startButtonView)
         startButtonView.addSubview(locationImage)
@@ -277,6 +296,10 @@ extension MapBoxViewController {
             routeDistance.leadingAnchor.constraint(equalTo: routeMainView.leadingAnchor, constant: 10),
             routeDistance.topAnchor.constraint(equalTo: fastestRoute.bottomAnchor, constant: 6),
             routeDistance.heightAnchor.constraint(equalToConstant: 12),
+            
+            potentialReward.leadingAnchor.constraint(equalTo: routeDistance.leadingAnchor, constant: 2),
+            potentialReward.topAnchor.constraint(equalTo: routeDistance.bottomAnchor, constant: 5),
+            potentialReward.heightAnchor.constraint(equalToConstant: 20),
             
             routeTime.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -15),
             routeTime.centerYAnchor.constraint(equalTo: locationName.centerYAnchor),

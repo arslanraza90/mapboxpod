@@ -13,6 +13,8 @@ import MapboxDirections
 
 
 class CustomTopBarViewController: ContainerViewController {
+    var navigationService: NavigationService!//for StepsViewController
+    
     private lazy var instructionsBannerTopOffsetConstraint = {
         return instructionsBannerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10)
     }()
@@ -76,14 +78,47 @@ class CustomTopBarViewController: ContainerViewController {
     
     public func navigationService(_ service: NavigationService, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
         // pass updated data to sub-views which also implement `NavigationServiceDelegate`
+        self.navigationService = service
         instructionsBannerView.updateDistance(for: progress.currentLegProgress.currentStepProgress)
     }
     
     public func navigationService(_ service: NavigationService, didPassVisualInstructionPoint instruction: VisualInstructionBanner, routeProgress: RouteProgress) {
+        self.navigationService = service
         instructionsBannerView.update(for: instruction)
     }
     
     public func navigationService(_ service: NavigationService, didRerouteAlong route: Route, at location: CLLocation?, proactive: Bool) {
+        self.navigationService = service
         instructionsBannerView.updateDistance(for: service.routeProgress.currentLegProgress.currentStepProgress)
+    }
+}
+
+extension CustomTopBarViewController: InstructionsBannerViewDelegate {
+    func didTapInstructionsBanner(_ sender: BaseInstructionsBannerView) {
+        toggleStepsList()
+    }
+    
+    func didSwipeInstructionsBanner(_ sender: BaseInstructionsBannerView, swipeDirection direction: UISwipeGestureRecognizer.Direction) {
+        if direction == .down {
+            toggleStepsList()
+            return
+        }
+    }
+    
+    func toggleStepsList() {
+        guard let service = navigationService else { return }
+        let controller = StepsViewController(routeProgress: service.routeProgress)
+        controller.delegate = self
+        self.present(controller, animated: true)
+    }
+}
+
+extension CustomTopBarViewController: StepsViewControllerDelegate {
+    func didDismissStepsViewController(_ viewController: StepsViewController) {
+        self.dismiss(animated: true)
+    }
+    
+    func stepsViewController(_ viewController: StepsViewController, didSelect legIndex: Int, stepIndex: Int, cell: StepTableViewCell) {
+        print(legIndex)
     }
 }

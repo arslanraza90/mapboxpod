@@ -18,7 +18,6 @@ class CustomBottomBannerView: UIView {
     @IBOutlet weak var etaLabel: UILabel!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var totalTime: UILabel!
-    @IBOutlet weak var crossImage: UIImageView!
     @IBOutlet weak var totalDistance: UILabel!
     @IBOutlet weak var mainView: UIView!
     
@@ -60,7 +59,6 @@ class CustomBottomBannerView: UIView {
         
         addSubview(contentView)
         contentView.frame = bounds
-        crossImage.image = UIImage(named: "cross")
         contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         cancelButton.backgroundColor = .clear
         cancelButton.layer.cornerRadius = 5

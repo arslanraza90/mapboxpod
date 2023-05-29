@@ -337,6 +337,18 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return label
     }()
     
+    lazy var potentialReward: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "  Potential Rewards 500 Drives  "
+        label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        label.backgroundColor = UIColor(red: 238/255, green: 238/255, blue: 238/255, alpha: 1.000)
+        label.textColor = .black
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 9
+        return label
+    }()
+    
     lazy var startButtonView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -371,6 +383,32 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return button
     }()
     
+    lazy var weatherView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 23.5
+        view.isHidden = true
+        return view
+    }()
+    
+    lazy var weatherImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "weather")
+        imageView.tintColor = .darkGray
+        return imageView
+    }()
+    
+    lazy var weatherLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = ""
+        label.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+        label.backgroundColor = .clear
+        label.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
+        return label
+    }()
     
     public func configrations() {
         
@@ -442,7 +480,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         
         if let lastLocation = locations.last {
             let geocoder = CLGeocoder()
-            
+            getWeather(location: lastLocation.coordinate)
             geocoder.reverseGeocodeLocation(lastLocation) { [weak self] (placemarks, error) in
                 if error == nil {
                     if let firstLocation = placemarks?[0],
@@ -502,7 +540,46 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         }
     }
     
+    func getWeather(location: CLLocationCoordinate2D) {
+        let weatherURL = "https://api.openweathermap.org/data/2.5/weather?lat=\(location.latitude)&lon=\(location.longitude)&units=metric&appid=92baa5b07d9b0604b34d250d24ccbe07"
+        guard let url =  URL(string: weatherURL) else { return }
+        let urlRequest = URLRequest(url: url)
+        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            if error == nil {
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! [String: AnyObject]
+                    if let main = json["main"] as? [String: AnyObject] {
+                        if let temp = main["temp"] as? Double {
+                            let temperature = Int(temp)
+                            DispatchQueue.main.async {
+                                self.weatherLabel.text = NSString(format:"\(temperature)%@C" as NSString, "\u{00B0}") as String
+                                self.weatherView.isHidden = false
+                            }
+                        }
+                    }
+                    if let weatherList = json["weather"] as? [[String: AnyObject]], let weather = weatherList.first {
+                        if let icon = weather["icon"] as? String {
+                            let iconUrl = "https://openweathermap.org/img/wn/\(icon).png"
+                            if let url = URL(string: iconUrl) {
+                                self.weatherImage.load(url: url)
+                            }
+                        }
+                    }
+                } catch (let err) {
+                    print(err.localizedDescription)
+                }
+            }
+        }
+        task.resume()
+    }
+    
     @objc func initialDestinationButtonTapped(sender: UIButton) {
+        if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
+            if selectedPlaces.count != 0 {
+                self.places = selectedPlaces
+                self.tableView.reloadData()
+            }
+        }
         addSubViewsOnDestinationTap()
     }
     
@@ -567,6 +644,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 
                 let topBanner = CustomTopBarViewController()
                 let bottomBanner = CustomBottomBarViewController()
+                bottomBanner.cancelDelegate = self
                 let navigationOptions = NavigationOptions(styles: [CustomNightStyles()], navigationService: navigationService,
                                                           topBanner: topBanner,
                                                           bottomBanner: bottomBanner)
@@ -858,5 +936,42 @@ extension MapBoxViewController: SelectedMapStyle {
     func selectedStyle(type: String) {
     navigationMapView.mapView.mapboxMap.style.uri = StyleURI(rawValue: type)//StyleURI.satellite
 
+    }
+}
+
+extension MapBoxViewController: CustomCancelNavigationDegate {
+    func onCancel() {
+        UIView.transition(with: self.view, duration: 0.1, options: [.transitionCrossDissolve], animations: {
+            self.navigationButton.removeFromSuperview()
+            self.routeMainView.removeFromSuperview()
+            self.mainTableView.removeFromSuperview()
+            self.tableView.removeFromSuperview()
+            self.initialDestinationView.removeFromSuperview()
+            self.searchMapsTextField.removeFromSuperview()
+            self.serachImageView.removeFromSuperview()
+            self.destinationMainView.removeFromSuperview()
+            self.initialDestinationMainView.removeFromSuperview()
+            self.originSubView.removeFromSuperview()
+            self.originTextField.removeFromSuperview()
+            self.destinationSubView.removeFromSuperview()
+            self.locationIcon.removeFromSuperview()
+            self.destinationTextField.removeFromSuperview()
+        
+            self.initialSubViewSetup()
+        }, completion: nil)
+    }
+}
+
+extension UIImageView {
+    func load(url: URL) {
+        DispatchQueue.global().async { [weak self] in
+            if let data = try? Data(contentsOf: url) {
+                if let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self?.image = image
+                    }
+                }
+            }
+        }
     }
 }

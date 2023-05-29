@@ -10,9 +10,14 @@ import MapboxNavigation
 import CoreLocation
 import MapboxCoreNavigation
 
+protocol CustomCancelNavigationDegate: AnyObject {
+    func onCancel()
+}
+
 class CustomBottomBarViewController: ContainerViewController, CustomBottomBannerViewDelegate {
     
     weak var navigationViewController: NavigationViewController?
+    weak var cancelDelegate: CustomCancelNavigationDegate?
     
     // Or you can implement your own UI elements
     lazy var bannerView: CustomBottomBannerView = {
@@ -56,11 +61,22 @@ class CustomBottomBarViewController: ContainerViewController, CustomBottomBanner
         let durationRemaining = self.secondsToHoursMinutesSeconds(Int(progress.durationRemaining))
         let expectedTime = self.secondsToHoursMinutesSeconds(Int(progress.route.expectedTravelTime))
         
+        let calendar = Calendar.current
+        if let date = calendar.date(byAdding: .hour, value: durationRemaining.0, to: Date()) {
+            if let date1 = calendar.date(byAdding: .minute, value: durationRemaining.1, to: date) {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "HH:mm"
+                dateFormatter.timeZone = TimeZone.current
+                let arrivalTime = dateFormatter.string(from: date1)
+                bannerView.eta = arrivalTime
+            }
+        } else {
+            bannerView.eta = ""
+        }
+        
         if durationRemaining.0 != 0{
-            bannerView.eta = "\(durationRemaining.0)" + ":" + "\(durationRemaining.1)"
             bannerView.timeTotal = "\(expectedTime.0)" + ":" + "\(expectedTime.1)"
         } else {
-            bannerView.eta = "\(durationRemaining.1)" + ":" + "\(durationRemaining.2)"
             bannerView.timeTotal = "\(expectedTime.1)"
         }
         
@@ -75,7 +91,9 @@ class CustomBottomBarViewController: ContainerViewController, CustomBottomBanner
     
     func customBottomBannerDidCancel(_ banner: CustomBottomBannerView) {
         navigationViewController?.dismiss(animated: true,
-                                          completion: nil)
+                                          completion: {
+            self.cancelDelegate?.onCancel()
+        })
     }
     
     func secondsToHoursMinutesSeconds(_ seconds: Int) -> (Int, Int, Int) {
