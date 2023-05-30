@@ -215,6 +215,30 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return imageView
     }()
     
+    lazy var locationIconOrigin: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "locIconorigin")
+        imageView.contentMode = .scaleToFill
+        return imageView
+    }()
+    
+    lazy var locationIconLine: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "locIconline")
+        imageView.contentMode = .scaleToFill
+        return imageView
+    }()
+    
+    lazy var locationIconDestination: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "locIcondestination")
+        imageView.contentMode = .scaleToFill
+        return imageView
+    }()
+    
     lazy var destinationTextField: UITextField = {
         let textField = UITextField()
         textField.attributedPlaceholder = NSAttributedString(
@@ -410,9 +434,20 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return label
     }()
     
+    lazy var carButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
+        button.setImage(UIImage(named: "carIcon"), for: .normal)
+        button.layer.cornerRadius = 10
+        return button
+    }()
+    
+    var showRoutes = false
+    
     public func configrations() {
         
-        let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/arslanraza900/clecn7cwl001k01piwth96e2d"))
+        let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11"))
         let mapView = MapView(frame: view.bounds, mapInitOptions: options)
         GMSPlacesClient.provideAPIKey("AIzaSyAMlml7aqa1BQRUnmmmgixmFoDR3mdpRUI")
         placesClient = GMSPlacesClient.shared()
@@ -559,9 +594,12 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
             if selectedPlaces.count != 0 {
                 self.places = selectedPlaces
+                showRoutes = false
                 self.tableView.reloadData()
             }
         }
+        showRoutes = false
+        onCancel()
         addSubViewsOnDestinationTap()
     }
     
@@ -585,6 +623,14 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     @objc func startNavigationAction(sender: UIButton) {
+        startNavigation()
+    }
+    
+    @objc func carDriveModeAction(sender: UIButton) {
+        showAlert(message: "Drive Only Mode.")
+    }
+    
+    func startNavigation() {
         if let destination = destination {
             if destination != backupOriginCordinates {
                 if origin == backupOriginCordinates {
@@ -605,8 +651,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     @objc func findRouteAction(sender: UIButton) {
-        manageSubViewOnFindRouteAction()
-        
+        showRoutes = true
         if let destination  = destination {
             requestRoute(origin: origin!, destination: destination)
         }
@@ -710,7 +755,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 self.navigationMapView.show(routes)
                 self.navigationMapView.showWaypoints(on: currentRoute)
                 
-                self.populateRouteView(route: currentRoute)
+                self.manageSubViewOnFindRouteAction1()
+                if let constraint = (self.mainTableView.constraints.filter{$0.firstAttribute == .height}.first) {
+                    constraint.constant = 30 + CGFloat((self.routeResponse?.routes?.count ?? 1) * 105)
+                }
+                self.tableView.reloadData()
             }
         }
     }
@@ -775,35 +824,57 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
 
 extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isFromOrigin || isFromDestination {
-            return places.count + 1
+        if showRoutes {
+            return self.routeResponse?.routes?.count ?? 0
+        } else {
+            if isFromOrigin || isFromDestination {
+                return places.count + 1
+            }
+            return places.count
         }
-        return places.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "LocationTableViewCell", for:indexPath) as! LocationTableViewCell
-        
-        if isFromOrigin || isFromDestination {
-            if indexPath.row == 0 {
-                cell.placeName.text = "Current Location"
-            } else {
-                cell.placeName.text = places[indexPath.row - 1].name
+        if showRoutes {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "RouteTableViewCell", for:indexPath) as! RouteTableViewCell
+            if let route = self.routeResponse?.routes?[indexPath.row] {
+                cell.populateRouteView(route: route, location: locationName.text, indexPath: indexPath.row)
             }
+            cell.startRouteClosure = { [weak self] in
+                if let routes = self?.routeResponse?.routes {
+                    self?.currentRouteIndex = routes.firstIndex(of: routes[indexPath.row]) ?? 0
+                    self?.startNavigation()
+                }
+            }
+            return cell
         } else {
-            cell.placeName.text = places[indexPath.row].name
+            let cell = tableView.dequeueReusableCell(withIdentifier: "LocationTableViewCell", for:indexPath) as! LocationTableViewCell
+            cell.backgroundColor = .green
+            if isFromOrigin || isFromDestination {
+                if indexPath.row == 0 {
+                    cell.placeName.text = "Current Location"
+                } else {
+                    cell.placeName.text = places[indexPath.row - 1].name
+                }
+            } else {
+                cell.placeName.text = places[indexPath.row].name
+            }
+            cell.selectionStyle = .none
+            return cell
         }
-        
-        cell.selectionStyle = .none
-        return cell
     }
     
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 46
+        if showRoutes {
+            return 125
+        } else {
+            return 46
+        }
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.view.endEditing(true)
+        guard !showRoutes else { return }
         var place: Place
         if indexPath.row == 0 {
             if isFromOrigin {
@@ -876,6 +947,10 @@ extension MapBoxViewController: UITextFieldDelegate{
     }
     
     public func textFieldDidBeginEditing(_ textField: UITextField) {
+        showRoutes = false
+        if let constraint = (self.mainTableView.constraints.filter{$0.firstAttribute == .height}.first) {
+            constraint.constant = 193
+        }
         if textField == originTextField {
             originSubView.layer.masksToBounds = true
             originSubView.layer.borderColor = #colorLiteral(red: 0.8941176471, green: 0.4745098039, blue: 1, alpha: 0.9)

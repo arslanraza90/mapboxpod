@@ -27,6 +27,8 @@ extension MapBoxViewController {
         initialDestinationView.addSubview(initialDestinationLabel)
         initialDestinationView.addSubview(initialDestinationButton)
         initialDestinationView.addSubview(serachImageView)
+        initialDestinationMainView.addSubview(carButton)
+        carButton.addTarget(self, action:#selector(self.carDriveModeAction), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             
@@ -81,9 +83,14 @@ extension MapBoxViewController {
             initialDestinationMainView.heightAnchor.constraint(equalToConstant: 72),
             
             initialDestinationView.leadingAnchor.constraint(equalTo: initialDestinationMainView.leadingAnchor, constant: 15),
-            initialDestinationView.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor, constant: -15),
+            initialDestinationView.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor, constant: -55),
             initialDestinationView.bottomAnchor.constraint(equalTo: initialDestinationMainView.bottomAnchor, constant: -16),
             initialDestinationView.topAnchor.constraint(equalTo: initialDestinationMainView.topAnchor, constant: 17),
+            
+            carButton.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor, constant: -5),
+            carButton.centerYAnchor.constraint(equalTo: initialDestinationMainView.centerYAnchor),
+            carButton.widthAnchor.constraint(equalToConstant: 45),
+            carButton.heightAnchor.constraint(equalToConstant: 40),
             
             serachImageView.leadingAnchor.constraint(equalTo: initialDestinationView.leadingAnchor, constant: 8),
             serachImageView.centerYAnchor.constraint(equalTo: initialDestinationView.centerYAnchor),
@@ -165,6 +172,17 @@ extension MapBoxViewController {
             searchMapsTextField.trailingAnchor.constraint(equalTo: initialDestinationView.trailingAnchor, constant: -12),
             
         ])
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.view.layoutIfNeeded()
+            self.navigationMapView.layoutIfNeeded()
+            self.mainTableView.layoutIfNeeded()
+            self.tableView.layoutIfNeeded()
+            self.destinationMainView.layoutIfNeeded()
+        }, completion: nil)
+        
+        if let constraint = (mainTableView.constraints.filter{$0.firstAttribute == .height}.first) {
+            constraint.constant = 193
+        }
     }
     
     func addSubviewsOnCellSelection() {
@@ -187,7 +205,9 @@ extension MapBoxViewController {
         destinationMainView.addSubview(originSubView)
         originSubView.addSubview(originTextField)
         destinationMainView.addSubview(destinationSubView)
-        destinationMainView.addSubview(locationIcon)
+        destinationMainView.addSubview(locationIconOrigin)
+        destinationMainView.addSubview(locationIconLine)
+        destinationMainView.addSubview(locationIconDestination)
         destinationSubView.addSubview(destinationTextField)
         destinationTextField.delegate = self
         originTextField.delegate = self
@@ -197,7 +217,7 @@ extension MapBoxViewController {
             
             navigationButton.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
             navigationButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
-            navigationButton.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -30),
+            navigationButton.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -100),
             navigationButton.heightAnchor.constraint(equalToConstant: 48),
             
             destinationMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
@@ -227,11 +247,17 @@ extension MapBoxViewController {
             originTextField.heightAnchor.constraint(equalToConstant: 20),
             originTextField.widthAnchor.constraint(equalToConstant: 120),
             
-            locationIcon.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 10),
-            locationIcon.bottomAnchor.constraint(equalTo: destinationMainView.bottomAnchor, constant: -17),
-            locationIcon.topAnchor.constraint(equalTo: destinationMainView.topAnchor, constant: 20),
-            locationIcon.widthAnchor.constraint(equalToConstant: 25),
+            locationIconOrigin.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 10),
+            locationIconOrigin.topAnchor.constraint(equalTo: destinationMainView.topAnchor, constant: 25),
+            locationIconOrigin.widthAnchor.constraint(equalToConstant: 25),
             
+            locationIconLine.centerXAnchor.constraint(equalTo: locationIconOrigin.centerXAnchor, constant: 0),
+            locationIconLine.topAnchor.constraint(equalTo: locationIconOrigin.bottomAnchor, constant: 6),
+            locationIconLine.widthAnchor.constraint(equalToConstant: 3),
+            
+            locationIconDestination.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 10),
+            locationIconDestination.topAnchor.constraint(equalTo: locationIconLine.bottomAnchor, constant: 10),
+            locationIconDestination.widthAnchor.constraint(equalToConstant: 25),
         ])
     }
     
@@ -327,6 +353,63 @@ extension MapBoxViewController {
         
         ])
     }
+    
+    func manageSubViewOnFindRouteAction1() {
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationButton.removeFromSuperview()
+            self.destinationMainView.removeFromSuperview()
+
+        }, completion: nil)
+        
+        navigationButton.removeFromSuperview()
+        destinationMainView.removeFromSuperview()
+        
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.mainTableView)
+
+        }, completion: nil)
+        
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.navigationMapView.addSubview(self.destinationMainView)
+
+        }, completion: nil)
+        
+        mainTableView.addSubview(tableView)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(RouteTableViewCell.self, forCellReuseIdentifier: "RouteTableViewCell")
+        
+        NSLayoutConstraint.activate([
+
+            destinationMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            destinationMainView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
+            destinationMainView.heightAnchor.constraint(equalToConstant: 140),
+            
+            mainTableView.topAnchor.constraint(equalTo: destinationMainView.bottomAnchor, constant: 10),
+            mainTableView.trailingAnchor.constraint(equalTo: destinationMainView.trailingAnchor, constant: 0),
+            mainTableView.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 0),
+            mainTableView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -100),
+            mainTableView.heightAnchor.constraint(equalToConstant: 200),
+            
+            tableView.topAnchor.constraint(equalTo: mainTableView.topAnchor, constant: 0),
+            tableView.trailingAnchor.constraint(equalTo: mainTableView.trailingAnchor, constant: 0),
+            tableView.leadingAnchor.constraint(equalTo: mainTableView.leadingAnchor, constant: 0),
+            tableView.bottomAnchor.constraint(equalTo: mainTableView.bottomAnchor, constant: 0),
+        ])
+        
+        UIView.transition(with: self.view, duration: 0.25, options: [.transitionCrossDissolve], animations: {
+            self.view.layoutIfNeeded()
+            self.navigationMapView.layoutIfNeeded()
+            self.mainTableView.layoutIfNeeded()
+            self.tableView.layoutIfNeeded()
+            self.destinationMainView.layoutIfNeeded()
+        }, completion: nil)
+        
+        if let constraint = (mainTableView.constraints.filter{$0.firstAttribute == .height}.first) {
+            constraint.constant = 20 + CGFloat((self.routeResponse?.routes?.count ?? 1) * 125)
+        }
+    }
+    
     
     func manageSubViewsOnTextFieldEditing() {
         
