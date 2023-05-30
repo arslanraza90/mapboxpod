@@ -585,16 +585,23 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     @objc func startNavigationAction(sender: UIButton) {
-        
         if let destination = destination {
             if destination != backupOriginCordinates {
-                navigationRouteTurnByTurn(origin: origin!, destination: destination)
+                if origin == backupOriginCordinates {
+                    navigationRouteTurnByTurn(origin: origin!, destination: destination)
+                } else {
+                    showAlert(message: "Please select your current location as origin.")
+                }
             } else {
-                let alert = UIAlertController(title: "Alert", message: "Please select the destination other than your current location.", preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+                showAlert(message: "Please select the destination other than your current location.")
             }
         }
+    }
+    
+    func showAlert(message: String) {
+        let alert = UIAlertController(title: "Alert", message: message, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     
     @objc func findRouteAction(sender: UIButton) {
