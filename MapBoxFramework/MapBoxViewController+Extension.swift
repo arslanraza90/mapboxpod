@@ -389,7 +389,7 @@ extension MapBoxViewController {
             mainTableView.trailingAnchor.constraint(equalTo: destinationMainView.trailingAnchor, constant: 0),
             mainTableView.leadingAnchor.constraint(equalTo: destinationMainView.leadingAnchor, constant: 0),
             mainTableView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -100),
-            mainTableView.heightAnchor.constraint(equalToConstant: 200),
+            mainTableView.heightAnchor.constraint(equalToConstant: 500),
             
             tableView.topAnchor.constraint(equalTo: mainTableView.topAnchor, constant: 0),
             tableView.trailingAnchor.constraint(equalTo: mainTableView.trailingAnchor, constant: 0),

@@ -1023,6 +1023,10 @@ extension MapBoxViewController: CustomCancelNavigationDegate {
         
             self.initialSubViewSetup()
         }, completion: nil)
+        
+        showRoutes = false
+        self.routeResponse = nil
+        self.tableView.reloadData()
     }
 }
 

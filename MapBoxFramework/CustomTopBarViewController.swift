@@ -29,6 +29,7 @@ class CustomTopBarViewController: ContainerViewController {
     // You can Include one of the existing Views to display route-specific info
     lazy var instructionsBannerView: InstructionsBannerView = {
         let banner = InstructionsBannerView()
+        banner.delegate = self
         banner.translatesAutoresizingMaskIntoConstraints = false
         banner.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
         banner.layer.cornerRadius = 25
