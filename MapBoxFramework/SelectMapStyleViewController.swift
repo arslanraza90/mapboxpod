@@ -537,34 +537,42 @@ class SelectMapStyleViewController: UIViewController {
         
         @objc func streetButtonAction(_ sender: UIButton?) {
             delegate?.selectedStyle(type: "mapbox://styles/mapbox/streets-v12")
+            dismiss(animated: true, completion: nil)
         }
         
         @objc func outDoorButtonAction(_ sender: UIButton?) {
             delegate?.selectedStyle(type: "mapbox://styles/mapbox/outdoors-v12")
+            dismiss(animated: true, completion: nil)
         }
         
         @objc func lightButtonAction(_ sender: UIButton?) {
             delegate?.selectedStyle(type: "mapbox://styles/mapbox/light-v11")
+            dismiss(animated: true, completion: nil)
         }
         
         @objc func darkButtonAction(_ sender: UIButton?) {
             delegate?.selectedStyle(type: "mapbox://styles/mapbox/dark-v11")
+            dismiss(animated: true, completion: nil)
         }
         
         @objc func sateLightButtonAction(_ sender: UIButton?) {
             delegate?.selectedStyle(type: "mapbox://styles/mapbox/satellite-v9")
+            dismiss(animated: true, completion: nil)
         }
         
         @objc func sateLightStreetButtonAction(_ sender: UIButton?) {
             delegate?.selectedStyle(type: "mapbox://styles/mapbox/satellite-streets-v12")
+            dismiss(animated: true, completion: nil)
         }
         
         @objc func navigationDayButtonAction(_ sender: UIButton?) {
             delegate?.selectedStyle(type: "mapbox://styles/mapbox/navigation-day-v1")
+            dismiss(animated: true, completion: nil)
         }
         
         @objc func traficNightButtonAction(_ sender: UIButton?) {
             delegate?.selectedStyle(type: "mapbox://styles/mapbox/navigation-night-v1")
+            dismiss(animated: true, completion: nil)
         }
         
         func getImageFromBundle(name: String) -> UIImage {

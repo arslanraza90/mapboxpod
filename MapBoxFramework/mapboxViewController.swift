@@ -22,7 +22,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     var isFromDestination = false
     var origin: CLLocationCoordinate2D?
     var destination: CLLocationCoordinate2D?
-    var backupOriginCordinates: CLLocationCoordinate2D?
+    var backupOriginCordinates: CLLocationCoordinate2D? {
+        didSet {
+            setCurrentLocation()
+        }
+    }
     var isSpeedLimitShowimg = false
     
     var currentRouteIndex = 0 {
@@ -154,6 +158,16 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
         button.layer.cornerRadius = 15.0
+        return button
+    }()
+    
+    lazy var backButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .clear
+        button.setImage(UIImage(named: "back")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .systemBlue
+        button.isHidden = true
         return button
     }()
     
@@ -443,6 +457,18 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return button
     }()
     
+    lazy var indicatorView: UIActivityIndicatorView = {
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.backgroundColor = .lightGray
+        activityView.color = .white
+        let transfrom = CGAffineTransform.init(scaleX: 2.5, y: 2.5)
+        activityView.transform = transfrom
+        activityView.layer.cornerRadius = 5
+        activityView.center = self.view.center
+        self.view.addSubview(activityView)
+        return activityView
+    }()
+    
     var showRoutes = false
     
     public func configrations() {
@@ -459,6 +485,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         initialDestinationButton.addTarget(self, action:#selector(self.initialDestinationButtonTapped), for: .touchUpInside)
         actionSheetButton.addTarget(self, action:#selector(self.actionSheetButtonTapped), for: .touchUpInside)
         currentLocationButton.addTarget(self, action:#selector(self.currentLocationButtonTapped), for: .touchUpInside)
+        backButton.addTarget(self, action:#selector(self.backButtonTapped), for: .touchUpInside)
         getUserLocation()
         let speedLimitView = SpeedLimitView()
         navigationMapView.addSubview(speedLimitView)
@@ -601,6 +628,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         showRoutes = false
         onCancel()
         addSubViewsOnDestinationTap()
+        backButton.isHidden = false
     }
     
     
@@ -612,14 +640,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     @objc func currentLocationButtonTapped(sender: UIButton) {
-        let cameraOptions = CameraOptions(center: backupOriginCordinates,
-                                      padding: .zero,
-                                      anchor: .zero,
-                                      zoom: 15.0,
-                                      bearing: 180.0,
-                                      pitch: 15.0)
-
-        self.navigationMapView.mapView.camera.ease(to: cameraOptions, duration: 4.0)
+        setCurrentLocation()
+    }
+    
+    @objc func backButtonTapped(sender: UIButton) {
+        onCancel()
     }
     
     @objc func startNavigationAction(sender: UIButton) {
@@ -630,30 +655,54 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         showAlert(message: "Drive Only Mode.")
     }
     
+    func setCurrentLocation() {
+        let cameraOptions = CameraOptions(center: backupOriginCordinates,
+                                          padding: .zero,
+                                          anchor: .zero,
+                                          zoom: 15.0,
+                                          bearing: 180.0,
+                                          pitch: 15.0)
+        
+        self.navigationMapView.mapView.camera.ease(to: cameraOptions, duration: 4.0)
+    }
+    
     func startNavigation() {
         if let destination = destination {
             if destination != backupOriginCordinates {
                 if origin == backupOriginCordinates {
                     navigationRouteTurnByTurn(origin: origin!, destination: destination)
                 } else {
-                    showAlert(message: "Please select your current location as origin.")
+                    showAlert(message: ORIGIN_LOCATION_TEXT)
                 }
             } else {
-                showAlert(message: "Please select the destination other than your current location.")
+                showAlert(message: DESTINATION_LOCATION_TEXT)
             }
         }
     }
     
-    func showAlert(message: String) {
+    func showAlert(message: String, showSettingAlert: Bool = false) {
         let alert = UIAlertController(title: "Alert", message: message, preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
+        if showSettingAlert {
+            alert.addAction(UIAlertAction(title: "Go to Settings now", style: UIAlertAction.Style.default, handler: { (alert: UIAlertAction!) in
+                if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
+                }
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.default, handler: nil))
+        } else {
+            alert.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil))
+        }
         self.present(alert, animated: true, completion: nil)
     }
     
     @objc func findRouteAction(sender: UIButton) {
         showRoutes = true
-        if let destination  = destination {
-            requestRoute(origin: origin!, destination: destination)
+        guard origin != nil  else {
+            showAlert(message: TURN_LOCATION_TEXT, showSettingAlert: true)
+            return
+        }
+        if let destination  = destination, let originLocation = origin {
+            requestRoute(origin: originLocation, destination: destination)
         }
     }
     
@@ -736,7 +785,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     func requestRoute(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
-        
+        indicatorView.startAnimating()
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [origin, destination])
         navigationRouteOptions.includesAlternativeRoutes = true
         let cameraOptions = CameraOptions(center: origin, zoom: 12.0)
@@ -745,8 +794,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         Directions.shared.calculate(navigationRouteOptions) { [weak self] (_, result) in
             switch result {
             case .failure(let error):
+                self?.indicatorView.stopAnimating()
+                self?.showAlert(message: error.localizedDescription)
                 print(error.localizedDescription)
             case .success(let response):
+                self?.indicatorView.stopAnimating()
                 guard let routes = response.routes,
                       let currentRoute = routes.first,
                       let self = self else { return }
@@ -1027,6 +1079,7 @@ extension MapBoxViewController: CustomCancelNavigationDegate {
         showRoutes = false
         self.routeResponse = nil
         self.tableView.reloadData()
+        backButton.isHidden = true
     }
 }
 

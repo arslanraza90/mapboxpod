@@ -13,6 +13,7 @@ extension MapBoxViewController {
     func initialSubViewSetup() {
         
         view.addSubview(navigationMapView)
+        navigationMapView.addSubview(backButton)
         weatherView.addSubview(weatherImage)
         weatherView.addSubview(weatherLabel)
         navigationMapView.addSubview(weatherView)
@@ -56,6 +57,10 @@ extension MapBoxViewController {
             weatherView.heightAnchor.constraint(equalToConstant: 48),
             weatherView.widthAnchor.constraint(equalToConstant: 82),
 
+            backButton.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: 5),
+            backButton.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 45),
+            backButton.heightAnchor.constraint(equalToConstant: 30),
+            backButton.widthAnchor.constraint(equalToConstant: 40),
             
             currentLocationImageView.centerYAnchor.constraint(equalTo: currentLocationView.centerYAnchor),
             currentLocationImageView.centerXAnchor.constraint(equalTo: currentLocationView.centerXAnchor),
