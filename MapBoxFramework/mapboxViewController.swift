@@ -482,6 +482,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         navigationMapView.userLocationStyle = .puck2D()
         navigationMapView.delegate = self
         navigationMapView.mapView.isUserInteractionEnabled = true
+        navigationMapView.mapView.ornaments.compassView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 290).isActive = true
         initialDestinationButton.addTarget(self, action:#selector(self.initialDestinationButtonTapped), for: .touchUpInside)
         actionSheetButton.addTarget(self, action:#selector(self.actionSheetButtonTapped), for: .touchUpInside)
         currentLocationButton.addTarget(self, action:#selector(self.currentLocationButtonTapped), for: .touchUpInside)
@@ -701,6 +702,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             showAlert(message: TURN_LOCATION_TEXT, showSettingAlert: true)
             return
         }
+        indicatorView.center = self.view.center
+        self.view.addSubview(indicatorView)
         if let destination  = destination, let originLocation = origin {
             requestRoute(origin: originLocation, destination: destination)
         }
