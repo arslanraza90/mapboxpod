@@ -38,6 +38,7 @@ class RouteTableViewCell: UITableViewCell {
         label.backgroundColor = .clear
         label.textColor = .black
         label.layer.cornerRadius = 5.0
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
     }()
     
@@ -60,6 +61,7 @@ class RouteTableViewCell: UITableViewCell {
         label.backgroundColor = .clear
         label.textColor = .black
         label.layer.cornerRadius = 5.0
+        label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         return label
     }()
     
@@ -77,7 +79,7 @@ class RouteTableViewCell: UITableViewCell {
     lazy var potentialReward: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "  Potential Rewards 500 Drives  "
+        label.text = "  Potential Rewards 500 DRIVES  "
         label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         label.backgroundColor = UIColor(red: 238/255, green: 238/255, blue: 238/255, alpha: 1.000)
         label.textColor = .black
@@ -170,7 +172,7 @@ class RouteTableViewCell: UITableViewCell {
             locationName.leadingAnchor.constraint(equalTo: routeMainView.leadingAnchor, constant: 10),
             locationName.topAnchor.constraint(equalTo: routesLabel.bottomAnchor, constant: 10),
             locationName.heightAnchor.constraint(equalToConstant: 15),
-            locationName.trailingAnchor.constraint(equalTo: routeTime.leadingAnchor, constant: 10),
+            locationName.trailingAnchor.constraint(equalTo: routeTime.leadingAnchor, constant: -2),
             
             fastestRoute.leadingAnchor.constraint(equalTo: routeMainView.leadingAnchor, constant: 10),
             fastestRoute.topAnchor.constraint(equalTo: locationName.bottomAnchor, constant: 7),

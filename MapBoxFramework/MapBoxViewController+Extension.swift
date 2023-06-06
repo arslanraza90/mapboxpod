@@ -31,6 +31,12 @@ extension MapBoxViewController {
         initialDestinationMainView.addSubview(carButton)
         carButton.addTarget(self, action:#selector(self.carDriveModeAction), for: .touchUpInside)
         
+        alertView.addSubview(alertTitleLabel)
+        alertView.addSubview(alertDescriptionLabel)
+        alertView.addSubview(alertSeparaterView)
+        alertView.addSubview(alertButton)
+        navigationMapView.addSubview(alertView)
+        
         NSLayoutConstraint.activate([
             
             actionSheetView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: UIScreen.main.bounds.width - 60),
@@ -57,9 +63,9 @@ extension MapBoxViewController {
             weatherView.heightAnchor.constraint(equalToConstant: 48),
             weatherView.widthAnchor.constraint(equalToConstant: 82),
 
-            backButton.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: 5),
+            backButton.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: 10),
             backButton.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 45),
-            backButton.heightAnchor.constraint(equalToConstant: 30),
+            backButton.heightAnchor.constraint(equalToConstant: 40),
             backButton.widthAnchor.constraint(equalToConstant: 40),
             
             currentLocationImageView.centerYAnchor.constraint(equalTo: currentLocationView.centerYAnchor),
@@ -112,6 +118,22 @@ extension MapBoxViewController {
             initialDestinationButton.heightAnchor.constraint(equalTo: initialDestinationMainView.heightAnchor),
             initialDestinationButton.widthAnchor.constraint(equalTo: initialDestinationMainView.widthAnchor),
             
+            alertTitleLabel.centerXAnchor.constraint(equalTo: alertView.centerXAnchor, constant: 0),
+            alertTitleLabel.topAnchor.constraint(equalTo: alertView.topAnchor, constant: 30),
+            alertDescriptionLabel.centerXAnchor.constraint(equalTo: alertView.centerXAnchor, constant: 0),
+            alertDescriptionLabel.topAnchor.constraint(equalTo: alertTitleLabel.bottomAnchor, constant: 10),
+            alertSeparaterView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: 5),
+            alertSeparaterView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: -5),
+            alertSeparaterView.topAnchor.constraint(equalTo: alertDescriptionLabel.bottomAnchor, constant: 15),
+            alertSeparaterView.heightAnchor.constraint(equalToConstant: 2),
+            alertButton.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: 28),
+            alertButton.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: -28),
+            alertButton.topAnchor.constraint(equalTo: alertSeparaterView.bottomAnchor, constant: 10),
+            alertButton.heightAnchor.constraint(equalToConstant: 35),
+            alertView.centerYAnchor.constraint(equalTo: navigationMapView.centerYAnchor, constant: 0),
+            alertView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor, constant: 0),
+            alertView.heightAnchor.constraint(equalToConstant: 150),
+            alertView.widthAnchor.constraint(equalToConstant: 300),
         ])
     }
     

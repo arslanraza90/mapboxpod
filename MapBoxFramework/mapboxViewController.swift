@@ -101,11 +101,34 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return label
     }()
     
+    lazy var speedLimitOuterView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .gray
+        view.layer.cornerRadius = 18.0
+        view.layer.masksToBounds = true
+        view.layer.borderColor = UIColor.white.cgColor
+        view.layer.borderWidth = 3.0
+        view.isHidden = true
+        return view
+    }()
+    
+    lazy var speedLimitLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "80"
+        label.backgroundColor = .clear
+        label.textAlignment = .center
+        label.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
+        label.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        return label
+    }()
+    
     lazy var navigationButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1)
-        button.setTitle("Find Route", for: .normal)
+        button.setTitle("Find Routes", for: .normal)
         button.setTitleColor(#colorLiteral(red: 0.1725490196, green: 0.1725490196, blue: 0.1725490196, alpha: 1), for: .normal)
         button.layer.cornerRadius = 12.0
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
@@ -165,7 +188,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
-        button.setImage(UIImage(named: "back")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(named: "back"), for: .normal)
         button.tintColor = .systemBlue
         button.isHidden = true
         return button
@@ -457,6 +480,53 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return button
     }()
     
+    lazy var alertView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = #colorLiteral(red: 0.1725490196, green: 0.1725490196, blue: 0.1725490196, alpha: 1)
+        view.layer.cornerRadius = 12
+        view.isHidden = true
+        return view
+    }()
+    
+    lazy var alertTitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Notice"
+        label.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        label.backgroundColor = .clear
+        label.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        return label
+    }()
+    
+    lazy var alertDescriptionLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "DriveSafe & Earn Mode"
+        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
+        label.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        return label
+    }()
+    
+    lazy var alertSeparaterView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .gray
+        view.isHidden = true
+        return view
+    }()
+    
+    lazy var alertButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1)
+        button.setTitle("Go", for: .normal)
+        button.setTitleColor(#colorLiteral(red: 0.1725490196, green: 0.1725490196, blue: 0.1725490196, alpha: 1), for: .normal)
+        button.layer.cornerRadius = 12.0
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        return button
+    }()
+    
     lazy var indicatorView: UIActivityIndicatorView = {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .lightGray
@@ -487,6 +557,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         actionSheetButton.addTarget(self, action:#selector(self.actionSheetButtonTapped), for: .touchUpInside)
         currentLocationButton.addTarget(self, action:#selector(self.currentLocationButtonTapped), for: .touchUpInside)
         backButton.addTarget(self, action:#selector(self.backButtonTapped), for: .touchUpInside)
+        alertButton.addTarget(self, action:#selector(self.alertOkButtonTapped), for: .touchUpInside)
         getUserLocation()
         let speedLimitView = SpeedLimitView()
         navigationMapView.addSubview(speedLimitView)
@@ -653,7 +724,23 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     @objc func carDriveModeAction(sender: UIButton) {
-        showAlert(message: "Drive Only Mode.")
+        UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: {
+            self.alertView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            self.alertView.alpha = 1.0
+            self.alertView.isHidden = false
+        }) { _ in
+            print("")
+        }
+    }
+    
+    @objc func alertOkButtonTapped(sender: UIButton) {
+        UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: {
+            self.alertView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            self.alertView.alpha = 0
+            self.alertView.isHidden = true
+        }) { _ in
+            print("")
+        }
     }
     
     func setCurrentLocation() {
@@ -740,7 +827,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 
                 navigationViewController.modalPresentationStyle = .fullScreen
                 navigationViewController.routeLineTracksTraversal = true
-                navigationViewController.showsSpeedLimits = true
+                navigationViewController.showsSpeedLimits = false
                 navigationViewController.navigationView.speedLimitView.regulatoryBorderColor = .white
                 navigationViewController.navigationView.speedLimitView.signBackColor = .red
                 navigationViewController.navigationView.speedLimitView.textColor = .white
@@ -758,6 +845,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 strongSelf.currentSpeedView.addSubview(strongSelf.speedLabel)
                 strongSelf.currentSpeedView.addSubview(strongSelf.speedLabel)
                 strongSelf.currentSpeedView.addSubview(strongSelf.kilometerPerHour)
+                strongSelf.speedLimitOuterView.addSubview(strongSelf.speedLimitLabel)
+                mapView.insertSubview(strongSelf.speedLimitOuterView, aboveSubview: strongSelf.currentSpeedView)
                 strongSelf.isSpeedLimitShowimg = false
                 
                 
@@ -773,12 +862,19 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                     strongSelf.currentSpeedView.widthAnchor.constraint(equalToConstant: 60),
                     strongSelf.speedLabel.topAnchor.constraint(equalTo: strongSelf.currentSpeedView.topAnchor, constant: 12),
                     strongSelf.speedLabel.centerXAnchor.constraint(equalTo: strongSelf.currentSpeedView.centerXAnchor),
-                    strongSelf.speedLabel.heightAnchor.constraint(equalToConstant: 15),
-                    strongSelf.speedLabel.widthAnchor.constraint(equalToConstant: 30),
+                    strongSelf.speedLabel.heightAnchor.constraint(equalToConstant: 20),
+                    strongSelf.speedLabel.widthAnchor.constraint(equalToConstant: 45),
+                    strongSelf.kilometerPerHour.topAnchor.constraint(equalTo: strongSelf.speedLabel.bottomAnchor, constant: 2),
+                    strongSelf.kilometerPerHour.centerXAnchor.constraint(equalTo: strongSelf.speedLabel.centerXAnchor),
                     
-                    strongSelf.kilometerPerHour.topAnchor.constraint(equalTo: strongSelf.speedLabel.bottomAnchor, constant: 4),
-                    strongSelf.kilometerPerHour.centerXAnchor.constraint(equalTo: strongSelf.speedLabel.centerXAnchor)
-                    
+                    strongSelf.speedLimitOuterView.leadingAnchor.constraint(equalTo: strongSelf.currentSpeedView.trailingAnchor, constant: -8),
+                    strongSelf.speedLimitOuterView.centerYAnchor.constraint(equalTo: strongSelf.currentSpeedView.centerYAnchor),
+                    strongSelf.speedLimitOuterView.heightAnchor.constraint(equalToConstant: 36),
+                    strongSelf.speedLimitOuterView.widthAnchor.constraint(equalToConstant: 36),
+                    strongSelf.speedLimitLabel.topAnchor.constraint(equalTo: strongSelf.speedLimitOuterView.topAnchor, constant: 0),
+                    strongSelf.speedLimitLabel.leadingAnchor.constraint(equalTo: strongSelf.speedLimitOuterView.leadingAnchor, constant: 0),
+                    strongSelf.speedLimitLabel.trailingAnchor.constraint(equalTo: strongSelf.speedLimitOuterView.trailingAnchor, constant: 0),
+                    strongSelf.speedLimitLabel.bottomAnchor.constraint(equalTo: strongSelf.speedLimitOuterView.bottomAnchor, constant: 0)
                 ])
                 
                 
@@ -850,20 +946,19 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
         
         let speedInKilometers = location.speed * 3.6
+        let limit = 80.0
         
-        if let speedLimit = navigationViewController.navigationView.speedLimitView.speedLimit?.value  {
-            if speedInKilometers > speedLimit {
-                kilometerPerHour.textColor = .red
-                speedLabel.textColor = .red
-                if isSpeedLimitShowimg == false {
-                    navigationViewController.showsSpeedLimits = true
-                    isSpeedLimitShowimg = true
-                }
+        if let _ = navigationViewController.navigationView.speedLimitView.speedLimit?.value  {
+            if speedInKilometers > limit {
+                kilometerPerHour.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+                speedLabel.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+                speedLimitLabel.textColor = .white
+                speedLimitOuterView.backgroundColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+                speedLimitOuterView.isHidden = false
             } else {
-                kilometerPerHour.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
-                speedLabel.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
-                navigationViewController.showsSpeedLimits = false
-                isSpeedLimitShowimg = false
+                kilometerPerHour.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+                speedLabel.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+                speedLimitOuterView.isHidden = true
             }
         }
         
