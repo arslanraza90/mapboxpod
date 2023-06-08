@@ -327,6 +327,16 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return tableView
     }()
     
+    lazy var routesTableView: UITableView = {
+        let tableView = UITableView(frame: .zero)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
+        tableView.layer.cornerRadius = 15.0
+        tableView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        return tableView
+    }()
+    
     lazy var mainTableView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -570,7 +580,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name: UIResponder.keyboardWillHideNotification, object: nil);
         
         addDoneButtonToKeyboard()
-        
+        tableView.register(LocationTableViewCell.self, forCellReuseIdentifier: "LocationTableViewCell")
+        routesTableView.register(RouteTableViewCell.self, forCellReuseIdentifier: "RouteTableViewCell")
     }
 
     func addDoneButtonToKeyboard() {
@@ -619,7 +630,13 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 if error == nil {
                     if let firstLocation = placemarks?[0],
                        let cityName = firstLocation.locality {
-                        self?.findPlaces(query: cityName)
+                        if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
+                            if selectedPlaces.count == 0 {
+                                self?.findPlaces(query: cityName)
+                            }
+                        } else {
+                            self?.findPlaces(query: cityName)
+                        }
                     }
                 }
             }
@@ -686,6 +703,22 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             case .failure(let error):
                 print(error)
             }
+        }
+    }
+    
+    func savePlace(_ place: Place) {
+        if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
+            if !(selectedPlaces.contains(where: {$0.identifier == place.identifier})) {
+                var list = [Place]()
+                list = selectedPlaces
+                if list.count > 5 {
+                    list.remove(at: 0)
+                }
+                list.append(place)
+                SharePreference.shared.setSelectedPlaces(list)
+            }
+        } else {
+            SharePreference.shared.setSelectedPlaces([place])
         }
     }
     
@@ -885,6 +918,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     
     func requestRoute(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
         indicatorView.startAnimating()
+        view.isUserInteractionEnabled = false
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [origin, destination])
         navigationRouteOptions.includesAlternativeRoutes = true
         let cameraOptions = CameraOptions(center: origin, zoom: 12.0)
@@ -893,10 +927,12 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         Directions.shared.calculate(navigationRouteOptions) { [weak self] (_, result) in
             switch result {
             case .failure(let error):
+                self?.view.isUserInteractionEnabled = true
                 self?.indicatorView.stopAnimating()
                 self?.showAlert(message: error.localizedDescription)
                 print(error.localizedDescription)
             case .success(let response):
+                self?.view.isUserInteractionEnabled = true
                 self?.indicatorView.stopAnimating()
                 guard let routes = response.routes,
                       let currentRoute = routes.first,
@@ -907,10 +943,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 self.navigationMapView.showWaypoints(on: currentRoute)
                 
                 self.manageSubViewOnFindRouteAction1()
-                if let constraint = (self.mainTableView.constraints.filter{$0.firstAttribute == .height}.first) {
-                    constraint.constant = 30 + CGFloat((self.routeResponse?.routes?.count ?? 1) * 105)
+                if self.showRoutes {
+                    self.routesTableView.reloadData()
                 }
-                self.tableView.reloadData()
             }
         }
     }
@@ -974,7 +1009,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
 
 extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if showRoutes {
+        if tableView == routesTableView {
             return self.routeResponse?.routes?.count ?? 0
         } else {
             if isFromOrigin || isFromDestination {
@@ -985,9 +1020,10 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if showRoutes {
+        if tableView == routesTableView {
             let cell = tableView.dequeueReusableCell(withIdentifier: "RouteTableViewCell", for:indexPath) as! RouteTableViewCell
-            if let route = self.routeResponse?.routes?[indexPath.row] {
+            if let routes = self.routeResponse?.routes, !routes.isEmpty {
+                let route = routes[indexPath.row]
                 cell.populateRouteView(route: route, location: locationName.text, indexPath: indexPath.row)
             }
             cell.startRouteClosure = { [weak self] in
@@ -1015,7 +1051,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if showRoutes {
+        if tableView == routesTableView {
             return 125
         } else {
             return 46
@@ -1039,6 +1075,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
                 destinationTextField.text = place.name
                 locationName.text = place.name
                 getCoordinatesFromPlaces(place: place)
+                self.savePlace(place)
             }
         }
         
@@ -1058,21 +1095,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
                 locationName.text = place.name
             }
             getCoordinatesFromPlaces(place: place)
-            
-            
-            if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
-                if !(selectedPlaces.contains(where: {$0.identifier == place.identifier})) {
-                    var list = [Place]()
-                    list = selectedPlaces
-                    if list.count > 5 {
-                        list.remove(at: 0)
-                    }
-                    list.append(place)
-                    SharePreference.shared.setSelectedPlaces(list)
-                }
-            } else {
-                SharePreference.shared.setSelectedPlaces([place])
-            }
+            self.savePlace(place)
         }
         addSubviewsOnCellSelection()
     }
@@ -1170,7 +1193,8 @@ extension MapBoxViewController: CustomCancelNavigationDegate {
             self.destinationSubView.removeFromSuperview()
             self.locationIcon.removeFromSuperview()
             self.destinationTextField.removeFromSuperview()
-        
+            self.routesTableView.removeFromSuperview()
+            
             self.initialSubViewSetup()
         }, completion: nil)
         

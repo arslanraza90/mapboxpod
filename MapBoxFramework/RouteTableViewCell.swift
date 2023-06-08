@@ -62,6 +62,7 @@ class RouteTableViewCell: UITableViewCell {
         label.textColor = .black
         label.layer.cornerRadius = 5.0
         label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        label.textAlignment = .right
         return label
     }()
     
@@ -119,6 +120,7 @@ class RouteTableViewCell: UITableViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
+        button.isEnabled = true
         return button
     }()
     
@@ -186,9 +188,10 @@ class RouteTableViewCell: UITableViewCell {
             potentialReward.topAnchor.constraint(equalTo: routeDistance.bottomAnchor, constant: 9),
             potentialReward.heightAnchor.constraint(equalToConstant: 20),
             
-            routeTime.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -15),
+            routeTime.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -10),
             routeTime.centerYAnchor.constraint(equalTo: locationName.centerYAnchor),
             routeTime.heightAnchor.constraint(equalToConstant: 18),
+            routeTime.widthAnchor.constraint(lessThanOrEqualToConstant: 85),
             
             startButtonView.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -15),
             startButtonView.topAnchor.constraint(equalTo: routeTime.bottomAnchor, constant: 10),
@@ -259,6 +262,7 @@ class RouteTableViewCell: UITableViewCell {
     }
     
     @objc func onStartRoute(_ sender: UIButton) {
+        startButton.isEnabled = false
         self.startRouteClosure?()
     }
 }
