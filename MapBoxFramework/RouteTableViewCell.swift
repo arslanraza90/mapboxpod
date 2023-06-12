@@ -223,7 +223,7 @@ class RouteTableViewCell: UITableViewCell {
     }
     
     func populateRouteView(route: Route, location: String?, indexPath: Int) {
-        
+        startButton.isEnabled = true
         routesLabel.isHidden = indexPath == 0 ? false : true
         fastestRoute.text = indexPath == 0 ? "Fastest Route now" : "Slower Route, more closures"
         if indexPath != 0 {

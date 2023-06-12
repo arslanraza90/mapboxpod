@@ -662,7 +662,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             case .success(let places):
                 if places.isEmpty {
                     if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
-                        self.places = selectedPlaces
+                        self.places = selectedPlaces.reversed()
                     }
                 } else {
                     self.places = places
@@ -725,7 +725,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     @objc func initialDestinationButtonTapped(sender: UIButton) {
         if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
             if selectedPlaces.count != 0 {
-                self.places = selectedPlaces
+                self.places = selectedPlaces.reversed()
                 showRoutes = false
                 self.tableView.reloadData()
             }
