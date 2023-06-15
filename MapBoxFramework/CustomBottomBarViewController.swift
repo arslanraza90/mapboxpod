@@ -90,8 +90,7 @@ class CustomBottomBarViewController: ContainerViewController, CustomBottomBanner
     // MARK: - CustomBottomBannerViewDelegate implementation
     
     func customBottomBannerDidCancel(_ banner: CustomBottomBannerView) {
-        self.dismiss(animated: true,
-                                          completion: {
+        dismiss(animated: true, completion: {
             self.cancelDelegate?.onCancel()
         })
     }

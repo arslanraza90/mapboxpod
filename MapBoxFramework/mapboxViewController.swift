@@ -750,7 +750,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             }
         }
         showRoutes = false
-        onCancel()
         addSubViewsOnDestinationTap()
         backButton.isHidden = false
     }
