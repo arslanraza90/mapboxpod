@@ -537,6 +537,15 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return button
     }()
     
+    lazy var alertCancelButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        button.layer.cornerRadius = 10.0
+        button.setImage(UIImage(named: "alertCross"), for: .normal)
+        return button
+    }()
+    
     lazy var indicatorView: UIActivityIndicatorView = {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.backgroundColor = .lightGray
@@ -577,6 +586,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         backButton.addTarget(self, action:#selector(self.backButtonTapped), for: .touchUpInside)
         alertButton.addTarget(self, action:#selector(self.alertOkButtonTapped), for: .touchUpInside)
         driveModeButton.addTarget(self, action:#selector(self.driveModeButtonTapped), for: .touchUpInside)
+        alertCancelButton.addTarget(self, action:#selector(self.alertCancelButtonTapped), for: .touchUpInside)
         getUserLocation()
         let speedLimitView = SpeedLimitView()
         navigationMapView.addSubview(speedLimitView)
@@ -665,8 +675,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     func findPlaces(query: String) {
-        
-        GooglePlacesManager.shared.findPlaces(query: query) { result in
+        guard let currentLocationCoordinate = self.origin else { return }
+        GooglePlacesManager.shared.findPlaces(query: query, origin: currentLocationCoordinate) { result in
             switch result {
             case .success(let places):
                 if places.isEmpty {
@@ -804,6 +814,16 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             print("")
             self.initialDestinationMainView.isHidden = true
             self.driveModeButton.isHidden = false
+        }
+    }
+    
+    @objc func alertCancelButtonTapped(sender: UIButton) {
+        UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: {
+            self.alertView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+            self.alertView.alpha = 0
+            self.alertView.isHidden = true
+        }) { _ in
+            print("")
         }
     }
     
@@ -1143,17 +1163,11 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
 extension MapBoxViewController: UITextFieldDelegate{
     
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        
-        if !(string == ""){
-            if textField == searchMapsTextField {
-                findPlaces(query: textField.text!)
-            } else if textField == destinationTextField {
-                findPlaces(query: textField.text!)
-            } else if textField == originTextField {
-                findPlaces(query: textField.text!)
-            }
+        if let text = textField.text, let textRange = Range(range, in: text) {
+            let updatedText = text.replacingCharacters(in: textRange, with: string)
+            findPlaces(query: updatedText)
         }
-        
+                
         if string.isEmpty {
             if textField == destinationTextField {
                 if textField.text?.count == 1 {

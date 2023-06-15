@@ -35,6 +35,7 @@ extension MapBoxViewController {
         alertView.addSubview(alertDescriptionLabel)
         alertView.addSubview(alertSeparaterView)
         alertView.addSubview(alertButton)
+        alertView.addSubview(alertCancelButton)
         navigationMapView.addSubview(alertView)
         
         navigationMapView.addSubview(driveModeButton)
@@ -137,6 +138,10 @@ extension MapBoxViewController {
             alertButton.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: -28),
             alertButton.topAnchor.constraint(equalTo: alertSeparaterView.bottomAnchor, constant: 10),
             alertButton.heightAnchor.constraint(equalToConstant: 35),
+            alertCancelButton.topAnchor.constraint(equalTo: alertView.topAnchor, constant: 10),
+            alertCancelButton.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: -10),
+            alertCancelButton.widthAnchor.constraint(equalToConstant: 20),
+            alertCancelButton.heightAnchor.constraint(equalToConstant: 20),
             alertView.centerYAnchor.constraint(equalTo: navigationMapView.centerYAnchor, constant: 0),
             alertView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor, constant: 0),
             alertView.heightAnchor.constraint(equalToConstant: 150),

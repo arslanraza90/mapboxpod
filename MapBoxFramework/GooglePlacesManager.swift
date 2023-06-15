@@ -30,10 +30,15 @@ final class GooglePlacesManager {
         
     }
     
-    public func findPlaces(query: String, completion: @escaping (Result<[Place], Error>) -> Void) {
+    public func findPlaces(query: String, origin: CLLocationCoordinate2D, completion: @escaping (Result<[Place], Error>) -> Void) {
         
         let filter = GMSAutocompleteFilter()
-        filter.type = .geocode
+//        filter.type = .geocode
+        filter.types = [""]
+        let searchBound: Double = 2.0
+        let northEastBounds = CLLocationCoordinate2D(latitude: origin.latitude + searchBound, longitude: origin.longitude + searchBound)
+        let southWestBounds = CLLocationCoordinate2D(latitude: origin.latitude - searchBound, longitude: origin.latitude - searchBound)
+        filter.locationBias = GMSPlaceRectangularLocationOption(northEastBounds, southWestBounds)
         
         client.findAutocompletePredictions(fromQuery: query, filter: filter, sessionToken: nil) { results, error in
             guard let results = results, error == nil else {
