@@ -457,7 +457,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var weatherView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = #colorLiteral(red: 0.09019607843, green: 0.1098039216, blue: 0.1254901961, alpha: 1)
         view.layer.cornerRadius = 23.5
         view.isHidden = true
         return view
@@ -477,7 +477,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         label.text = ""
         label.font = UIFont.systemFont(ofSize: 12, weight: .bold)
         label.backgroundColor = .clear
-        label.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
+        label.textColor = .white
         return label
     }()
     
@@ -549,6 +549,14 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return activityView
     }()
     
+    lazy var driveModeButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(named: "drivemode"), for: .normal)
+        button.isHidden = true
+        return button
+    }()
+    
     var showRoutes = false
     
     public func configrations() {
@@ -568,6 +576,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         currentLocationButton.addTarget(self, action:#selector(self.currentLocationButtonTapped), for: .touchUpInside)
         backButton.addTarget(self, action:#selector(self.backButtonTapped), for: .touchUpInside)
         alertButton.addTarget(self, action:#selector(self.alertOkButtonTapped), for: .touchUpInside)
+        driveModeButton.addTarget(self, action:#selector(self.driveModeButtonTapped), for: .touchUpInside)
         getUserLocation()
         let speedLimitView = SpeedLimitView()
         navigationMapView.addSubview(speedLimitView)
@@ -744,6 +753,26 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         present(vc, animated: true, completion: nil)
     }
     
+    func presentRouteOptionDialog() {
+        let vc = RouteOptionsAlertViewController()
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true, completion: nil)
+    }
+    
+    func presentDriveModeCancelDialog() {
+        let vc = DriveModeCancelAlertViewController()
+        vc.modalPresentationStyle = .custom
+        vc.okDriveModeClosure = { [weak self] in
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: {
+                self?.initialDestinationMainView.isHidden = false
+                self?.driveModeButton.isHidden = true
+            }) { _ in
+                print("")
+            }
+        }
+        present(vc, animated: true, completion: nil)
+    }
+    
     @objc func currentLocationButtonTapped(sender: UIButton) {
         setCurrentLocation()
     }
@@ -773,7 +802,13 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             self.alertView.isHidden = true
         }) { _ in
             print("")
+            self.initialDestinationMainView.isHidden = true
+            self.driveModeButton.isHidden = false
         }
+    }
+    
+    @objc func driveModeButtonTapped(sender: UIButton) {
+        presentDriveModeCancelDialog()
     }
     
     func setCurrentLocation() {
@@ -1032,6 +1067,9 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
                     self?.startNavigation()
                 }
             }
+            cell.routeOptionClosure = { [weak self] in
+                self?.presentRouteOptionDialog()
+            }
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "LocationTableViewCell", for:indexPath) as! LocationTableViewCell
@@ -1116,6 +1154,17 @@ extension MapBoxViewController: UITextFieldDelegate{
             }
         }
         
+        if string.isEmpty {
+            if textField == destinationTextField {
+                if textField.text?.count == 1 {
+                    if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
+                        self.places = selectedPlaces.reversed()
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        }
+        
         return true
     }
     
@@ -1155,6 +1204,7 @@ extension MapBoxViewController: UITextFieldDelegate{
                 routeMainView.removeFromSuperview()
                 manageSubViewsOnTextFieldEditing()
             }
+            destinationTextField.text = locationName.text
         }
     }
     

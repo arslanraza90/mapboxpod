@@ -132,7 +132,21 @@ class RouteTableViewCell: UITableViewCell {
         return view
     }()
     
+    lazy var routeOptionButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = UIColor(red: 238/255, green: 238/255, blue: 238/255, alpha: 1.000)
+        button.setImage(UIImage(named: "routeOption"), for: .normal)
+        button.setTitleColor(UIColor.black, for: .normal)
+        button.setTitle("    Route options ", for: .normal)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 0)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.layer.cornerRadius = 8
+        return button
+    }()
+    
     var startRouteClosure: (()  -> Void)?
+    var routeOptionClosure: (()  -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -149,6 +163,7 @@ class RouteTableViewCell: UITableViewCell {
         
         contentView.addSubview(routeMainView)
         routeMainView.addSubview(routesLabel)
+        routeMainView.addSubview(routeOptionButton)
         routeMainView.addSubview(locationName)
         routeMainView.addSubview(fastestRoute)
         routeMainView.addSubview(routeTime)
@@ -170,6 +185,10 @@ class RouteTableViewCell: UITableViewCell {
             routesLabel.leadingAnchor.constraint(equalTo: routeMainView.leadingAnchor, constant: 10),
             routesLabel.topAnchor.constraint(equalTo: routeMainView.topAnchor, constant: 5),
             routesLabel.heightAnchor.constraint(equalToConstant: 17),
+            
+            routeOptionButton.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -10),
+            routeOptionButton.topAnchor.constraint(equalTo: routeMainView.topAnchor, constant: 5),
+            routeOptionButton.heightAnchor.constraint(equalToConstant: 20),
             
             locationName.leadingAnchor.constraint(equalTo: routeMainView.leadingAnchor, constant: 10),
             locationName.topAnchor.constraint(equalTo: routesLabel.bottomAnchor, constant: 10),
@@ -220,11 +239,13 @@ class RouteTableViewCell: UITableViewCell {
         ])
         
         startButton.addTarget(self, action:#selector(self.onStartRoute), for: .touchUpInside)
+        routeOptionButton.addTarget(self, action:#selector(self.onRouteOptionTapped), for: .touchUpInside)
     }
     
     func populateRouteView(route: Route, location: String?, indexPath: Int) {
         startButton.isEnabled = true
         routesLabel.isHidden = indexPath == 0 ? false : true
+        routeOptionButton.isHidden = indexPath == 0 ? false : true
         fastestRoute.text = indexPath == 0 ? "Fastest Route now" : "Slower Route, more closures"
         if indexPath != 0 {
             if let constraint = (self.routesLabel.constraints.filter{$0.firstAttribute == .height}.first) {
@@ -264,5 +285,9 @@ class RouteTableViewCell: UITableViewCell {
     @objc func onStartRoute(_ sender: UIButton) {
         startButton.isEnabled = false
         self.startRouteClosure?()
+    }
+    
+    @objc func onRouteOptionTapped(_ sender: UIButton) {
+        self.routeOptionClosure?()
     }
 }

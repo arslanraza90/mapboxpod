@@ -37,6 +37,8 @@ extension MapBoxViewController {
         alertView.addSubview(alertButton)
         navigationMapView.addSubview(alertView)
         
+        navigationMapView.addSubview(driveModeButton)
+        
         NSLayoutConstraint.activate([
             
             actionSheetView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: UIScreen.main.bounds.width - 60),
@@ -49,18 +51,18 @@ extension MapBoxViewController {
             currentLocationView.heightAnchor.constraint(equalToConstant: 50),
             currentLocationView.widthAnchor.constraint(equalToConstant: 50),
             
-            weatherImage.leadingAnchor.constraint(equalTo: weatherView.leadingAnchor, constant: 12),
-            weatherImage.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 10),
-            weatherImage.heightAnchor.constraint(equalToConstant: 30),
-            weatherImage.widthAnchor.constraint(equalToConstant: 30),
+            weatherImage.leadingAnchor.constraint(equalTo: weatherView.leadingAnchor, constant: 4),
+            weatherImage.topAnchor.constraint(equalTo: weatherView.topAnchor, constant: 4),
+            weatherImage.heightAnchor.constraint(equalToConstant: 40),
+            weatherImage.widthAnchor.constraint(equalToConstant: 40),
             
-            weatherLabel.leadingAnchor.constraint(equalTo: weatherImage.trailingAnchor, constant: 4),
+            weatherLabel.leadingAnchor.constraint(equalTo: weatherImage.trailingAnchor, constant: 2),
             weatherLabel.centerYAnchor.constraint(equalTo: weatherImage.centerYAnchor),
             weatherLabel.trailingAnchor.constraint(equalTo: weatherView.trailingAnchor, constant: 0),
             
             weatherView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: 10),
             weatherView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 160),
-            weatherView.heightAnchor.constraint(equalToConstant: 48),
+            weatherView.heightAnchor.constraint(equalToConstant: 52),
             weatherView.widthAnchor.constraint(equalToConstant: 82),
 
             backButton.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: 10),
@@ -87,6 +89,11 @@ extension MapBoxViewController {
             actionSheetButton.topAnchor.constraint(equalTo: actionSheetView.topAnchor, constant: 0),
             actionSheetButton.bottomAnchor.constraint(equalTo: actionSheetView.bottomAnchor, constant: 0),
             actionSheetButton.leadingAnchor.constraint(equalTo: actionSheetView.leadingAnchor, constant: 0),
+            
+            driveModeButton.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor),
+            driveModeButton.centerYAnchor.constraint(equalTo: initialDestinationMainView.centerYAnchor, constant: 25),
+            driveModeButton.widthAnchor.constraint(equalToConstant: 150),
+            driveModeButton.heightAnchor.constraint(equalToConstant: 50),
             
             initialDestinationMainView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
             initialDestinationMainView.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 40),
