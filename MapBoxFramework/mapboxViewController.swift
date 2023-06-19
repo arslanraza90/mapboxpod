@@ -566,6 +566,17 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return button
     }()
     
+    lazy var gifImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.tintColor = .darkGray
+        imageView.layer.cornerRadius = 30.0
+        imageView.layer.masksToBounds = true
+        imageView.loadGif(name: "loader")
+        imageView.isHidden = true
+        return imageView
+    }()
+    
     var showRoutes = false
     
     public func configrations() {
@@ -876,8 +887,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             showAlert(message: TURN_LOCATION_TEXT, showSettingAlert: true)
             return
         }
-        indicatorView.center = self.view.center
-        self.view.addSubview(indicatorView)
         if let destination  = destination, let originLocation = origin {
             requestRoute(origin: originLocation, destination: destination)
         }
@@ -971,7 +980,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     func requestRoute(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
-        indicatorView.startAnimating()
+        gifImage.isHidden = false
         view.isUserInteractionEnabled = false
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [origin, destination])
         navigationRouteOptions.includesAlternativeRoutes = true
@@ -982,12 +991,12 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             switch result {
             case .failure(let error):
                 self?.view.isUserInteractionEnabled = true
-                self?.indicatorView.stopAnimating()
+                self?.gifImage.isHidden = true
                 self?.showAlert(message: error.localizedDescription)
                 print(error.localizedDescription)
             case .success(let response):
                 self?.view.isUserInteractionEnabled = true
-                self?.indicatorView.stopAnimating()
+                self?.gifImage.isHidden = true
                 guard let routes = response.routes,
                       let currentRoute = routes.first,
                       let self = self else { return }

@@ -120,7 +120,6 @@ class RouteTableViewCell: UITableViewCell {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
-        button.isEnabled = true
         return button
     }()
     
@@ -243,7 +242,6 @@ class RouteTableViewCell: UITableViewCell {
     }
     
     func populateRouteView(route: Route, location: String?, indexPath: Int) {
-        startButton.isEnabled = true
         routesLabel.isHidden = indexPath == 0 ? false : true
         routeOptionButton.isHidden = indexPath == 0 ? false : true
         fastestRoute.text = indexPath == 0 ? "Fastest Route now" : "Slower Route, more closures"
@@ -283,7 +281,6 @@ class RouteTableViewCell: UITableViewCell {
     }
     
     @objc func onStartRoute(_ sender: UIButton) {
-        startButton.isEnabled = false
         self.startRouteClosure?()
     }
     

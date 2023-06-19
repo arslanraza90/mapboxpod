@@ -39,8 +39,13 @@ extension MapBoxViewController {
         navigationMapView.addSubview(alertView)
         
         navigationMapView.addSubview(driveModeButton)
+        navigationMapView.addSubview(gifImage)
         
         NSLayoutConstraint.activate([
+            gifImage.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
+            gifImage.centerYAnchor.constraint(equalTo: navigationMapView.centerYAnchor),
+            gifImage.heightAnchor.constraint(equalToConstant: 100),
+            gifImage.widthAnchor.constraint(equalToConstant: 100),
             
             actionSheetView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: UIScreen.main.bounds.width - 60),
             actionSheetView.topAnchor.constraint(equalTo: navigationMapView.topAnchor, constant: 160),
@@ -92,7 +97,7 @@ extension MapBoxViewController {
             actionSheetButton.leadingAnchor.constraint(equalTo: actionSheetView.leadingAnchor, constant: 0),
             
             driveModeButton.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor),
-            driveModeButton.centerYAnchor.constraint(equalTo: initialDestinationMainView.centerYAnchor, constant: 25),
+            driveModeButton.centerYAnchor.constraint(equalTo: initialDestinationMainView.centerYAnchor, constant: 15),
             driveModeButton.widthAnchor.constraint(equalToConstant: 150),
             driveModeButton.heightAnchor.constraint(equalToConstant: 50),
             

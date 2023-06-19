@@ -66,6 +66,10 @@ class CustomBottomBannerView: UIView {
         mainView.layer.cornerRadius = 14.5
         backgroundColor = UIColor.white
         layer.cornerRadius = 10
+        layer.shadowColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1).cgColor
+        layer.shadowOpacity = 0.5
+        layer.shadowOffset = CGSize(width: 0 , height:5)
+        layer.shadowRadius = 3
     }
     
     override init(frame: CGRect) {
