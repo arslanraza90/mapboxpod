@@ -779,6 +779,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 self.tableView.reloadData()
             }
         }
+        categoryCollectionView.isHidden = true
         showRoutes = false
         addSubViewsOnDestinationTap()
         backButton.isHidden = false
@@ -804,6 +805,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         vc.okDriveModeClosure = { [weak self] in
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: {
                 self?.initialDestinationMainView.isHidden = false
+                self?.categoryCollectionView.isHidden = false
                 self?.driveModeButton.isHidden = true
             }) { _ in
                 print("")
@@ -858,6 +860,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         }) { _ in
             print("")
             self.initialDestinationMainView.isHidden = true
+            self.categoryCollectionView.isHidden = true
             self.driveModeButton.isHidden = false
         }
     }
@@ -1338,6 +1341,7 @@ extension MapBoxViewController: NearestLocationDelegate {
                 destinationTextField.text = name
                 locationName.text = name
                 requestRoute(origin: originLocation, destination: destinationLocation)
+                backButton.isHidden = false
             }
         }
     }

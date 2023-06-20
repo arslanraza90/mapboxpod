@@ -91,6 +91,17 @@ class NearestPlacesViewController: UIViewController {
         return button
     }()
     
+    lazy var gifImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.tintColor = .darkGray
+        imageView.layer.cornerRadius = 30.0
+        imageView.layer.masksToBounds = true
+        imageView.loadGif(name: "loader")
+        imageView.isHidden = true
+        return imageView
+    }()
+    
     weak var delegate: NearestLocationDelegate?
     
     var placeType: PlacesType = .grocerystore
@@ -140,8 +151,14 @@ class NearestPlacesViewController: UIViewController {
         searchView.addSubview(filterButton)
         view.addSubview(searchView)
         view.addSubview(backButton)
+        view.addSubview(gifImage)
         
         NSLayoutConstraint.activate([
+            gifImage.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            gifImage.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            gifImage.heightAnchor.constraint(equalToConstant: 100),
+            gifImage.widthAnchor.constraint(equalToConstant: 100),
+            
             backButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             backButton.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 60),
             backButton.heightAnchor.constraint(equalToConstant: 40),
@@ -166,7 +183,7 @@ class NearestPlacesViewController: UIViewController {
             filterButton.heightAnchor.constraint(equalToConstant: 30),
             filterButton.widthAnchor.constraint(equalToConstant: 30),
             
-            categoryCollectionView.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 15),
+            categoryCollectionView.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 3),
             categoryCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             categoryCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0),
             categoryCollectionView.heightAnchor.constraint(equalToConstant: 40),
@@ -181,11 +198,31 @@ class NearestPlacesViewController: UIViewController {
         nearestPlacesTableView.delegate = self
         backButton.addTarget(self, action:#selector(self.backButtonTapped), for: .touchUpInside)
         searchTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        addDoneButtonToKeyboard()
+    }
+    
+    func addDoneButtonToKeyboard() {
+        let toolbar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0,  width: self.view.frame.size.width, height: 30))
+        let flexSpace = UIBarButtonItem(barButtonSystemItem:    .flexibleSpace, target: nil, action: nil)
+        let doneBtn: UIBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonAction(sender:)))
+        toolbar.setItems([flexSpace, doneBtn], animated: false)
+        toolbar.sizeToFit()
+        self.searchTextField.inputAccessoryView = toolbar
+    }
+    
+    @objc func doneButtonAction(sender: UIGestureRecognizer) {
+        self.view.endEditing(true)
     }
     
     func findNearestLocation() {
         guard let locationCoordinate = origin  else { return}
+        gifImage.isHidden = false
+        view.isUserInteractionEnabled = false
         GooglePlacesManager.shared.getNearestLocation(placeType: self.placeType, locationCoordinate: locationCoordinate) { (response, error) in
+            DispatchQueue.main.async {
+                self.view.isUserInteractionEnabled = true
+                self.gifImage.isHidden = true
+            }
             if let error = error {
                 print("Error: \(error.localizedDescription)")
             } else if let results = response {
@@ -242,7 +279,7 @@ extension NearestPlacesViewController: UITableViewDataSource, UITableViewDelegat
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 200
+        return 195
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

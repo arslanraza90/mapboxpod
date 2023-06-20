@@ -158,7 +158,7 @@ class NearestPlaceTableViewCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             
-            placeMainView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            placeMainView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             placeMainView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             placeMainView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             placeMainView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15),
@@ -189,9 +189,9 @@ class NearestPlaceTableViewCell: UITableViewCell {
             statusLabel.trailingAnchor.constraint(equalTo: placeMainView.trailingAnchor, constant: -5),
             
             bottomStakeView.leadingAnchor.constraint(equalTo: placeMainView.leadingAnchor, constant: 0),
-            bottomStakeView.topAnchor.constraint(equalTo: placeImage.bottomAnchor, constant: 15),
+            bottomStakeView.topAnchor.constraint(equalTo: placeImage.bottomAnchor, constant: 10),
             bottomStakeView.trailingAnchor.constraint(equalTo: placeMainView.trailingAnchor, constant: 0),
-            bottomStakeView.heightAnchor.constraint(equalToConstant: 55),
+            bottomStakeView.heightAnchor.constraint(equalToConstant: 50),
         ])
         callButton.addTarget(self, action:#selector(self.callButtonTapped), for: .touchUpInside)
         directionButton.addTarget(self, action:#selector(self.dirctionButtonTapped), for: .touchUpInside)
