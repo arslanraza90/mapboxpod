@@ -14,6 +14,14 @@
 		0138F0AC2A39C34900900F00 /* DriveModeCancelAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0138F0AB2A39C34900900F00 /* DriveModeCancelAlertViewController.swift */; };
 		014532EF2A3C4F7A0038C744 /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 014532EE2A3C4F7A0038C744 /* UIImageView+Extension.swift */; };
 		014532F12A3C4FCC0038C744 /* loader.gif in Resources */ = {isa = PBXBuildFile; fileRef = 014532F02A3C4FCC0038C744 /* loader.gif */; };
+		018CF7542A41B21C00344248 /* PlacesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018CF7532A41B21C00344248 /* PlacesResponse.swift */; };
+		018CF7562A41B25300344248 /* NearestPlacesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018CF7552A41B25300344248 /* NearestPlacesViewController.swift */; };
+		018CF7582A41B2AF00344248 /* CategoryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018CF7572A41B2AF00344248 /* CategoryCollectionViewCell.swift */; };
+		018CF75A2A41B2D500344248 /* NearestPlaceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018CF7592A41B2D500344248 /* NearestPlaceTableViewCell.swift */; };
+		018CF75C2A41B31000344248 /* StarRatingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018CF75B2A41B31000344248 /* StarRatingView.swift */; };
+		018CF75E2A41B33C00344248 /* ImagesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018CF75D2A41B33C00344248 /* ImagesManager.swift */; };
+		018CF7602A41B47300344248 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018CF75F2A41B47300344248 /* Common.swift */; };
+		018CF7622A41B58400344248 /* MapBoxViewController+UICollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018CF7612A41B58400344248 /* MapBoxViewController+UICollectionViewDelegate.swift */; };
 		A80347B529B5E21E00644C3D /* SharePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80347B429B5E21E00644C3D /* SharePreference.swift */; };
 		A83A80F429E6ADFE00119291 /* Artworks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F329E6ADFE00119291 /* Artworks.xcassets */; };
 		A83A80F729E6AE3500119291 /* Artworks.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A83A80F329E6ADFE00119291 /* Artworks.xcassets */; };
@@ -54,6 +62,14 @@
 		0138F0AB2A39C34900900F00 /* DriveModeCancelAlertViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveModeCancelAlertViewController.swift; sourceTree = "<group>"; };
 		014532EE2A3C4F7A0038C744 /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
 		014532F02A3C4FCC0038C744 /* loader.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loader.gif; sourceTree = "<group>"; };
+		018CF7532A41B21C00344248 /* PlacesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacesResponse.swift; sourceTree = "<group>"; };
+		018CF7552A41B25300344248 /* NearestPlacesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearestPlacesViewController.swift; sourceTree = "<group>"; };
+		018CF7572A41B2AF00344248 /* CategoryCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryCollectionViewCell.swift; sourceTree = "<group>"; };
+		018CF7592A41B2D500344248 /* NearestPlaceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearestPlaceTableViewCell.swift; sourceTree = "<group>"; };
+		018CF75B2A41B31000344248 /* StarRatingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRatingView.swift; sourceTree = "<group>"; };
+		018CF75D2A41B33C00344248 /* ImagesManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesManager.swift; sourceTree = "<group>"; };
+		018CF75F2A41B47300344248 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		018CF7612A41B58400344248 /* MapBoxViewController+UICollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapBoxViewController+UICollectionViewDelegate.swift"; sourceTree = "<group>"; };
 		1E4332B41C4667295E7067D1 /* Pods-MapBoxFramework.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxFramework.debug.xcconfig"; path = "Target Support Files/Pods-MapBoxFramework/Pods-MapBoxFramework.debug.xcconfig"; sourceTree = "<group>"; };
 		20C35316E764BF35B5CBE4B5 /* Pods_MapBoxFramework_MapBoxFrameworkTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MapBoxFramework_MapBoxFrameworkTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CA0980D29470944ACDB2231 /* Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig"; path = "Target Support Files/Pods-MapBoxFramework-MapBoxFrameworkTests/Pods-MapBoxFramework-MapBoxFrameworkTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -157,6 +173,14 @@
 				0138F0A72A39A04B00900F00 /* RouteOptionsAlertViewController.swift */,
 				0138F0AB2A39C34900900F00 /* DriveModeCancelAlertViewController.swift */,
 				014532EE2A3C4F7A0038C744 /* UIImageView+Extension.swift */,
+				018CF7532A41B21C00344248 /* PlacesResponse.swift */,
+				018CF7552A41B25300344248 /* NearestPlacesViewController.swift */,
+				018CF7572A41B2AF00344248 /* CategoryCollectionViewCell.swift */,
+				018CF7592A41B2D500344248 /* NearestPlaceTableViewCell.swift */,
+				018CF75B2A41B31000344248 /* StarRatingView.swift */,
+				018CF75D2A41B33C00344248 /* ImagesManager.swift */,
+				018CF75F2A41B47300344248 /* Common.swift */,
+				018CF7612A41B58400344248 /* MapBoxViewController+UICollectionViewDelegate.swift */,
 			);
 			path = MapBoxFramework;
 			sourceTree = "<group>";
@@ -396,21 +420,29 @@
 			files = (
 				A83A812E29E96F1200119291 /* CustomBottomBarViewController.swift in Sources */,
 				A8E199FD29AFCCAA00CF2952 /* LocationTableViewCell.swift in Sources */,
+				018CF7542A41B21C00344248 /* PlacesResponse.swift in Sources */,
 				0138F0A82A39A04B00900F00 /* RouteOptionsAlertViewController.swift in Sources */,
 				A83A813029E96F6500119291 /* CustomTopBarViewController.swift in Sources */,
 				A88B5EE0299516FB0096FF88 /* MapBoxFramework.docc in Sources */,
 				A8C10FC829DEC4DC0091F776 /* CustomBottomBannerView.swift in Sources */,
+				018CF7562A41B25300344248 /* NearestPlacesViewController.swift in Sources */,
 				013747032A28971100D112BC /* Constants.swift in Sources */,
+				018CF7622A41B58400344248 /* MapBoxViewController+UICollectionViewDelegate.swift in Sources */,
 				0138F0AC2A39C34900900F00 /* DriveModeCancelAlertViewController.swift in Sources */,
 				A80347B529B5E21E00644C3D /* SharePreference.swift in Sources */,
 				A876F5AC299CFAA200E72D37 /* CustomDayStyle.swift in Sources */,
 				A8E199FF29AFCCC900CF2952 /* GooglePlacesManager.swift in Sources */,
+				018CF7602A41B47300344248 /* Common.swift in Sources */,
 				A88B5EF6299517600096FF88 /* mapboxViewController.swift in Sources */,
 				014532EF2A3C4F7A0038C744 /* UIImageView+Extension.swift in Sources */,
+				018CF75E2A41B33C00344248 /* ImagesManager.swift in Sources */,
 				013746CD2A249C0100D112BC /* APIService.swift in Sources */,
+				018CF75A2A41B2D500344248 /* NearestPlaceTableViewCell.swift in Sources */,
 				A83A812C29E96DEF00119291 /* SelectMapStyleViewController.swift in Sources */,
 				013746D32A261F9900D112BC /* RouteTableViewCell.swift in Sources */,
 				A876F5AE299CFAB500E72D37 /* CustomNightStyle.swift in Sources */,
+				018CF7582A41B2AF00344248 /* CategoryCollectionViewCell.swift in Sources */,
+				018CF75C2A41B31000344248 /* StarRatingView.swift in Sources */,
 				A8E199FB29AFCC4A00CF2952 /* MapBoxViewController+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

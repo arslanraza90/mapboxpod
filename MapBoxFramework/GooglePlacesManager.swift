@@ -65,5 +65,84 @@ final class GooglePlacesManager {
         }
     }
     
+    
+    func getNearestLocation(placeType: PlacesType, locationCoordinate: CLLocationCoordinate2D, completion: @escaping ([Results]?, Error?) -> Void) {
+        let location = "\(locationCoordinate.latitude), \(locationCoordinate.longitude)"
+        var urlComponents = URLComponents(string: PLACES_URL)
+        urlComponents?.queryItems = [
+            URLQueryItem(name: "location", value: location),
+            URLQueryItem(name: "radius", value: "5000"),
+            URLQueryItem(name: "types", value: placeType.rawValue),
+            URLQueryItem(name: "key", value: API_KEY)
+        ]
+        guard let url = urlComponents?.url else {
+            completion(nil, NSError(domain: "Invalid URL", code: 0, userInfo: nil))
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+            
+            guard let data = data else {
+                completion(nil, NSError(domain: "No data", code: 0, userInfo: nil))
+                return
+            }
+            
+            do {
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print(jsonString)
+                }
+                let decoder = JSONDecoder()
+                let response = try decoder.decode(PlacesResponse.self, from: data)
+                completion(response.results, nil)
+            } catch {
+                completion(nil, error)
+            }
+        }
+        task.resume()
+    }
+    
+    func findPlaceDetails(_ placeId: String, completion: @escaping (PlaceDetailsResponse?, Error?) -> Void) {
+        let fields = "name,formatted_phone_number"
+        var urlComponents = URLComponents(string: PLACES_DETAILS)
+        urlComponents?.queryItems = [
+            URLQueryItem(name: "place_id", value: placeId),
+            URLQueryItem(name: "fields", value: fields),
+            URLQueryItem(name: "key", value: API_KEY)
+        ]
+        
+        guard let url = urlComponents?.url else {
+            completion(nil, NSError(domain: "Invalid URL", code: 0, userInfo: nil))
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+            
+            guard let data = data else {
+                completion(nil, NSError(domain: "No data", code: 0, userInfo: nil))
+                return
+            }
+            
+            do {
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print(jsonString)
+                }
+                let decoder = JSONDecoder()
+                let placeDetails = try decoder.decode(PlaceDetailsResponse.self, from: data)
+                completion(placeDetails, nil)
+            } catch {
+                print("Error parsing JSON: \(error)")
+                completion(nil, error)
+            }
+        }
+        task.resume()
+    }
 }
 

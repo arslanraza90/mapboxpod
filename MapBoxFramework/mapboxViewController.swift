@@ -577,13 +577,32 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return imageView
     }()
     
+    lazy var categoryCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 10
+        layout.estimatedItemSize = .zero
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.isScrollEnabled = true
+        collectionView.collectionViewLayout = layout
+        collectionView.backgroundColor = .clear
+        collectionView.delegate   = self
+        collectionView.dataSource = self
+        collectionView.register(CategoryCollectionViewCell.self, forCellWithReuseIdentifier: CategoryCollectionViewCell.identifier)
+        return collectionView
+    }()
+    
     var showRoutes = false
     
     public func configrations() {
         
         let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11"))
         let mapView = MapView(frame: view.bounds, mapInitOptions: options)
-        GMSPlacesClient.provideAPIKey("AIzaSyAMlml7aqa1BQRUnmmmgixmFoDR3mdpRUI")
+        GMSPlacesClient.provideAPIKey(API_KEY)
         placesClient = GMSPlacesClient.shared()
         navigationMapView = NavigationMapView(frame: view.bounds, mapView: mapView)
         navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -790,6 +809,22 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 print("")
             }
         }
+        present(vc, animated: true, completion: nil)
+    }
+    
+    func presentNearestLocations(type: PlacesType) {
+        allCategories.forEach({$0.isselected = false })
+        allCategories.forEach({category in
+            if category.type == type {
+                category.isselected = true
+                category.type = type
+            }
+        })
+        let vc = NearestPlacesViewController()
+        vc.modalPresentationStyle = .custom
+        vc.placeType = type
+        vc.origin = origin
+        vc.delegate = self
         present(vc, animated: true, completion: nil)
     }
     
@@ -1286,6 +1321,23 @@ extension UIImageView {
                         self?.image = image
                     }
                 }
+            }
+        }
+    }
+}
+
+extension MapBoxViewController: NearestLocationDelegate {
+    func onDirectionAction(location: Location, name: String) {
+        if let lat = location.lat, let lng = location.lng {
+            let destinationLocation = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+            if let originLocation = origin {
+                categoryCollectionView.isHidden = true
+                addSubviewsOnCellSelection()
+                self.destination = destinationLocation
+                showRoutes = true
+                destinationTextField.text = name
+                locationName.text = name
+                requestRoute(origin: originLocation, destination: destinationLocation)
             }
         }
     }

@@ -41,7 +41,15 @@ extension MapBoxViewController {
         navigationMapView.addSubview(driveModeButton)
         navigationMapView.addSubview(gifImage)
         
+        navigationMapView.addSubview(categoryCollectionView)
+        categoryCollectionView.isHidden = false
+        
         NSLayoutConstraint.activate([
+            categoryCollectionView.bottomAnchor.constraint(equalTo: initialDestinationMainView.topAnchor, constant: -15),
+            categoryCollectionView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: 15),
+            categoryCollectionView.trailingAnchor.constraint(equalTo: navigationMapView.trailingAnchor, constant: 0),
+            categoryCollectionView.heightAnchor.constraint(equalToConstant: 40),
+            
             gifImage.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor),
             gifImage.centerYAnchor.constraint(equalTo: navigationMapView.centerYAnchor),
             gifImage.heightAnchor.constraint(equalToConstant: 100),
