@@ -31,6 +31,10 @@ enum PlacesType: String {
     }
 }
 
+enum PlaceFilterType {
+    case All, TopRated, Open
+}
+
 class Category {
     var name: String
     var image: String

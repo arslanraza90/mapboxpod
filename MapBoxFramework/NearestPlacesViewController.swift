@@ -87,7 +87,6 @@ class NearestPlacesViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
         button.setImage(UIImage(named: "filter"), for: .normal)
-        button.isHidden = true
         return button
     }()
     
@@ -109,7 +108,7 @@ class NearestPlacesViewController: UIViewController {
     var catogories = allCategories
     
     var placesResults: [Results] = []
-    
+    var filterType: PlaceFilterType = .All
     var filterPlacesResults: [Results] = [] {
         didSet {
             DispatchQueue.main.async {
@@ -167,7 +166,7 @@ class NearestPlacesViewController: UIViewController {
             searchView.heightAnchor.constraint(equalToConstant: 45),
             searchView.centerYAnchor.constraint(equalTo: backButton.centerYAnchor),
             searchView.leadingAnchor.constraint(equalTo: backButton.trailingAnchor, constant: 15),
-            searchView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -30),
+            searchView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
     
             serachImageView.leadingAnchor.constraint(equalTo: searchView.leadingAnchor, constant: 8),
             serachImageView.centerYAnchor.constraint(equalTo: searchView.centerYAnchor),
@@ -197,6 +196,7 @@ class NearestPlacesViewController: UIViewController {
         nearestPlacesTableView.dataSource = self
         nearestPlacesTableView.delegate = self
         backButton.addTarget(self, action:#selector(self.backButtonTapped), for: .touchUpInside)
+        filterButton.addTarget(self, action:#selector(self.onFilterTappedPresentDialog), for: .touchUpInside)
         searchTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         addDoneButtonToKeyboard()
     }
@@ -228,6 +228,7 @@ class NearestPlacesViewController: UIViewController {
             } else if let results = response {
                 self.placesResults = results
                 self.filterPlacesResults = results
+                self.filterType = .All
             }
         }
     }
@@ -257,6 +258,16 @@ class NearestPlacesViewController: UIViewController {
         dismiss(animated: true)
     }
     
+    @objc func onFilterTappedPresentDialog(sender: UIButton) {
+        let vc = FilterAlertViewController()
+        vc.doneFilterClosure = { [weak self] filterType in
+            self?.filterPlaces(filterType)
+        }
+        vc.filterType = filterType
+        vc.modalPresentationStyle = .custom
+        present(vc, animated: true, completion: nil)
+    }
+    
     @objc func textFieldDidChange(_ textField: UITextField) {
         if let searchText = textField.text {
             if searchText != "" {
@@ -270,6 +281,23 @@ class NearestPlacesViewController: UIViewController {
     func searchItems(searchText: String) -> [Results] {
         let filteredItems = placesResults.filter { ($0.name?.lowercased() ?? "").contains(searchText.lowercased()) }
         return filteredItems
+    }
+    
+    func filterPlaces(_ filterType: PlaceFilterType) {
+        self.filterType = filterType
+        switch filterType {
+        case .All:
+            filterPlacesResults = placesResults
+        case .TopRated:
+            filterPlacesResults = placesResults.filter({ $0.rating ?? 0 >= 4.5})
+        case .Open:
+            filterPlacesResults = placesResults.filter({ place in
+                if let open_now = place.opening_hours?.open_now {
+                    return open_now
+                }
+                return false
+            })
+        }
     }
 }
 
