@@ -35,7 +35,7 @@ class NearestPlaceTableViewCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Grocery store name"
-        label.font = UIFont.systemFont(ofSize: 18, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         label.backgroundColor = .clear
         label.textColor = #colorLiteral(red: 0.1725490196, green: 0.1725490196, blue: 0.1725490196, alpha: 1)
         label.numberOfLines = 2
@@ -101,7 +101,7 @@ class NearestPlaceTableViewCell: UITableViewCell {
         button.backgroundColor = .clear
         button.setTitle("Call", for: .normal)
         button.setImage(UIImage(named: "call"), for: .normal)
-        button.setTitleColor(UIColor.lightGray, for: .normal)
+        button.setTitleColor(#colorLiteral(red: 0.2666666667, green: 0.2666666667, blue: 0.2666666667, alpha: 1), for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
         return button
     }()
@@ -112,7 +112,7 @@ class NearestPlaceTableViewCell: UITableViewCell {
         button.backgroundColor = .clear
         button.setTitle("Directions", for: .normal)
         button.setImage(UIImage(named: "direction"), for: .normal)
-        button.setTitleColor(UIColor.lightGray, for: .normal)
+        button.setTitleColor(#colorLiteral(red: 0.2666666667, green: 0.2666666667, blue: 0.2666666667, alpha: 1), for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
         return button
     }()
@@ -123,7 +123,7 @@ class NearestPlaceTableViewCell: UITableViewCell {
         button.backgroundColor = .clear
         button.setTitle("Share", for: .normal)
         button.setImage(UIImage(named: "share"), for: .normal)
-        button.setTitleColor(UIColor.lightGray, for: .normal)
+        button.setTitleColor(#colorLiteral(red: 0.2666666667, green: 0.2666666667, blue: 0.2666666667, alpha: 1), for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
         return button
     }()

@@ -183,12 +183,12 @@ class NearestPlacesViewController: UIViewController {
             filterButton.heightAnchor.constraint(equalToConstant: 30),
             filterButton.widthAnchor.constraint(equalToConstant: 30),
             
-            categoryCollectionView.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 3),
+            categoryCollectionView.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 15),
             categoryCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15),
             categoryCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0),
             categoryCollectionView.heightAnchor.constraint(equalToConstant: 40),
             
-            nearestPlacesTableView.topAnchor.constraint(equalTo: self.categoryCollectionView.bottomAnchor, constant: 15),
+            nearestPlacesTableView.topAnchor.constraint(equalTo: self.categoryCollectionView.bottomAnchor, constant: 3),
             nearestPlacesTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 0),
             nearestPlacesTableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0),
             nearestPlacesTableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0),
