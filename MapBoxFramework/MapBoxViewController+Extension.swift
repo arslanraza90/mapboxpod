@@ -30,6 +30,7 @@ extension MapBoxViewController {
         initialDestinationView.addSubview(serachImageView)
         initialDestinationMainView.addSubview(carButton)
         carButton.addTarget(self, action:#selector(self.carDriveModeAction), for: .touchUpInside)
+        carButton.isHidden = false
         
         alertView.addSubview(alertTitleLabel)
         alertView.addSubview(alertDescriptionLabel)
@@ -115,7 +116,8 @@ extension MapBoxViewController {
             initialDestinationMainView.heightAnchor.constraint(equalToConstant: 72),
             
             initialDestinationView.leadingAnchor.constraint(equalTo: initialDestinationMainView.leadingAnchor, constant: 15),
-            initialDestinationView.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor, constant: -55),
+//            initialDestinationView.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor, constant: -55),
+            initialDestinationView.trailingAnchor.constraint(equalTo: carButton.leadingAnchor, constant: -5),
             initialDestinationView.bottomAnchor.constraint(equalTo: initialDestinationMainView.bottomAnchor, constant: -16),
             initialDestinationView.topAnchor.constraint(equalTo: initialDestinationMainView.topAnchor, constant: 17),
             

@@ -779,6 +779,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 self.tableView.reloadData()
             }
         }
+        carButton.isHidden = true
         categoryCollectionView.isHidden = true
         showRoutes = false
         addSubViewsOnDestinationTap()
