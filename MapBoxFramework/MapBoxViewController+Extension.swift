@@ -32,13 +32,6 @@ extension MapBoxViewController {
         carButton.addTarget(self, action:#selector(self.carDriveModeAction), for: .touchUpInside)
         carButton.isHidden = false
         
-        alertView.addSubview(alertTitleLabel)
-        alertView.addSubview(alertDescriptionLabel)
-        alertView.addSubview(alertSeparaterView)
-        alertView.addSubview(alertButton)
-        alertView.addSubview(alertCancelButton)
-        navigationMapView.addSubview(alertView)
-        
         navigationMapView.addSubview(driveModeButton)
         navigationMapView.addSubview(gifImage)
         
@@ -140,27 +133,6 @@ extension MapBoxViewController {
             initialDestinationButton.centerYAnchor.constraint(equalTo: initialDestinationMainView.centerYAnchor),
             initialDestinationButton.heightAnchor.constraint(equalTo: initialDestinationMainView.heightAnchor),
             initialDestinationButton.widthAnchor.constraint(equalTo: initialDestinationMainView.widthAnchor),
-            
-            alertTitleLabel.centerXAnchor.constraint(equalTo: alertView.centerXAnchor, constant: 0),
-            alertTitleLabel.topAnchor.constraint(equalTo: alertView.topAnchor, constant: 30),
-            alertDescriptionLabel.centerXAnchor.constraint(equalTo: alertView.centerXAnchor, constant: 0),
-            alertDescriptionLabel.topAnchor.constraint(equalTo: alertTitleLabel.bottomAnchor, constant: 10),
-            alertSeparaterView.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: 5),
-            alertSeparaterView.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: -5),
-            alertSeparaterView.topAnchor.constraint(equalTo: alertDescriptionLabel.bottomAnchor, constant: 15),
-            alertSeparaterView.heightAnchor.constraint(equalToConstant: 2),
-            alertButton.leadingAnchor.constraint(equalTo: alertView.leadingAnchor, constant: 28),
-            alertButton.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: -28),
-            alertButton.topAnchor.constraint(equalTo: alertSeparaterView.bottomAnchor, constant: 10),
-            alertButton.heightAnchor.constraint(equalToConstant: 35),
-            alertCancelButton.topAnchor.constraint(equalTo: alertView.topAnchor, constant: 10),
-            alertCancelButton.trailingAnchor.constraint(equalTo: alertView.trailingAnchor, constant: -10),
-            alertCancelButton.widthAnchor.constraint(equalToConstant: 20),
-            alertCancelButton.heightAnchor.constraint(equalToConstant: 20),
-            alertView.centerYAnchor.constraint(equalTo: navigationMapView.centerYAnchor, constant: 0),
-            alertView.centerXAnchor.constraint(equalTo: navigationMapView.centerXAnchor, constant: 0),
-            alertView.heightAnchor.constraint(equalToConstant: 150),
-            alertView.widthAnchor.constraint(equalToConstant: 300),
         ])
     }
     

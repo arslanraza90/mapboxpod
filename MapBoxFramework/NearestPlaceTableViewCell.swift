@@ -217,6 +217,9 @@ class NearestPlaceTableViewCell: UITableViewCell {
         if let rating = place.rating {
             ratingLabel.text = String(rating)
             self.ratingView.rating = rating
+        } else {
+            ratingLabel.text = "0"
+            self.ratingView.rating = 0
         }
         var status = ""
         if let openNow = place.opening_hours?.open_now {

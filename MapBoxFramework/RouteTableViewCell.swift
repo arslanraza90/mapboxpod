@@ -80,7 +80,7 @@ class RouteTableViewCell: UITableViewCell {
     lazy var potentialReward: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "  Potential Rewards 500 DRIVES  "
+        label.text = "  Potential Rewards 500 $DRIVES  "
         label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         label.backgroundColor = UIColor(red: 238/255, green: 238/255, blue: 238/255, alpha: 1.000)
         label.textColor = .black

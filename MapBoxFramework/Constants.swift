@@ -35,6 +35,10 @@ enum PlaceFilterType {
     case All, TopRated, Open
 }
 
+public enum DistanceType {
+    case km, miles
+}
+
 class Category {
     var name: String
     var image: String
