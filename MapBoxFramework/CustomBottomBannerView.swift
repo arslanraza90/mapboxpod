@@ -21,6 +21,12 @@ class CustomBottomBannerView: UIView {
     @IBOutlet weak var totalDistance: UILabel!
     @IBOutlet weak var mainView: UIView!
     
+    @IBOutlet weak var kmLabel: UILabel!
+    @IBOutlet weak var arrivalView: UIView!
+    @IBOutlet weak var minuteView: UIView!
+    @IBOutlet weak var kmView: UIView!
+    @IBOutlet weak var drivesView: UIView!
+    
     var eta: String? {
         get {
             return etaLabel.text
@@ -66,10 +72,31 @@ class CustomBottomBannerView: UIView {
         mainView.layer.cornerRadius = 14.5
         backgroundColor = UIColor.white
         layer.cornerRadius = 10
-        layer.shadowColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1).cgColor
-        layer.shadowOpacity = 0.5
-        layer.shadowOffset = CGSize(width: 0 , height:5)
-        layer.shadowRadius = 3
+        
+//        layer.shadowColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1).cgColor
+//        layer.shadowOpacity = 0.5
+//        layer.shadowOffset = CGSize(width: 0 , height:5)
+//        layer.shadowRadius = 3
+        
+        arrivalView.layer.shadowColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1).cgColor
+        arrivalView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        arrivalView.layer.shadowOpacity = 0.7
+        arrivalView.layer.shadowRadius = 4.0
+        
+        minuteView.layer.shadowColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1).cgColor
+        minuteView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        minuteView.layer.shadowOpacity = 0.7
+        minuteView.layer.shadowRadius = 4.0
+        
+        kmView.layer.shadowColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1).cgColor
+        kmView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        kmView.layer.shadowOpacity = 0.7
+        kmView.layer.shadowRadius = 4.0
+        
+        drivesView.layer.shadowColor = #colorLiteral(red: 0.2, green: 0.9529411765, blue: 0.6666666667, alpha: 1).cgColor
+        drivesView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        drivesView.layer.shadowOpacity = 0.7
+        drivesView.layer.shadowRadius = 4.0
     }
     
     override init(frame: CGRect) {

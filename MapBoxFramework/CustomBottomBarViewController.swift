@@ -18,6 +18,7 @@ class CustomBottomBarViewController: ContainerViewController, CustomBottomBanner
     
     weak var navigationViewController: NavigationViewController?
     weak var cancelDelegate: CustomCancelNavigationDegate?
+    var distanceType: DistanceType = .km
     
     // Or you can implement your own UI elements
     lazy var bannerView: CustomBottomBannerView = {
@@ -81,10 +82,10 @@ class CustomBottomBarViewController: ContainerViewController, CustomBottomBanner
         }
         
         
-        
-        let measurement = Measurement(value: progress.route.distance, unit: UnitLength.meters).converted(to: .kilometers)
-        let distanceInKilometers = Int(measurement.value)
-        bannerView.distanceTotal = String(distanceInKilometers)
+        let measurement = Measurement(value: progress.route.distance, unit: UnitLength.meters).converted(to: distanceType == .km ? .kilometers : .miles)
+        let distance = Int(measurement.value)
+        bannerView.distanceTotal = String(distance)
+        bannerView.kmLabel.text = distanceType == .km ? "Km" : "Miles"
     }
     
     // MARK: - CustomBottomBannerViewDelegate implementation

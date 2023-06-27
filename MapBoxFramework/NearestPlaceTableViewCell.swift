@@ -85,7 +85,7 @@ class NearestPlaceTableViewCell: UITableViewCell {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.distribution = .equalSpacing
+        stackView.distribution = .fillEqually
         stackView.spacing = 15
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.backgroundColor = #colorLiteral(red: 0.9490196078, green: 0.9490196078, blue: 0.9490196078, alpha: 1)
@@ -125,6 +125,7 @@ class NearestPlaceTableViewCell: UITableViewCell {
         button.setImage(UIImage(named: "share"), for: .normal)
         button.setTitleColor(#colorLiteral(red: 0.2666666667, green: 0.2666666667, blue: 0.2666666667, alpha: 1), for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+        button.isHidden = true
         return button
     }()
     

@@ -241,7 +241,7 @@ class RouteTableViewCell: UITableViewCell {
         routeOptionButton.addTarget(self, action:#selector(self.onRouteOptionTapped), for: .touchUpInside)
     }
     
-    func populateRouteView(route: Route, location: String?, indexPath: Int) {
+    func populateRouteView(route: Route, location: String?, indexPath: Int, distanceType: DistanceType) {
         routesLabel.isHidden = indexPath == 0 ? false : true
         routeOptionButton.isHidden = indexPath == 0 ? false : true
         fastestRoute.text = indexPath == 0 ? "Fastest Route now" : "Slower Route, more closures"
@@ -256,11 +256,15 @@ class RouteTableViewCell: UITableViewCell {
         }
         
         
-        let kilometers = Measurement(value: route.distance, unit: UnitLength.meters).converted(to: .kilometers)
+        let measurement = Measurement(value: route.distance, unit: UnitLength.meters).converted(to: distanceType == .km ? .kilometers : .miles)
         let meters = Measurement(value: route.distance, unit: UnitLength.meters).converted(to: .meters)
-        let distanceInKilometers = Int(kilometers.value)
-        if distanceInKilometers != 0 {
-            self.routeDistance.text = "\(distanceInKilometers) km"
+        let distance = Int(measurement.value)
+        if distance != 0 {
+            if distanceType == .km {
+                self.routeDistance.text = "\(distance) km"
+            } else {
+                self.routeDistance.text = "\(distance) miles"
+            }
         } else {
             let meters = Int(meters.value)
             self.routeDistance.text = "\(meters) m"

@@ -878,6 +878,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 let topBanner = CustomTopBarViewController()
                 let bottomBanner = CustomBottomBarViewController()
                 bottomBanner.cancelDelegate = self
+                bottomBanner.distanceType = strongSelf.distanceType
                 let navigationOptions = NavigationOptions(styles: [CustomNightStyles()], navigationService: navigationService,
                                                           topBanner: topBanner,
                                                           bottomBanner: bottomBanner)
@@ -1051,7 +1052,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "RouteTableViewCell", for:indexPath) as! RouteTableViewCell
             if let routes = self.routeResponse?.routes, !routes.isEmpty {
                 let route = routes[indexPath.row]
-                cell.populateRouteView(route: route, location: locationName.text, indexPath: indexPath.row)
+                cell.populateRouteView(route: route, location: locationName.text, indexPath: indexPath.row, distanceType: self.distanceType)
             }
             cell.startRouteClosure = { [weak self] in
                 if let routes = self?.routeResponse?.routes {
