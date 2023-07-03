@@ -1232,6 +1232,7 @@ extension MapBoxViewController: CustomCancelNavigationDegate {
             self.destinationTextField.removeFromSuperview()
             self.routesTableView.removeFromSuperview()
             
+            self.searchMapsTextField.text = ""
             self.initialSubViewSetup()
         }, completion: nil)
         

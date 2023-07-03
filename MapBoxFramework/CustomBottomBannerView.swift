@@ -97,6 +97,7 @@ class CustomBottomBannerView: UIView {
         drivesView.layer.shadowOffset = CGSize(width: 0, height: 3)
         drivesView.layer.shadowOpacity = 0.7
         drivesView.layer.shadowRadius = 4.0
+        cancelButton.setTitle("", for: .normal)
     }
     
     override init(frame: CGRect) {
