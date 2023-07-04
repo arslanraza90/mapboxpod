@@ -215,6 +215,12 @@ class NearestPlacesViewController: UIViewController {
     }
     
     func findNearestLocation() {
+        guard Reachability.isConnectedToNetwork() else {
+            DispatchQueue.main.async {
+                Common.showAlert(message: kInternetConnection, viewController: self)
+            }
+            return
+        }
         guard let locationCoordinate = origin  else { return}
         gifImage.isHidden = false
         view.isUserInteractionEnabled = false

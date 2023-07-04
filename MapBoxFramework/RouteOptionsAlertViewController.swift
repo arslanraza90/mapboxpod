@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapboxDirections
 
 class RouteOptionsAlertViewController: UIViewController {
     
@@ -44,7 +45,7 @@ class RouteOptionsAlertViewController: UIViewController {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .clear
-        button.setImage(UIImage(named: "check"), for: .normal)
+        button.setImage(UIImage(named: "uncheck"), for: .normal)
         button.setTitleColor(UIColor.white, for: .normal)
         button.setTitle("Avoid Hazards", for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -12, bottom: 0, right: 0)
@@ -100,6 +101,9 @@ class RouteOptionsAlertViewController: UIViewController {
         button.setTitleColor(#colorLiteral(red: 0.1725490196, green: 0.1725490196, blue: 0.1725490196, alpha: 1), for: .normal)
         return button
     }()
+    
+    var filterType: RoadClasses?
+    var onSelectedRouteTypeClosure: ((_ filterType: RoadClasses)  -> Void)?
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -169,6 +173,22 @@ class RouteOptionsAlertViewController: UIViewController {
         avoidHazardsButton.addTarget(self, action: #selector(avoidHazardsAction(_:)), for: .touchUpInside)
         avoidTrafficButton.addTarget(self, action: #selector(avoidTrafficAction(_:)), for: .touchUpInside)
         avoidRestrictedRoadsButton.addTarget(self, action: #selector(avoidRestrictedRoadsAction(_:)), for: .touchUpInside)
+        
+        if let type = filterType {
+            switch type {
+            case .toll:
+                avoidRoadTollsButton.setImage(UIImage(named: "check"), for: .normal)
+            case .ferry:
+                avoidHazardsButton.setImage(UIImage(named: "check"), for: .normal)
+            case .motorway:
+                avoidTrafficButton.setImage(UIImage(named: "check"), for: .normal)
+            case .restricted:
+                avoidRestrictedRoadsButton.setImage(UIImage(named: "check"), for: .normal)
+            default:
+                return
+
+            }
+        }
     }
     
     @objc func cancelAction(_ sender: UIButton) {
@@ -176,7 +196,11 @@ class RouteOptionsAlertViewController: UIViewController {
     }
     
     @objc func doneAction(_ sender: UIButton) {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: {
+            if let type = self.filterType {
+                self.onSelectedRouteTypeClosure?(type)
+            }
+        })
     }
     
     @objc func avoidRoadTollsAction(_ sender: UIButton) {
@@ -184,6 +208,7 @@ class RouteOptionsAlertViewController: UIViewController {
         avoidHazardsButton.setImage(UIImage(named: "uncheck"), for: .normal)
         avoidTrafficButton.setImage(UIImage(named: "uncheck"), for: .normal)
         avoidRestrictedRoadsButton.setImage(UIImage(named: "uncheck"), for: .normal)
+        filterType = .toll
     }
     
     @objc func avoidHazardsAction(_ sender: UIButton) {
@@ -191,6 +216,7 @@ class RouteOptionsAlertViewController: UIViewController {
         avoidHazardsButton.setImage(UIImage(named: "check"), for: .normal)
         avoidTrafficButton.setImage(UIImage(named: "uncheck"), for: .normal)
         avoidRestrictedRoadsButton.setImage(UIImage(named: "uncheck"), for: .normal)
+        filterType = .ferry
     }
     
     @objc func avoidTrafficAction(_ sender: UIButton) {
@@ -198,6 +224,7 @@ class RouteOptionsAlertViewController: UIViewController {
         avoidHazardsButton.setImage(UIImage(named: "uncheck"), for: .normal)
         avoidTrafficButton.setImage(UIImage(named: "check"), for: .normal)
         avoidRestrictedRoadsButton.setImage(UIImage(named: "uncheck"), for: .normal)
+        filterType = .motorway
     }
     
     @objc func avoidRestrictedRoadsAction(_ sender: UIButton) {
@@ -205,5 +232,6 @@ class RouteOptionsAlertViewController: UIViewController {
         avoidHazardsButton.setImage(UIImage(named: "uncheck"), for: .normal)
         avoidTrafficButton.setImage(UIImage(named: "uncheck"), for: .normal)
         avoidRestrictedRoadsButton.setImage(UIImage(named: "check"), for: .normal)
+        filterType = .restricted
     }
 }

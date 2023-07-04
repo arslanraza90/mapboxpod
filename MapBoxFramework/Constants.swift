@@ -7,6 +7,7 @@
 
 import Foundation
 
+let kInternetConnection = "Please check internet connection."
 let TURN_LOCATION_TEXT = "Turn on Location Services to Allow App to determine your current location."
 let ORIGIN_LOCATION_TEXT = "Please select your current location as origin."
 let DESTINATION_LOCATION_TEXT = "Please select the destination other than your current location."

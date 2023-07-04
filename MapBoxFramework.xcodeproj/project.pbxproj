@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		011632DE2A52DB4B00667139 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 011632DD2A52DB4B00667139 /* Reachability.swift */; };
 		013746CD2A249C0100D112BC /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013746CC2A249C0100D112BC /* APIService.swift */; };
 		013746D32A261F9900D112BC /* RouteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013746D22A261F9900D112BC /* RouteTableViewCell.swift */; };
 		013747032A28971100D112BC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013747022A28971100D112BC /* Constants.swift */; };
@@ -57,6 +58,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		011632DD2A52DB4B00667139 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		013746CC2A249C0100D112BC /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		013746D22A261F9900D112BC /* RouteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteTableViewCell.swift; sourceTree = "<group>"; };
 		013747022A28971100D112BC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				018CF7612A41B58400344248 /* MapBoxViewController+UICollectionViewDelegate.swift */,
 				018CF7652A4334E900344248 /* FilterAlertViewController.swift */,
 				01AA29EE2A45754600FDE555 /* DriveModeGoAlertViewController.swift */,
+				011632DD2A52DB4B00667139 /* Reachability.swift */,
 			);
 			path = MapBoxFramework;
 			sourceTree = "<group>";
@@ -431,6 +434,7 @@
 				A83A813029E96F6500119291 /* CustomTopBarViewController.swift in Sources */,
 				A88B5EE0299516FB0096FF88 /* MapBoxFramework.docc in Sources */,
 				A8C10FC829DEC4DC0091F776 /* CustomBottomBannerView.swift in Sources */,
+				011632DE2A52DB4B00667139 /* Reachability.swift in Sources */,
 				018CF7562A41B25300344248 /* NearestPlacesViewController.swift in Sources */,
 				013747032A28971100D112BC /* Constants.swift in Sources */,
 				018CF7622A41B58400344248 /* MapBoxViewController+UICollectionViewDelegate.swift in Sources */,

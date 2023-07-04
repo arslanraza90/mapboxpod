@@ -542,6 +542,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     
     var showRoutes = false
     var distanceType: DistanceType = .km
+    var routeType: RoadClasses?
+    
     public func configrations(distanceType: DistanceType = .km) {
         self.distanceType = distanceType
         let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11"))
@@ -683,6 +685,12 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     func getWeather(location: CLLocationCoordinate2D) {
+        guard Reachability.isConnectedToNetwork() else {
+            DispatchQueue.main.async {
+                Common.showAlert(message: kInternetConnection, viewController: self)
+            }
+            return
+        }
         APIService.shared.getWeather(location: location) { result in
             switch result {
             case .success(let weather):
@@ -714,6 +722,14 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     @objc func initialDestinationButtonTapped(sender: UIButton) {
+        guard origin != nil  else {
+            showAlert(message: TURN_LOCATION_TEXT, showSettingAlert: true)
+            return
+        }
+        guard Reachability.isConnectedToNetwork() else {
+            showAlert(message: kInternetConnection)
+            return
+        }
         if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
             if selectedPlaces.count != 0 {
                 self.places = selectedPlaces.reversed()
@@ -738,6 +754,13 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     
     func presentRouteOptionDialog() {
         let vc = RouteOptionsAlertViewController()
+        vc.filterType = self.routeType
+        vc.onSelectedRouteTypeClosure = { [weak self] filterType in
+            self?.routeType = filterType
+            if let destination  = self?.destination, let originLocation = self?.origin {
+                self?.requestRoute(origin: originLocation, destination: destination)
+            }
+        }
         vc.modalPresentationStyle = .custom
         present(vc, animated: true, completion: nil)
     }
@@ -947,7 +970,10 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     func requestRoute(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
         gifImage.isHidden = false
         view.isUserInteractionEnabled = false
-        let navigationRouteOptions = NavigationRouteOptions(coordinates: [origin, destination])
+        let navigationRouteOptions = NavigationRouteOptions(coordinates: [origin, destination], profileIdentifier: .automobile)
+        if let type = routeType {
+            navigationRouteOptions.roadClassesToAvoid = type
+        }
         navigationRouteOptions.includesAlternativeRoutes = true
         let cameraOptions = CameraOptions(center: origin, zoom: 12.0)
         self.navigationMapView.mapView.mapboxMap.setCamera(to: cameraOptions)
@@ -1090,6 +1116,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.routeType = nil // Set nil to clear filter types
         self.view.endEditing(true)
         guard !showRoutes else { return }
         var place: Place
@@ -1240,6 +1267,7 @@ extension MapBoxViewController: CustomCancelNavigationDegate {
         self.routeResponse = nil
         self.tableView.reloadData()
         backButton.isHidden = true
+        self.routeType = nil
     }
 }
 

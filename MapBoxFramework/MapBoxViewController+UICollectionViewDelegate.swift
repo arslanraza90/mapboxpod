@@ -24,6 +24,14 @@ extension MapBoxViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard origin != nil  else {
+            showAlert(message: TURN_LOCATION_TEXT, showSettingAlert: true)
+            return
+        }
+        guard Reachability.isConnectedToNetwork() else {
+            showAlert(message: kInternetConnection)
+            return
+        }
         presentNearestLocations(type: allCategories[indexPath.row].type)
     }
 }
