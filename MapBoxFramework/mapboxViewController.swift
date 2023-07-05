@@ -881,7 +881,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     
     func navigationRouteTurnByTurn(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
         
-        let options = NavigationRouteOptions(coordinates: [origin, destination], profileIdentifier: .automobileAvoidingTraffic)
+        let options = NavigationRouteOptions(coordinates: [origin, destination], profileIdentifier: .automobile)
+        if let type = routeType {
+            options.roadClassesToAvoid = type
+        }
+        options.includesAlternativeRoutes = true
         
         Directions.shared.calculate(options) { [weak self] (_, result) in
             switch result {
