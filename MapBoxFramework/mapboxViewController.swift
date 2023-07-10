@@ -545,7 +545,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     var routeType: RoadClasses?
     
     public func configrations(distanceType: DistanceType = .km) {
-        self.distanceType = distanceType
         let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11"))
         let mapView = MapView(frame: view.bounds, mapInitOptions: options)
         GMSPlacesClient.provideAPIKey(API_KEY)
@@ -575,6 +574,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         addDoneButtonToKeyboard()
         tableView.register(LocationTableViewCell.self, forCellReuseIdentifier: "LocationTableViewCell")
         routesTableView.register(RouteTableViewCell.self, forCellReuseIdentifier: "RouteTableViewCell")
+        let mapSubview = MapSubview()
+        mapSubview.onDistanceTypeClosure = { [weak self] type in
+            self?.distanceType = type
+        }
+        view = mapSubview
     }
 
     func addDoneButtonToKeyboard() {
@@ -987,7 +991,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             case .failure(let error):
                 self?.view.isUserInteractionEnabled = true
                 self?.gifImage.isHidden = true
-                self?.showAlert(message: error.localizedDescription)
+                self?.showAlert(message: "The requested route not found, Please try another one")
                 print(error.localizedDescription)
             case .success(let response):
                 self?.view.isUserInteractionEnabled = true

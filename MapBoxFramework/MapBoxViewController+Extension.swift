@@ -467,3 +467,16 @@ extension MapBoxViewController {
     }
 }
 
+//This view is used to pass data from react Native to swift Controller. 
+open class MapSubview: UIView {
+    var onDistanceTypeClosure: ((_ type: DistanceType)  -> Void)?
+    @objc public var distanceType: NSString = "" {
+        didSet {
+            if distanceType == "km" {
+                onDistanceTypeClosure?(.km)
+            } else if distanceType == "miles" {
+                onDistanceTypeClosure?(.miles)
+            }
+        }
+    }
+}
