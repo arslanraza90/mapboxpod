@@ -14,6 +14,11 @@ struct Place: Codable {
     let identifier: String
 }
 
+public struct PlaceVisit: Codable {
+    public let locationName: String
+    public let date: Date
+}
+
 final class GooglePlacesManager {
     
     static let shared = GooglePlacesManager()

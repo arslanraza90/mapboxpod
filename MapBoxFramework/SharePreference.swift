@@ -30,5 +30,23 @@ open class SharePreference: NSObject {
         }
         return nil
     }
+    
+    func setVisitedPlaces(_ place: [PlaceVisit]) {
+        let placeData = try! JSONEncoder().encode(place)
+        defaults.set(placeData, forKey: "PlaceVisit")
+    }
+    
+    func getSavedVistPlaces() -> [PlaceVisit]? {
+        let placesData = UserDefaults.standard.data(forKey: "PlaceVisit")
+        if let placesData = placesData {
+            do {
+                let placeArray = try JSONDecoder().decode([PlaceVisit].self, from: placesData)
+                return placeArray
+            } catch {
+                print("error")
+            }
+        }
+        return nil
+    }
 }
 

@@ -543,6 +543,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     var showRoutes = false
     var distanceType: DistanceType = .km
     var routeType: RoadClasses?
+    public var onRouteHistoryClosure: ((_ places: [PlaceVisit]) -> Void)?
     
     public func configrations(distanceType: DistanceType = .km) {
         let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11"))
@@ -725,6 +726,15 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         }
     }
     
+    func saveVisitPlace(_ place: PlaceVisit) {
+        if var selectedPlaces = SharePreference.shared.getSavedVistPlaces() {
+            selectedPlaces.append(place)
+            SharePreference.shared.setVisitedPlaces(selectedPlaces)
+        } else {
+            SharePreference.shared.setVisitedPlaces([place])
+        }
+    }
+    
     @objc func initialDestinationButtonTapped(sender: UIButton) {
         guard origin != nil  else {
             showAlert(message: TURN_LOCATION_TEXT, showSettingAlert: true)
@@ -884,7 +894,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     func navigationRouteTurnByTurn(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
-        
+        let vistPlace = PlaceVisit(locationName: locationName.text ?? "", date: Date())
+        saveVisitPlace(vistPlace)
+        if let places = SharePreference.shared.getSavedVistPlaces() {
+            onRouteHistoryClosure?(places)
+        }
         let options = NavigationRouteOptions(coordinates: [origin, destination], profileIdentifier: .automobile)
         if let type = routeType {
             options.roadClassesToAvoid = type
