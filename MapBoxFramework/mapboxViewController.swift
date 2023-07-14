@@ -544,6 +544,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     var distanceType: DistanceType = .km
     var routeType: RoadClasses?
     public var onRouteHistoryClosure: ((_ places: [PlaceVisit]) -> Void)?
+    var source: String = ""
     
     public func configrations(distanceType: DistanceType = .km) {
         let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11"))
@@ -628,6 +629,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 if error == nil {
                     if let firstLocation = placemarks?[0],
                        let cityName = firstLocation.locality {
+                        if let name = firstLocation.name {
+                            self?.source = name + ", " + cityName
+                        }
                         if let selectedPlaces = SharePreference.shared.getSelectedPlaces() {
                             if selectedPlaces.count == 0 {
                                 self?.findPlaces(query: cityName)
@@ -894,7 +898,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     func navigationRouteTurnByTurn(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
-        let vistPlace = PlaceVisit(locationName: locationName.text ?? "", date: Date())
+        let vistPlace = PlaceVisit(locationName: locationName.text ?? "", date: Date(), source: self.source, id: 0)
         saveVisitPlace(vistPlace)
         if let places = SharePreference.shared.getSavedVistPlaces() {
             onRouteHistoryClosure?(places)
