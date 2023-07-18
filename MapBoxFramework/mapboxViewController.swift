@@ -670,6 +670,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         self.manager.desiredAccuracy = kCLLocationAccuracyBest
         self.manager.requestWhenInUseAuthorization()
         self.manager.startUpdatingLocation()
+        self.manager.distanceFilter = 4
     }
     
     func startUpdatingLocation() {
@@ -901,6 +902,10 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     @objc func carDriveModeAction(sender: UIButton) {
+        guard origin != nil  else {
+            showAlert(message: TURN_LOCATION_TEXT, showSettingAlert: true)
+            return
+        }
         let vc = DriveModeGoAlertViewController()
         vc.modalPresentationStyle = .custom
         vc.goDriveModeClosure = { [weak self] in
@@ -1137,7 +1142,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     
     public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
         let limit = distanceType == .km ? 80.0 : 50.0
-        let speed = distanceType == .km ? location.speed * 3.6 : location.speed * 2.23694
+        var speed = distanceType == .km ? location.speed * 3.6 : location.speed * 2.23694
         kilometerPerHour.text = distanceType == .km ? "km/h" : "mi/h"
         speedLimitLabel.text = distanceType == .km ? "80" : "50"
         
@@ -1154,13 +1159,16 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 speedLimitOuterView.isHidden = true
             }
         }
+        if speed < 0 {
+            speed = 0
+        }
         let currentSpeed = String(format: "%.0f", speed)
         speedLabel.text = currentSpeed
     }
     
     func setSpeedView(location: CLLocation) {
         let limit = distanceType == .km ? 80.0 : 50.0
-        let speed = distanceType == .km ? location.speed * 3.6 : location.speed * 2.23694
+        var speed = distanceType == .km ? location.speed * 3.6 : location.speed * 2.23694
         driveKilometerPerHour.text = distanceType == .km ? "km/h" : "mi/h"
         driveSpeedLimitLabel.text = distanceType == .km ? "80" : "50"
         if speed > limit {
@@ -1174,7 +1182,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             driveSpeedLabel.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
             driveSpeedLimitOuterView.isHidden = true
         }
-        
+        if speed < 0 {
+            speed = 0
+        }
         let currentSpeed = String(format: "%.0f", speed)
         driveSpeedLabel.text = currentSpeed
     }
