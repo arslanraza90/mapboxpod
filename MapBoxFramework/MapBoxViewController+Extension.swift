@@ -38,6 +38,12 @@ extension MapBoxViewController {
         navigationMapView.addSubview(categoryCollectionView)
         categoryCollectionView.isHidden = false
         
+        navigationMapView.addSubview(driveCurrentSpeedView)
+        driveCurrentSpeedView.addSubview(driveSpeedLabel)
+        driveCurrentSpeedView.addSubview(driveKilometerPerHour)
+        driveSpeedLimitOuterView.addSubview(driveSpeedLimitLabel)
+        navigationMapView.insertSubview(driveSpeedLimitOuterView, aboveSubview: driveCurrentSpeedView)
+        
         NSLayoutConstraint.activate([
             categoryCollectionView.bottomAnchor.constraint(equalTo: initialDestinationMainView.topAnchor, constant: -15),
             categoryCollectionView.leadingAnchor.constraint(equalTo: navigationMapView.leadingAnchor, constant: 15),
@@ -133,6 +139,26 @@ extension MapBoxViewController {
             initialDestinationButton.centerYAnchor.constraint(equalTo: initialDestinationMainView.centerYAnchor),
             initialDestinationButton.heightAnchor.constraint(equalTo: initialDestinationMainView.heightAnchor),
             initialDestinationButton.widthAnchor.constraint(equalTo: initialDestinationMainView.widthAnchor),
+            
+            driveCurrentSpeedView.trailingAnchor.constraint(equalTo: initialDestinationMainView.trailingAnchor, constant: 0),
+            driveCurrentSpeedView.bottomAnchor.constraint(equalTo: navigationMapView.bottomAnchor, constant: -160),
+            driveCurrentSpeedView.widthAnchor.constraint(equalToConstant: 60),
+            driveCurrentSpeedView.heightAnchor.constraint(equalToConstant: 60),
+            driveSpeedLabel.topAnchor.constraint(equalTo: driveCurrentSpeedView.topAnchor, constant: 12),
+            driveSpeedLabel.centerXAnchor.constraint(equalTo: driveCurrentSpeedView.centerXAnchor),
+            driveSpeedLabel.heightAnchor.constraint(equalToConstant: 20),
+            driveSpeedLabel.widthAnchor.constraint(equalToConstant: 45),
+            driveKilometerPerHour.topAnchor.constraint(equalTo: driveSpeedLabel.bottomAnchor, constant: 2),
+            driveKilometerPerHour.centerXAnchor.constraint(equalTo: driveSpeedLabel.centerXAnchor),
+            
+            driveSpeedLimitOuterView.leadingAnchor.constraint(equalTo: driveCurrentSpeedView.trailingAnchor, constant: -15),
+            driveSpeedLimitOuterView.centerYAnchor.constraint(equalTo: driveCurrentSpeedView.centerYAnchor),
+            driveSpeedLimitOuterView.heightAnchor.constraint(equalToConstant: 36),
+            driveSpeedLimitOuterView.widthAnchor.constraint(equalToConstant: 36),
+            driveSpeedLimitLabel.topAnchor.constraint(equalTo: driveSpeedLimitOuterView.topAnchor, constant: 0),
+            driveSpeedLimitLabel.leadingAnchor.constraint(equalTo: driveSpeedLimitOuterView.leadingAnchor, constant: 0),
+            driveSpeedLimitLabel.trailingAnchor.constraint(equalTo: driveSpeedLimitOuterView.trailingAnchor, constant: 0),
+            driveSpeedLimitLabel.bottomAnchor.constraint(equalTo: driveSpeedLimitOuterView.bottomAnchor, constant: 0),
         ])
     }
     

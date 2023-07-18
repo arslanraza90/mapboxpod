@@ -102,8 +102,9 @@ class RouteOptionsAlertViewController: UIViewController {
         return button
     }()
     
-    var filterType: RoadClasses?
-    var onSelectedRouteTypeClosure: ((_ filterType: RoadClasses)  -> Void)?
+    var buttonTappedStates: [UIButton: Bool] = [:]
+    var filterType: [RoadClasses] = []
+    var onSelectedRouteTypeClosure: ((_ filterType: [RoadClasses])  -> Void)?
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -174,15 +175,23 @@ class RouteOptionsAlertViewController: UIViewController {
         avoidTrafficButton.addTarget(self, action: #selector(avoidTrafficAction(_:)), for: .touchUpInside)
         avoidRestrictedRoadsButton.addTarget(self, action: #selector(avoidRestrictedRoadsAction(_:)), for: .touchUpInside)
         
-        if let type = filterType {
+        buttonTappedStates[avoidRoadTollsButton] = false
+        buttonTappedStates[avoidHazardsButton] = false
+        buttonTappedStates[avoidTrafficButton] = false
+        buttonTappedStates[avoidRestrictedRoadsButton] = false
+        for type in filterType {
             switch type {
             case .toll:
+                buttonTappedStates[avoidRoadTollsButton] = true
                 avoidRoadTollsButton.setImage(UIImage(named: "check"), for: .normal)
             case .ferry:
+                buttonTappedStates[avoidHazardsButton] = true
                 avoidHazardsButton.setImage(UIImage(named: "check"), for: .normal)
             case .motorway:
+                buttonTappedStates[avoidTrafficButton] = true
                 avoidTrafficButton.setImage(UIImage(named: "check"), for: .normal)
             case .restricted:
+                buttonTappedStates[avoidRestrictedRoadsButton] = true
                 avoidRestrictedRoadsButton.setImage(UIImage(named: "check"), for: .normal)
             default:
                 return
@@ -197,41 +206,63 @@ class RouteOptionsAlertViewController: UIViewController {
     
     @objc func doneAction(_ sender: UIButton) {
         dismiss(animated: true, completion: {
-            if let type = self.filterType {
-                self.onSelectedRouteTypeClosure?(type)
-            }
+            self.onSelectedRouteTypeClosure?(self.filterType)
         })
     }
     
     @objc func avoidRoadTollsAction(_ sender: UIButton) {
-        avoidRoadTollsButton.setImage(UIImage(named: "check"), for: .normal)
-        avoidHazardsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidTrafficButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidRestrictedRoadsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        filterType = .toll
+        if let currentState = buttonTappedStates[sender] {
+            let newState = !currentState // Toggle the state
+            buttonTappedStates[sender] = newState
+            if newState {
+                filterType.append(.toll)
+                sender.setImage(UIImage(named: "check"), for: .normal)
+            } else {
+                sender.setImage(UIImage(named: "uncheck"), for: .normal)
+                filterType.removeAll(where: {$0 == .toll})
+            }
+        }
     }
     
     @objc func avoidHazardsAction(_ sender: UIButton) {
-        avoidRoadTollsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidHazardsButton.setImage(UIImage(named: "check"), for: .normal)
-        avoidTrafficButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidRestrictedRoadsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        filterType = .ferry
+        if let currentState = buttonTappedStates[sender] {
+            let newState = !currentState // Toggle the state
+            buttonTappedStates[sender] = newState
+            if newState {
+                filterType.append(.ferry)
+                sender.setImage(UIImage(named: "check"), for: .normal)
+            } else {
+                sender.setImage(UIImage(named: "uncheck"), for: .normal)
+                filterType.removeAll(where: {$0 == .ferry})
+            }
+        }
     }
     
     @objc func avoidTrafficAction(_ sender: UIButton) {
-        avoidRoadTollsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidHazardsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidTrafficButton.setImage(UIImage(named: "check"), for: .normal)
-        avoidRestrictedRoadsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        filterType = .motorway
+        if let currentState = buttonTappedStates[sender] {
+            let newState = !currentState // Toggle the state
+            buttonTappedStates[sender] = newState
+            if newState {
+                filterType.append(.motorway)
+                sender.setImage(UIImage(named: "check"), for: .normal)
+            } else {
+                sender.setImage(UIImage(named: "uncheck"), for: .normal)
+                filterType.removeAll(where: {$0 == .motorway})
+            }
+        }
     }
     
     @objc func avoidRestrictedRoadsAction(_ sender: UIButton) {
-        avoidRoadTollsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidHazardsButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidTrafficButton.setImage(UIImage(named: "uncheck"), for: .normal)
-        avoidRestrictedRoadsButton.setImage(UIImage(named: "check"), for: .normal)
-        filterType = .restricted
+        if let currentState = buttonTappedStates[sender] {
+            let newState = !currentState // Toggle the state
+            buttonTappedStates[sender] = newState
+            if newState {
+                filterType.append(.restricted)
+                sender.setImage(UIImage(named: "check"), for: .normal)
+            } else {
+                sender.setImage(UIImage(named: "uncheck"), for: .normal)
+                filterType.removeAll(where: {$0 == .restricted})
+            }
+        }
     }
 }

@@ -17,6 +17,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     var navigationMapView: NavigationMapView!
     private var placesClient: GMSPlacesClient!
     var manager:CLLocationManager!
+    private var isUpdatingLocation = false
     var places: [Place] = []
     var isFromOrigin = false
     var isFromDestination = false
@@ -83,10 +84,10 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var speedLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "10"
+        label.text = "0"
         label.backgroundColor = .clear
         label.textAlignment = .center
-        label.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
+        label.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
         label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
         return label
     }()
@@ -97,7 +98,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         label.text = "km/h"
         label.backgroundColor = .clear
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        label.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
+        label.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
         return label
     }()
     
@@ -484,7 +485,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     lazy var carButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = #colorLiteral(red: 0.968627451, green: 0.968627451, blue: 0.968627451, alpha: 0.9)
+        button.backgroundColor = #colorLiteral(red: 0.8470588235, green: 0.8470588235, blue: 0.8470588235, alpha: 1)
         button.setImage(UIImage(named: "carIcon"), for: .normal)
         button.layer.cornerRadius = 10
         return button
@@ -540,9 +541,65 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         return collectionView
     }()
     
+    lazy var driveCurrentSpeedView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        view.layer.cornerRadius = 30.0
+        view.layer.masksToBounds = true
+        view.layer.borderColor = UIColor.white.cgColor
+        view.layer.borderWidth = 3.0
+        view.isHidden = true
+        return view
+    }()
+    
+    lazy var driveSpeedLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "0"
+        label.backgroundColor = .clear
+        label.textAlignment = .center
+        label.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+        label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+        return label
+    }()
+    
+    lazy var driveKilometerPerHour: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "km/h"
+        label.backgroundColor = .clear
+        label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        label.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+        return label
+    }()
+    
+    lazy var driveSpeedLimitOuterView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .gray
+        view.layer.cornerRadius = 18.0
+        view.layer.masksToBounds = true
+        view.layer.borderColor = UIColor.white.cgColor
+        view.layer.borderWidth = 3.0
+        view.isHidden = true
+        return view
+    }()
+    
+    lazy var driveSpeedLimitLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "80"
+        label.backgroundColor = .clear
+        label.textAlignment = .center
+        label.textColor = #colorLiteral(red: 0.3450980392, green: 0.3450980392, blue: 0.3450980392, alpha: 1)
+        label.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        return label
+    }()
+    
     var showRoutes = false
     var distanceType: DistanceType = .km
-    var routeType: RoadClasses?
+    var routeType: [RoadClasses] = []
     public var onRouteHistoryClosure: ((_ places: [PlaceVisit]) -> Void)?
     var source: String = ""
     
@@ -615,13 +672,26 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         self.manager.startUpdatingLocation()
     }
     
+    func startUpdatingLocation() {
+        self.manager.startUpdatingLocation()
+        isUpdatingLocation = true
+    }
+    
+    func stopUpdatingLocation() {
+        self.manager.stopUpdatingLocation()
+        isUpdatingLocation = false
+    }
+    
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        self.manager.stopUpdatingLocation() //stop getting user location
-        
+        if let location = locations.last {
+            setSpeedView(location: location)
+        }
         let location = locations[0]
         origin = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         backupOriginCordinates = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
         
+        guard !isUpdatingLocation else { return }
+        stopUpdatingLocation()
         if let lastLocation = locations.last {
             let geocoder = CLGeocoder()
             getWeather(location: lastLocation.coordinate)
@@ -791,6 +861,10 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 self?.initialDestinationMainView.isHidden = false
                 self?.categoryCollectionView.isHidden = false
                 self?.driveModeButton.isHidden = true
+                
+                self?.driveCurrentSpeedView.isHidden = true
+                self?.driveSpeedLimitOuterView.isHidden = true
+                self?.stopUpdatingLocation()
             }) { _ in
                 print("")
             }
@@ -835,6 +909,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
                 self?.categoryCollectionView.isHidden = true
                 self?.driveModeButton.isHidden = false
                 
+                self?.driveCurrentSpeedView.isHidden = false
+                self?.resetSpeedViews()
+                self?.startUpdatingLocation()
             }) { _ in
                 print("")
             }
@@ -904,8 +981,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
             onRouteHistoryClosure?(places)
         }
         let options = NavigationRouteOptions(coordinates: [origin, destination], profileIdentifier: .automobile)
-        if let type = routeType {
-            options.roadClassesToAvoid = type
+        for roadClass in routeType {
+            options.roadClassesToAvoid.insert(roadClass)
         }
         options.includesAlternativeRoutes = true
         
@@ -997,8 +1074,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         gifImage.isHidden = false
         view.isUserInteractionEnabled = false
         let navigationRouteOptions = NavigationRouteOptions(coordinates: [origin, destination], profileIdentifier: .automobile)
-        if let type = routeType {
-            navigationRouteOptions.roadClassesToAvoid = type
+        for roadClass in routeType {
+            navigationRouteOptions.roadClassesToAvoid.insert(roadClass)
         }
         navigationRouteOptions.includesAlternativeRoutes = true
         let cameraOptions = CameraOptions(center: origin, zoom: 12.0)
@@ -1081,6 +1158,33 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         speedLabel.text = currentSpeed
     }
     
+    func setSpeedView(location: CLLocation) {
+        let limit = distanceType == .km ? 80.0 : 50.0
+        let speed = distanceType == .km ? location.speed * 3.6 : location.speed * 2.23694
+        driveKilometerPerHour.text = distanceType == .km ? "km/h" : "mi/h"
+        driveSpeedLimitLabel.text = distanceType == .km ? "80" : "50"
+        if speed > limit {
+            driveKilometerPerHour.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+            driveSpeedLabel.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+            driveSpeedLimitLabel.textColor = .white
+            driveSpeedLimitOuterView.backgroundColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+            driveSpeedLimitOuterView.isHidden = false
+        } else {
+            driveKilometerPerHour.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+            driveSpeedLabel.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+            driveSpeedLimitOuterView.isHidden = true
+        }
+        
+        let currentSpeed = String(format: "%.0f", speed)
+        driveSpeedLabel.text = currentSpeed
+    }
+    
+    func resetSpeedViews() {
+        driveSpeedLabel.text = "0"
+        driveSpeedLabel.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+        driveKilometerPerHour.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+    }
+    
     public func navigationMapView(_ navigationMapView: MapboxNavigation.NavigationMapView, didSelect route: MapboxDirections.Route) {
         currentRouteIndex = routes?.firstIndex(of: route) ?? 0
         populateRouteView(route: route)
@@ -1142,7 +1246,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.routeType = nil // Set nil to clear filter types
+        self.routeType = [] // Set nil to clear filter types
         self.view.endEditing(true)
         guard !showRoutes else { return }
         var place: Place
@@ -1293,7 +1397,7 @@ extension MapBoxViewController: CustomCancelNavigationDegate {
         self.routeResponse = nil
         self.tableView.reloadData()
         backButton.isHidden = true
-        self.routeType = nil
+        self.routeType = []
     }
 }
 
