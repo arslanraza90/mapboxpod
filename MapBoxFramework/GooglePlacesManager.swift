@@ -18,7 +18,7 @@ public struct PlaceVisit: Codable {
     public let locationName: String
     public let date: Date
     public let source: String
-    public let id: Int
+    public let id: String
 }
 
 final class GooglePlacesManager {

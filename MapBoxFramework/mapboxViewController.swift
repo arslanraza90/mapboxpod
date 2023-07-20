@@ -602,6 +602,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     var routeType: [RoadClasses] = []
     public var onRouteHistoryClosure: ((_ places: [PlaceVisit]) -> Void)?
     var source: String = ""
+    var place: Place?
     
     public func configrations(distanceType: DistanceType = .km) {
         let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11"))
@@ -980,11 +981,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     func navigationRouteTurnByTurn(origin: CLLocationCoordinate2D, destination: CLLocationCoordinate2D) {
-        let vistPlace = PlaceVisit(locationName: locationName.text ?? "", date: Date(), source: self.source, id: 0)
-        saveVisitPlace(vistPlace)
-        if let places = SharePreference.shared.getSavedVistPlaces() {
-            onRouteHistoryClosure?(places)
-        }
+        let vistPlace = PlaceVisit(locationName: locationName.text ?? "", date: Date(), source: self.source, id: self.place?.identifier ?? "0")
+        onRouteHistoryClosure?([vistPlace])
         let options = NavigationRouteOptions(coordinates: [origin, destination], profileIdentifier: .automobile)
         for roadClass in routeType {
             options.roadClassesToAvoid.insert(roadClass)
@@ -1270,6 +1268,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
                 locationName.text = "Current location"
             } else  {
                 place = places[indexPath.row]
+                self.place = place
                 destinationTextField.text = place.name
                 locationName.text = place.name
                 getCoordinatesFromPlaces(place: place)
@@ -1281,6 +1280,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
             
             if isFromOrigin || isFromDestination {
                 place = places[indexPath.row - 1]
+                self.place = place
                 if isFromOrigin {
                     originTextField.text = place.name
                 } else {
@@ -1426,7 +1426,7 @@ extension UIImageView {
 }
 
 extension MapBoxViewController: NearestLocationDelegate {
-    func onDirectionAction(location: Location, name: String) {
+    func onDirectionAction(location: Location, name: String, placeId: String) {
         if let lat = location.lat, let lng = location.lng {
             let destinationLocation = CLLocationCoordinate2D(latitude: lat, longitude: lng)
             if let originLocation = origin {
@@ -1436,6 +1436,7 @@ extension MapBoxViewController: NearestLocationDelegate {
                 showRoutes = true
                 destinationTextField.text = name
                 locationName.text = name
+                self.place = Place(name: name, identifier: placeId)
                 requestRoute(origin: originLocation, destination: destinationLocation)
                 backButton.isHidden = false
             }

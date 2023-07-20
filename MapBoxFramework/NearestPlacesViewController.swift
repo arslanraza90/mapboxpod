@@ -12,7 +12,7 @@ import MapboxNavigation
 import MapboxMaps
 
 protocol NearestLocationDelegate: AnyObject {
-    func onDirectionAction(location: Location, name: String)
+    func onDirectionAction(location: Location, name: String, placeId: String)
 }
 
 class NearestPlacesViewController: UIViewController {
@@ -329,9 +329,9 @@ extension NearestPlacesViewController: UITableViewDataSource, UITableViewDelegat
             }
         }
         cell.directionClosure = { [weak self] in
-            if let location = place.geometry?.location, let name = place.name {
+            if let location = place.geometry?.location, let name = place.name, let id = place.place_id {
                 self?.dismiss(animated: true, completion: {
-                    self?.delegate?.onDirectionAction(location: location, name: name)
+                    self?.delegate?.onDirectionAction(location: location, name: name, placeId: id)
                 })
             }
         }
