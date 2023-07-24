@@ -21,6 +21,16 @@ public struct PlaceVisit: Codable {
     public let id: String
 }
 
+public struct SaveRoute: Codable {
+    public let id: String
+    public let date: Date
+    public let title: String
+    public let lat: Double
+    public let lng: Double
+    public let placeType: String
+    public let placeImageURL: String
+}
+
 final class GooglePlacesManager {
     
     static let shared = GooglePlacesManager()

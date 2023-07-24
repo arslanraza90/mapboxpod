@@ -144,8 +144,17 @@ class RouteTableViewCell: UITableViewCell {
         return button
     }()
     
+    lazy var favouriteButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(named: "unfavourite"), for: .normal)
+        return button
+    }()
+    
     var startRouteClosure: (()  -> Void)?
     var routeOptionClosure: (()  -> Void)?
+    var saveRouteOptionClosure: (()  -> Void)?
+    var isFavourite = false
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -173,6 +182,7 @@ class RouteTableViewCell: UITableViewCell {
         routeMainView.addSubview(startLabel)
         routeMainView.addSubview(startButton)
         routeMainView.addSubview(sepratorView)
+        routeMainView.addSubview(favouriteButton)
         
         NSLayoutConstraint.activate([
             
@@ -184,6 +194,11 @@ class RouteTableViewCell: UITableViewCell {
             routesLabel.leadingAnchor.constraint(equalTo: routeMainView.leadingAnchor, constant: 10),
             routesLabel.topAnchor.constraint(equalTo: routeMainView.topAnchor, constant: 5),
             routesLabel.heightAnchor.constraint(equalToConstant: 17),
+            
+            favouriteButton.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -5),
+            favouriteButton.topAnchor.constraint(equalTo: routeMainView.topAnchor, constant: 2),
+            favouriteButton.heightAnchor.constraint(equalToConstant: 25),
+            favouriteButton.widthAnchor.constraint(equalToConstant: 28),
             
             routeOptionButton.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -10),
             routeOptionButton.topAnchor.constraint(equalTo: routeMainView.topAnchor, constant: 5),
@@ -239,9 +254,13 @@ class RouteTableViewCell: UITableViewCell {
         
         startButton.addTarget(self, action:#selector(self.onStartRoute), for: .touchUpInside)
         routeOptionButton.addTarget(self, action:#selector(self.onRouteOptionTapped), for: .touchUpInside)
+        favouriteButton.addTarget(self, action:#selector(self.onSaveRouteTapped(_:)), for: .touchUpInside)
     }
     
-    func populateRouteView(route: Route, location: String?, indexPath: Int, distanceType: DistanceType) {
+    func populateRouteView(route: Route, location: String?, indexPath: Int, distanceType: DistanceType, isFavourite: Bool) {
+        favouriteButton.isHidden = indexPath == 0 ? false : true
+        favouriteButton.setImage(isFavourite ? UIImage(named: "favourite") : UIImage(named: "unfavourite") , for: .normal)
+        self.isFavourite = isFavourite
         routesLabel.isHidden = indexPath == 0 ? false : true
         routeOptionButton.isHidden = indexPath == 0 ? false : true
         fastestRoute.text = indexPath == 0 ? "Fastest Route now" : "Slower Route, more closures"
@@ -290,5 +309,11 @@ class RouteTableViewCell: UITableViewCell {
     
     @objc func onRouteOptionTapped(_ sender: UIButton) {
         self.routeOptionClosure?()
+    }
+    
+    @objc func onSaveRouteTapped(_ sender: UIButton) {
+        self.saveRouteOptionClosure?()
+        isFavourite.toggle()
+        favouriteButton.setImage(isFavourite ? UIImage(named: "favourite") : UIImage(named: "unfavourite") , for: .normal)
     }
 }

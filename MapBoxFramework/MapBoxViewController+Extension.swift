@@ -496,6 +496,7 @@ extension MapBoxViewController {
 //This view is used to pass data from react Native to swift Controller. 
 open class MapSubview: UIView {
     var onDistanceTypeClosure: ((_ type: DistanceType)  -> Void)?
+    var onSaveRoutesClosure: ((_ placesIds: [String])  -> Void)?
     @objc public var distanceType: NSString = "" {
         didSet {
             if distanceType == "km" {
@@ -503,6 +504,18 @@ open class MapSubview: UIView {
             } else if distanceType == "miles" {
                 onDistanceTypeClosure?(.miles)
             }
+        }
+    }
+    
+    @objc public var saveRoutes: NSArray = [] {
+        didSet {
+            var placesIds: [String] = []
+            for dict in saveRoutes {
+                if let userDict = dict as? [String: Any], let id = userDict["id"] as? String {
+                    placesIds.append(id)
+                }
+            }
+            onSaveRoutesClosure?(placesIds)
         }
     }
 }

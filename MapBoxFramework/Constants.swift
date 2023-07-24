@@ -30,6 +30,17 @@ enum PlacesType: String {
             return "gas"
         }
     }
+    
+    var name: String {
+        switch self {
+        case .grocerystore:
+            return "Grocery Store"
+        case .restaurant:
+            return "Restaurant"
+        case .gasStations:
+            return "Gas Stations"
+        }
+    }
 }
 
 enum PlaceFilterType {

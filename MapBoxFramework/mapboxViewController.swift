@@ -601,8 +601,12 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     var distanceType: DistanceType = .km
     var routeType: [RoadClasses] = []
     public var onRouteHistoryClosure: ((_ places: [PlaceVisit]) -> Void)?
+    public var onSaveRouteClosure: ((_ saveRoute: SaveRoute) -> Void)?
     var source: String = ""
     var place: Place?
+    var placesIds: [String] = []
+    var placeType: String = ""
+    var placeImageURL = ""
     
     public func configrations(distanceType: DistanceType = .km) {
         let options = MapInitOptions(styleURI: StyleURI(rawValue: "mapbox://styles/mapbox/dark-v11"))
@@ -637,6 +641,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         let mapSubview = MapSubview()
         mapSubview.onDistanceTypeClosure = { [weak self] type in
             self?.distanceType = type
+        }
+        mapSubview.onSaveRoutesClosure = { [weak self] placeIds in
+            self?.placesIds = placeIds
         }
         view = mapSubview
     }
@@ -1197,6 +1204,15 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         currentRouteIndex = routes?.firstIndex(of: route) ?? 0
         populateRouteView(route: route)
     }
+    
+    func saveRoutes() {
+        if let latitude = destination?.latitude, let longitude = destination?.longitude {
+            let saveRoute = SaveRoute(id: self.place?.identifier ?? "0", date: Date(), title: self.source, lat: latitude, lng: longitude, placeType: placeType, placeImageURL: placeImageURL)
+            onSaveRouteClosure?(saveRoute)
+            placeType = ""
+            placeImageURL = ""
+        }
+    }
 }
 
 extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
@@ -1216,7 +1232,13 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "RouteTableViewCell", for:indexPath) as! RouteTableViewCell
             if let routes = self.routeResponse?.routes, !routes.isEmpty {
                 let route = routes[indexPath.row]
-                cell.populateRouteView(route: route, location: locationName.text, indexPath: indexPath.row, distanceType: self.distanceType)
+                var isFavourite = false
+                if let placeId = self.place?.identifier {
+                    if placesIds.contains(placeId) {
+                        isFavourite = true
+                    }
+                }
+                cell.populateRouteView(route: route, location: locationName.text, indexPath: indexPath.row, distanceType: self.distanceType, isFavourite: isFavourite)
             }
             cell.startRouteClosure = { [weak self] in
                 if let routes = self?.routeResponse?.routes {
@@ -1226,6 +1248,9 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
             }
             cell.routeOptionClosure = { [weak self] in
                 self?.presentRouteOptionDialog()
+            }
+            cell.saveRouteOptionClosure = { [weak self] in
+                self?.saveRoutes()
             }
             return cell
         } else {
@@ -1426,7 +1451,7 @@ extension UIImageView {
 }
 
 extension MapBoxViewController: NearestLocationDelegate {
-    func onDirectionAction(location: Location, name: String, placeId: String) {
+    func onDirectionAction(location: Location, name: String, placeId: String, imageURL: String, placeType: String) {
         if let lat = location.lat, let lng = location.lng {
             let destinationLocation = CLLocationCoordinate2D(latitude: lat, longitude: lng)
             if let originLocation = origin {
@@ -1437,6 +1462,8 @@ extension MapBoxViewController: NearestLocationDelegate {
                 destinationTextField.text = name
                 locationName.text = name
                 self.place = Place(name: name, identifier: placeId)
+                self.placeType = placeType
+                self.placeImageURL = imageURL
                 requestRoute(origin: originLocation, destination: destinationLocation)
                 backButton.isHidden = false
             }
