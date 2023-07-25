@@ -1314,6 +1314,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             } else {
                 place = places[indexPath.row]
+                self.place = place
                 destinationTextField.text = place.name
                 locationName.text = place.name
             }

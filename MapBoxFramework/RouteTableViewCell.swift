@@ -196,11 +196,11 @@ class RouteTableViewCell: UITableViewCell {
             routesLabel.heightAnchor.constraint(equalToConstant: 17),
             
             favouriteButton.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -5),
-            favouriteButton.topAnchor.constraint(equalTo: routeMainView.topAnchor, constant: 2),
+            favouriteButton.topAnchor.constraint(equalTo: routeMainView.topAnchor, constant: 3),
             favouriteButton.heightAnchor.constraint(equalToConstant: 25),
             favouriteButton.widthAnchor.constraint(equalToConstant: 28),
             
-            routeOptionButton.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -10),
+            routeOptionButton.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor, constant: -40),
             routeOptionButton.topAnchor.constraint(equalTo: routeMainView.topAnchor, constant: 5),
             routeOptionButton.heightAnchor.constraint(equalToConstant: 20),
             
