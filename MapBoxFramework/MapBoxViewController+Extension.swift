@@ -452,7 +452,7 @@ extension MapBoxViewController {
         }, completion: nil)
         
         if let constraint = (routesTableView.constraints.filter{$0.firstAttribute == .height}.first) {
-            constraint.constant = 20 + CGFloat((self.routeResponse?.routes?.count ?? 1) * 125)
+            constraint.constant = CGFloat((self.routeResponse?.routes?.count ?? 1) * 133)
         }
     }
     

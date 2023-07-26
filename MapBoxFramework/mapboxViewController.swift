@@ -977,6 +977,8 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     }
     
     @objc func findRouteAction(sender: UIButton) {
+        placeType = ""
+        placeImageURL = ""
         showRoutes = true
         guard origin != nil  else {
             showAlert(message: TURN_LOCATION_TEXT, showSettingAlert: true)
@@ -1209,8 +1211,6 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         if let latitude = destination?.latitude, let longitude = destination?.longitude {
             let saveRoute = SaveRoute(id: self.place?.identifier ?? "0", date: Date(), title: locationName.text ?? "", lat: latitude, lng: longitude, placeType: placeType, placeImageURL: placeImageURL, isFavourite: isFavourite)
             onSaveRouteClosure?(saveRoute)
-            placeType = ""
-            placeImageURL = ""
         }
     }
 }
@@ -1272,7 +1272,7 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView == routesTableView {
-            return 125
+            return 132
         } else {
             return 46
         }

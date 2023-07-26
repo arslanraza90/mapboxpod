@@ -128,6 +128,7 @@ class RouteTableViewCell: UITableViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .lightGray
         view.layer.cornerRadius = 0
+        view.isHidden = true
         return view
     }()
     
@@ -149,6 +150,14 @@ class RouteTableViewCell: UITableViewCell {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(named: "unfavourite"), for: .normal)
         return button
+    }()
+    
+    lazy var routeSepratorView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .lightGray
+        view.layer.cornerRadius = 0
+        return view
     }()
     
     var startRouteClosure: (()  -> Void)?
@@ -183,6 +192,7 @@ class RouteTableViewCell: UITableViewCell {
         routeMainView.addSubview(startButton)
         routeMainView.addSubview(sepratorView)
         routeMainView.addSubview(favouriteButton)
+        routeMainView.addSubview(routeSepratorView)
         
         NSLayoutConstraint.activate([
             
@@ -205,7 +215,7 @@ class RouteTableViewCell: UITableViewCell {
             routeOptionButton.heightAnchor.constraint(equalToConstant: 20),
             
             locationName.leadingAnchor.constraint(equalTo: routeMainView.leadingAnchor, constant: 10),
-            locationName.topAnchor.constraint(equalTo: routesLabel.bottomAnchor, constant: 10),
+            locationName.topAnchor.constraint(equalTo: routeSepratorView.bottomAnchor, constant: 10),
             locationName.heightAnchor.constraint(equalToConstant: 15),
             locationName.trailingAnchor.constraint(equalTo: routeTime.leadingAnchor, constant: -2),
             
@@ -250,6 +260,11 @@ class RouteTableViewCell: UITableViewCell {
             sepratorView.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor),
             sepratorView.bottomAnchor.constraint(equalTo: routeMainView.bottomAnchor, constant: 0),
             sepratorView.heightAnchor.constraint(equalToConstant: 1),
+            
+            routeSepratorView.leadingAnchor.constraint(equalTo: routeMainView.leadingAnchor),
+            routeSepratorView.trailingAnchor.constraint(equalTo: routeMainView.trailingAnchor),
+            routeSepratorView.topAnchor.constraint(equalTo: routesLabel.bottomAnchor, constant: 13),
+            routeSepratorView.heightAnchor.constraint(equalToConstant: 1),
         ])
         
         startButton.addTarget(self, action:#selector(self.onStartRoute), for: .touchUpInside)
