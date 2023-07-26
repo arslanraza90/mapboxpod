@@ -153,7 +153,7 @@ class RouteTableViewCell: UITableViewCell {
     
     var startRouteClosure: (()  -> Void)?
     var routeOptionClosure: (()  -> Void)?
-    var saveRouteOptionClosure: (()  -> Void)?
+    var saveRouteOptionClosure: ((_ isFavourite: Bool)  -> Void)?
     var isFavourite = false
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -312,8 +312,8 @@ class RouteTableViewCell: UITableViewCell {
     }
     
     @objc func onSaveRouteTapped(_ sender: UIButton) {
-        self.saveRouteOptionClosure?()
         isFavourite.toggle()
         favouriteButton.setImage(isFavourite ? UIImage(named: "favourite") : UIImage(named: "unfavourite") , for: .normal)
+        self.saveRouteOptionClosure?(isFavourite)
     }
 }

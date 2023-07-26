@@ -29,6 +29,7 @@ public struct SaveRoute: Codable {
     public let lng: Double
     public let placeType: String
     public let placeImageURL: String
+    public let isFavourite: Bool
 }
 
 final class GooglePlacesManager {

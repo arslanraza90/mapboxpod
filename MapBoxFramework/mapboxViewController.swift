@@ -1205,9 +1205,9 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         populateRouteView(route: route)
     }
     
-    func saveRoutes() {
+    func saveRoutes(isFavourite: Bool) {
         if let latitude = destination?.latitude, let longitude = destination?.longitude {
-            let saveRoute = SaveRoute(id: self.place?.identifier ?? "0", date: Date(), title: self.source, lat: latitude, lng: longitude, placeType: placeType, placeImageURL: placeImageURL)
+            let saveRoute = SaveRoute(id: self.place?.identifier ?? "0", date: Date(), title: locationName.text ?? "", lat: latitude, lng: longitude, placeType: placeType, placeImageURL: placeImageURL, isFavourite: isFavourite)
             onSaveRouteClosure?(saveRoute)
             placeType = ""
             placeImageURL = ""
@@ -1249,8 +1249,8 @@ extension MapBoxViewController: UITableViewDelegate, UITableViewDataSource {
             cell.routeOptionClosure = { [weak self] in
                 self?.presentRouteOptionDialog()
             }
-            cell.saveRouteOptionClosure = { [weak self] in
-                self?.saveRoutes()
+            cell.saveRouteOptionClosure = { [weak self] isFavourite in
+                self?.saveRoutes(isFavourite: isFavourite)
             }
             return cell
         } else {
