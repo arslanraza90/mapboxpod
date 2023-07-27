@@ -1153,19 +1153,19 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
         kilometerPerHour.text = distanceType == .km ? "km/h" : "mi/h"
         speedLimitLabel.text = distanceType == .km ? "80" : "50"
         
-        if let _ = navigationViewController.navigationView.speedLimitView.speedLimit?.value  {
-            if speed > limit {
-                kilometerPerHour.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
-                speedLabel.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
-                speedLimitLabel.textColor = .white
-                speedLimitOuterView.backgroundColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
-                speedLimitOuterView.isHidden = false
-            } else {
-                kilometerPerHour.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
-                speedLabel.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
-                speedLimitOuterView.isHidden = true
-            }
+        if let _ = navigationViewController.navigationView.speedLimitView.speedLimit?.value  {}
+        if speed > limit {
+            kilometerPerHour.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+            speedLabel.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+            speedLimitLabel.textColor = .white
+            speedLimitOuterView.backgroundColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
+            speedLimitOuterView.isHidden = false
+        } else {
+            kilometerPerHour.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+            speedLabel.textColor = #colorLiteral(red: 0.003921568627, green: 0.8, blue: 0.08235294118, alpha: 1)
+            speedLimitOuterView.isHidden = true
         }
+        
         if speed < 0 {
             speed = 0
         }
