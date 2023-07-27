@@ -295,7 +295,7 @@ class NearestPlacesViewController: UIViewController {
         case .All:
             filterPlacesResults = placesResults
         case .TopRated:
-            filterPlacesResults = placesResults.filter({ $0.rating ?? 0 >= 4.5})
+            filterPlacesResults = placesResults.filter({ $0.rating ?? 0 >= 4.0})
         case .Open:
             filterPlacesResults = placesResults.filter({ place in
                 if let open_now = place.opening_hours?.open_now {
