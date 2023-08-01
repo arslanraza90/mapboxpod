@@ -604,7 +604,11 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     public var onSaveRouteClosure: ((_ saveRoute: SaveRoute) -> Void)?
     var source: String = ""
     var place: Place?
-    var placesIds: [String] = []
+    var placesIds: [String] = [] {
+        didSet {
+            routesTableView.reloadData()
+        }
+    }
     var placeType: String = ""
     var placeImageURL = ""
     
