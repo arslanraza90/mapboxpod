@@ -1154,7 +1154,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
         let limit = distanceType == .km ? 80.0 : 50.0
         var speed = distanceType == .km ? location.speed * 3.6 : location.speed * 2.23694
-        kilometerPerHour.text = distanceType == .km ? "km/h" : "mi/h"
+        kilometerPerHour.text = distanceType == .km ? "km/h" : "mph"
         speedLimitLabel.text = distanceType == .km ? "80" : "50"
         
         if let _ = navigationViewController.navigationView.speedLimitView.speedLimit?.value  {}
@@ -1180,7 +1180,7 @@ open class MapBoxViewController: UIViewController, CLLocationManagerDelegate, Na
     func setSpeedView(location: CLLocation) {
         let limit = distanceType == .km ? 80.0 : 50.0
         var speed = distanceType == .km ? location.speed * 3.6 : location.speed * 2.23694
-        driveKilometerPerHour.text = distanceType == .km ? "km/h" : "mi/h"
+        driveKilometerPerHour.text = distanceType == .km ? "km/h" : "mph"
         driveSpeedLimitLabel.text = distanceType == .km ? "80" : "50"
         if speed > limit {
             driveKilometerPerHour.textColor = #colorLiteral(red: 1, green: 0.4705882353, blue: 0.4784313725, alpha: 1)
